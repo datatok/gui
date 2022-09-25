@@ -2,6 +2,7 @@
 import React from 'react';
 import { EuiLink } from '@elastic/eui';
 import { useNavigate, useHref } from 'react-router';
+import { getRouteURL, useRoutingNavigate } from 'services/routing';
 
 const isModifiedEvent = (event) =>
   !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
@@ -13,9 +14,8 @@ const isTargetBlank = (event) => {
   return target && target !== '_self';
 };
 
-export default function EuiCustomLink({ to, ...rest }) {
-  // This is the key!
-  const history = useNavigate();
+export default function EuiCustomLink({ to, toArgs, ...rest }) {
+  const navigate = useRoutingNavigate();
 
   function onClick(event) {
     if (event.defaultPrevented) {
@@ -31,11 +31,13 @@ export default function EuiCustomLink({ to, ...rest }) {
     event.preventDefault();
 
     // Push the route to the history.
-    history(to);
+    navigate(to, toArgs);
   }
 
+  const fullURL = getRouteURL(to, toArgs)
+
   // Generate the correct link href (with basename accounted for)
-  const href = useHref(to);
+  const href = useHref(fullURL);
 
   const props = { ...rest, href, onClick };
   return <EuiLink {...props} />;

@@ -1,4 +1,4 @@
-import { GuiBrowserFile } from "store/browser/types"
+import { GuiBrowserFile } from "types"
 
 export const BrowserUtils = {
     searchNaive: (path: string, items:GuiBrowserFile[]): GuiBrowserFile|undefined => {

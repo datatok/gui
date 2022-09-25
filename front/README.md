@@ -7,7 +7,8 @@
 * routing with elastic EUI https://github.com/elastic/eui/blob/main/wiki/react-router.md
 * context with react https://felixgerschau.com/react-typescript-context/
 * state store https://github.com/pmndrs/valtio/wiki/How-to-use-with-context 
-
+* mock API https://www.npmjs.com/package/json-server
+* useContext better https://www.robinwieruch.de/react-usecontext-hook/
 
 ## Available Scripts
 

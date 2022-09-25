@@ -1,4 +1,5 @@
-import { GuiBrowserFile } from "../store/browser/types"
+import { GuiBucket } from "types"
+import { GuiBrowserFile } from "../types"
 import { StringUtils } from "./StringUtils"
 
 const getFilesR = (generator: string, parent: GuiBrowserFile) :GuiBrowserFile[] => {
@@ -59,4 +60,24 @@ export const getFiles = (): GuiBrowserFile[] => {
   }
 
   return getFilesR("year", root)
+}
+
+export const getBuckets = (): GuiBucket[] => {
+  return [
+    {
+      name: "steam",
+      host: "dev-c2",
+      id: "dev-c2-steam",
+    },
+    {
+      name: "pocs",
+      host: "dev-c2",
+      id: "dev-c2-pocs",
+    },
+    {
+      name: "steam",
+      host: "prod-c2",
+      id: "prod-c2-steam",
+    }
+  ]
 }

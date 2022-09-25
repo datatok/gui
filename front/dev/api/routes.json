@@ -1,0 +1,4 @@
+{
+    "/auth/anonymous": "/auth_anonymous",
+    "/bucket/*": "/bucket"
+}
