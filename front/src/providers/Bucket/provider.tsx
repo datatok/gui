@@ -1,6 +1,17 @@
-import { BucketContext, state } from "./context"
+import { useParams } from "react-router-dom"
 
-const provider = ({children}) => {
+import { actions, BucketContext, state } from "./context"
+
+const BucketStateProvider = ({children}) => {
+
+  const routeParams = useParams()
+
+  const bucketIDFromRoute: string | undefined = routeParams.bucket
+
+  if (bucketIDFromRoute) {
+    actions.setCurrentByID(bucketIDFromRoute)
+  }
+
   return (
     <BucketContext.Provider value={state}>
         {children}
@@ -8,4 +19,4 @@ const provider = ({children}) => {
   )
 }
 
-export default provider
+export default BucketStateProvider

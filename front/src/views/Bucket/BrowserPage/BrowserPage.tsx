@@ -5,9 +5,7 @@ import { setSiteTitle } from 'providers/Site';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import Grid from './Grid';
 import RenameModal from './RenameModal';
-import { getBucket } from 'services/api';
-import { AxiosError } from 'axios';
-import { browserStateActions, useBrowserStateSnapshot } from 'providers/Browser'
+import { useBrowserStateSnapshot } from 'providers/Browser'
 
 let selectionFromSingle = false
 
@@ -22,34 +20,9 @@ const BrowserPage: FC = () => {
 
   const [currentModal, setCurrentModal] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
-  const [apiWorkflowStep, setAPIWorkflowStep] = useState({
-    status: "start",
-    message: ""
-  })
 
   useEffect(() => {
     setSiteTitle("Browse")
-  })
-
-  useEffect(() => {
-    if (apiWorkflowStep.status === "start") {
-
-      setAPIWorkflowStep({
-        status: "loading",
-        message: ""
-      })
-
-      getBucket(bucket.id)
-        .then(response => {
-          browserStateActions.setItems(response.data.files)
-        })
-        .catch((error:AxiosError) => {
-          setAPIWorkflowStep({
-            status: "error",
-            message: error.message
-          })
-        })
-    }
   })
 
   const onDeleteItemAskConfirmation = (file: GuiBrowserFile) => {

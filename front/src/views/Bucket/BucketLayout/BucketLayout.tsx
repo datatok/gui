@@ -1,8 +1,9 @@
-import { EuiPageTemplate } from '@elastic/eui';
-import React, { FC } from 'react';
+import { EuiLoadingSpinner, EuiModal, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui';
+import React, { FC, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
+import { getBucket } from 'services/api';
 
 
 import { BucketProvider, bucketActions, useBucketStateSnapshot } from 'providers/Bucket';
@@ -28,50 +29,45 @@ const BucketLayout: FC = () => {
     title: pageTitle
   } = useSiteStateSnapshot()
 
-  React.useEffect(() => {
-    if (browserBucket?.id !== bucket?.id) {
-      browserStateActions.setBucket(bucket)
+  const [refreshBrowseFilesWorkflow, setRefreshBrowseFilesWorkflow] = useState({
+    step: "start",
+    message: ""
+  })
 
-
-    }
-  }, [bucket])
-
-  React.useEffect(() => {
-    const params = routeParams
-
-    const paramBrowsePath: string | undefined = params['*']
-    const URLBucketID: string | undefined = params.bucket
-
-    if (URLBucketID) {
-      bucketActions.setCurrentByID(URLBucketID)
-    }
-
-    if (paramBrowsePath) {
-      browserStateActions.setCurrentByPath(paramBrowsePath)
-    } else {
-      browserStateActions.setCurrentByPath('/')
-    }
-  }, [routeParams]);
-
-  if (bucket && browserBucket) {
-    return (
-      <BucketProvider>
-        <BrowserStateProvider>
-          <EuiPageTemplate>
-            <EuiPageTemplate.Sidebar css={{margin:0,padding:'5px'}}>
-              <Sidebar bucket={bucket} buckets={buckets} browserItems={browserItems} />
-            </EuiPageTemplate.Sidebar>
-              <Header bucket={bucket} browserFile={browserSelectedFile} pageTitle={pageTitle} />
-              <EuiPageTemplate.Section>
-                <Outlet />
-              </EuiPageTemplate.Section>
-          </EuiPageTemplate>
-        </BrowserStateProvider>
-      </BucketProvider>
-    );
+  const onRefreshingWorkflowChange = (step: string, message: string) => {
+    setRefreshBrowseFilesWorkflow({
+      step,
+      message
+    })
   }
 
-  return <></>
+  const inner = (bucket) ? (
+      <EuiPageTemplate>
+        <EuiPageTemplate.Sidebar css={{margin:0,padding:'5px'}}>
+          <Sidebar bucket={bucket} buckets={buckets} browserItems={browserItems} />
+        </EuiPageTemplate.Sidebar>
+        <Header bucket={bucket} browserFile={browserSelectedFile} pageTitle={pageTitle} />
+        <EuiPageTemplate.Section>
+          {refreshBrowseFilesWorkflow.step === "loading" ? (
+            <EuiText textAlign='center'>
+              <EuiSpacer size='l' />
+              <h2>Loading files</h2>
+              <EuiSpacer size='m' />
+              <EuiLoadingSpinner size='xxl' />
+            <EuiSpacer size='l' />
+          </EuiText>
+          ) : <Outlet />}
+        </EuiPageTemplate.Section>
+      </EuiPageTemplate>
+    ) : <></>
+
+  return (
+    <BucketProvider>
+      <BrowserStateProvider onRefreshingWorkflowChange={onRefreshingWorkflowChange}>
+        {inner}
+      </BrowserStateProvider>
+    </BucketProvider>
+  );
 };
 
 export default BucketLayout;
