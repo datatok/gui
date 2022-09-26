@@ -29,7 +29,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "api" : "./node_modules/.bin/json-server --port 3001 --routes ./dev/api/routes.json ./dev/api/mock.json"
+    "api" : "./node_modules/.bin/json-server --port 3001 --routes ./dev/api/routes.json --delay 500 ./dev/api/mock.json"
   },
   "eslintConfig": {
     "extends": [

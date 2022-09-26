@@ -9,7 +9,7 @@ import {
 import BucketLayout from 'views/Bucket/BucketLayout/BucketLayout';
 import LoginPage from 'views/Auth/Login/LoginPage/LoginPage';
 import NotFoundErrorPage from 'views/Error/ErrorPage/NotFoundErrorPage';
-import { EuiProvider } from '@elastic/eui';
+import { EuiGlobalToastList, EuiProvider } from '@elastic/eui';
 
 import '@elastic/eui/dist/eui_theme_light.css';
 import UploadPage from 'views/Bucket/UploadPage/UploadPage';

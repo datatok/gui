@@ -26,7 +26,7 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
       <p>You&rsquo;re about to remove {selectedItems.length} file(s):</p>
       <ul>
         {selectedItems.map((file:GuiBrowserFile) => (
-          <li>{file.name}</li>
+          <li key={file.name}>{file.name}</li>
         ))}
       </ul>
       <p>Are you sure you want to do this?</p>

@@ -12,6 +12,10 @@ export const setSiteTitle = (t:string) => {
   actions.setTitle(t)
 }
 
+export const addSiteToast = (toast: any) => {
+  actions.addToast(toast)
+}
+
 export const useAuth = () => {
   return {
     apiAccessToken: state.apiAccessToken

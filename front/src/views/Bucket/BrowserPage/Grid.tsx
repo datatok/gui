@@ -1,6 +1,6 @@
 import { EuiBasicTable } from '@elastic/eui';
 import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
-import React, { FC, useState } from 'react';
+import React, { FC, useRef, useState } from 'react';
 import { GuiBrowserFile } from 'types';
 
 interface GridProps {
@@ -15,6 +15,10 @@ const Grid: FC<GridProps> = ({browseFile, onDeleteItem, onSelectionChange, onEdi
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedItems, setSelectedItems] = useState([]);
+
+  console.log(browseFile)
+
+  const tableRef = useRef<EuiBasicTable>()
 
   const sorting: any = {
     sort: {
@@ -89,24 +93,26 @@ const Grid: FC<GridProps> = ({browseFile, onDeleteItem, onSelectionChange, onEdi
     selectable: (n:any) => true,
     selectableMessage: (selectable:boolean, item:GuiBrowserFile) => "",
     onSelectionChange: (selectedItems: GuiBrowserFile[]) => {
-      setSelectedItems(selectedItems);
+      //setSelectedItems(selectedItems);
+      console.log(selectedItems)
 
       onSelectionChange(selectedItems)
     },
   };
 
-  const items:GuiBrowserFile[] = (browseFile && browseFile.children) ? [...browseFile.children] : []
+  const items:GuiBrowserFile[] = (browseFile && browseFile.children) ? browseFile.children : []
 
   return (
     <EuiBasicTable
-    tableCaption="Folder children"
-    items={items}
-    itemId="path"
-    columns={columns}
-    sorting={sorting}
-    onChange={onTableChange}
-    isSelectable={true}
-    selection={selection}
+      ref={tableRef}
+      tableCaption="Folder children"
+      items={items}
+      itemId="path"
+      columns={columns}
+      sorting={sorting}
+      onChange={onTableChange}
+      isSelectable={true}
+      selection={selection}
     />
   );
 };

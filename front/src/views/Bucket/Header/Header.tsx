@@ -1,9 +1,10 @@
-import { EuiPageTemplate } from '@elastic/eui';
+import { EuiButton, EuiPageTemplate } from '@elastic/eui';
 import React, { FC, ReactNode } from 'react';
-import { Route } from 'services/routing';
+import { useNavigateProps, Route, onClick, getRouteURL } from 'services/routing';
 import { GuiBrowserFile } from 'types';
 import EuiCustomLink from 'components/EuiCustomLink';
 import { GuiBucket } from 'types';
+import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   browserFile?: GuiBrowserFile
@@ -13,23 +14,35 @@ interface HeaderProps {
 
 const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
 
-  const sideItems:ReactNode = [
-    <EuiCustomLink to={Route.BucketUpload} toArgs={{bucket: bucket.id}} key={'upload'} >Upload</EuiCustomLink>
-  ]
+  const navigate = useNavigate();
 
   const breadcrumbs = []
+  const fileToBreadcrumbItem = (file: GuiBrowserFile) => {
+    const href = getRouteURL(Route.BucketBrowse, {
+      bucket: bucket.id,
+      path: file.path
+    })
 
-  if (browserFile) {
-    for (let it:GuiBrowserFile|undefined = browserFile; typeof it !== "undefined"; it = it.parent) {
-      breadcrumbs.push({
-        text: it.name || ""
+    return {
+      text: file.name || "",
+      href,
+      onClick: onClick(() => {
+        navigate(href)
       })
     }
   }
 
-  breadcrumbs.push({
-    text: bucket.name
-  })
+  if (browserFile) {
+    for (let it:GuiBrowserFile|undefined = browserFile; typeof it !== "undefined"; it = it.parent) {
+      breadcrumbs.push(fileToBreadcrumbItem(it))
+    }
+  }
+
+  breadcrumbs.push(fileToBreadcrumbItem({
+    name: bucket.name,
+    path: "/",
+    type: "folder",
+  }))
 
   breadcrumbs.reverse()
 
@@ -37,7 +50,6 @@ const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
     <EuiPageTemplate.Header 
       breadcrumbs={breadcrumbs}
       pageTitle={pageTitle}
-      rightSideItems={[sideItems]}
     />
   );
 };

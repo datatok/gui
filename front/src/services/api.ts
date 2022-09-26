@@ -6,7 +6,8 @@ const apiServer = "http://localhost:3001"
 enum APIService {
   authAnonymous = 1,
   buckets,
-  bucket
+  bucket,
+  deleteFile
 }
 
 const getAPIUrl = (service: APIService, args?: {[key:string]: string}): string => {
@@ -17,6 +18,8 @@ const getAPIUrl = (service: APIService, args?: {[key:string]: string}): string =
       return `${apiServer}/buckets`
     case APIService.bucket:
         return `${apiServer}/bucket/${args.bucket}`
+    case APIService.deleteFile:
+      return `${apiServer}/bucket/${args.bucket}/delete`
   }
 }
 
@@ -28,8 +31,14 @@ export const getBuckets = () => {
   return axios.get<GetBucketsResponse>(getAPIUrl(APIService.buckets))
 }
 
-export const getBucket = (bucket: string) => {
-  return axios.get<GetBucketResponse>(getAPIUrl(APIService.bucket, { bucket }))
+export const getBucket = (bucket: GuiBucket) => {
+  return axios.get<GetBucketResponse>(getAPIUrl(APIService.bucket, { bucket: bucket.id }))
+}
+
+export const deleteFiles = (bucket: GuiBucket, items: GuiBrowserFile[]) => {
+  return axios.post<Response>(getAPIUrl(APIService.deleteFile, { bucket: bucket.id }), {
+    files: items.map(i => i.path)
+  })
 }
 
 export interface Response {

@@ -1,11 +1,16 @@
 import { EuiButton, EuiConfirmModal, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
 import React, { FC, useEffect, useState } from 'react';
 import { GuiBrowserFile } from 'types';
-import { setSiteTitle } from 'providers/Site';
+import { addSiteToast, setSiteTitle } from 'providers/Site';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import Grid from './Grid';
 import RenameModal from './RenameModal';
-import { useBrowserStateSnapshot } from 'providers/Browser'
+import { browserStateActions, useBrowserStateSnapshot } from 'providers/Browser'
+import { deleteFiles } from 'services/api';
+import { getRouteURL, onClick, Route } from 'services/routing';
+import { useNavigate } from 'react-router-dom';
+import TopBar from './TopBar';
+import NewFolderModal from './NewFolderModal';
 
 let selectionFromSingle = false
 
@@ -16,10 +21,12 @@ const BrowserPage: FC = () => {
     bucket
   } = useBrowserStateSnapshot()
 
-
-
   const [currentModal, setCurrentModal] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
+  const [deleteAPIWorkflow, setDeleteAPIWorkflow] = useState({
+    step: "",
+    message: ""
+  })
 
   useEffect(() => {
     setSiteTitle("Browse")
@@ -41,13 +48,17 @@ const BrowserPage: FC = () => {
     setSelectedItems(files)
   }
 
+  const onNewFolderClick = (file?: GuiBrowserFile) => {
+    setCurrentModal("new-folder")
+  }
+
   /** 
    * Delete stuff 
    */
   let modal;
 
-  const showDeleteConfirm = () => {
-    setCurrentModal("delete-confirm")
+  const onShowModal = (modal:string) => {
+    setCurrentModal(modal)
   }
 
   const closeModal = () => {
@@ -59,6 +70,38 @@ const BrowserPage: FC = () => {
   }
 
   const doDeleteSelection = () => {
+    setDeleteAPIWorkflow({ step: 'doing', message: ''})
+
+    deleteFiles(bucket, selectedItems)
+      .then(response => {
+        
+        selectedItems.forEach(file => {
+          browserStateActions.deleteFile(file)
+        })
+
+        setDeleteAPIWorkflow({ step: 'done', message: ''})
+        
+        setSelectedItems([])
+        
+        addSiteToast({
+          title: 'Success',
+          color: 'success',
+          iconType: 'help',
+          text: "File deleted!",
+        })
+        console.log("ok")
+      })
+      .catch(err => {
+        setDeleteAPIWorkflow({ step: 'error', message: err.message})
+        addSiteToast({
+            title: 'Oops, there was an error',
+            color: 'danger',
+            iconType: 'help',
+            text: `${err.message}`,
+        })
+        console.log("error")
+      })
+
     closeModal()
   }
 
@@ -66,36 +109,48 @@ const BrowserPage: FC = () => {
     switch (currentModal) {
       case "delete-confirm":
         modal = (
-          <DeleteConfirmModal 
-            selectedItems={selectedItems} 
+          <DeleteConfirmModal
+            key={"delete-modal"}
+            selectedItems={selectedItems}
             onConfirm={doDeleteSelection}
-            onCancel={closeModal} 
+            onCancel={closeModal}
           />
         );
         break
       case "edit-rename":
         modal = (
-          <RenameModal 
-            selectedItem={selectedItems[0]} 
+          <RenameModal
+            key={"rename-modal"}
+            selectedItem={selectedItems[0]}
             onConfirm={doDeleteSelection}
             onCancel={closeModal} 
           />
         );
+        break
+      case "new-folder":
+        modal = (
+          <NewFolderModal
+            key={"new-folder-modal"}
+            bucket={bucket}
+            selectedItem={browseFile}
+            onConfirm={doDeleteSelection}
+            onCancel={closeModal} 
+          />
+        )
     }
     
   }
 
+  
+
   return (
     <>
-      <EuiFlexGroup alignItems="center">
-        <EuiFlexItem grow={false}>
-
-        </EuiFlexItem>
-        <EuiFlexItem />
-        <EuiButton color="danger" iconType="trash" disabled={selectedItems.length === 0} onClick={showDeleteConfirm}>
-          Delete {selectedItems.length} Items
-        </EuiButton>
-      </EuiFlexGroup>
+      <TopBar 
+        bucket={bucket}
+        browserFile={browseFile}
+        onShowModal={onShowModal}
+        selectedItems={selectedItems}
+      />
 
       <EuiSpacer size="l" />
 

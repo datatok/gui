@@ -13,16 +13,15 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ onRefreshingWorkf
 
   const { current : bucket } = useBucketStateSnapshot()
   const routeParams = useParams()
-  const bucketIDFromRoute: string | undefined = routeParams.bucket
   const paramBrowsePath: string | undefined = routeParams['*']
 
   React.useEffect( () => {
-    if (!GuiBucketUtils.equals(bucket, state.bucket)) {
+    if (bucket && !GuiBucketUtils.equals(bucket, state.bucket)) {
       actions.setBucket(bucket, [])
 
       onRefreshingWorkflowChange("loading")
 
-      getBucket(bucket.id)
+      getBucket(bucket)
         .then(response => {
           actions.setBucket(bucket, response.data.files)
           

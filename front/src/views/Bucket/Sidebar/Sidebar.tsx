@@ -16,7 +16,7 @@ const Sidebar: FC<SidebarProps> = ({ bucket, buckets, browserItems }) => {
   return (
     <>
       <BucketSelect bucket={bucket} buckets={buckets} />
-      <FilesTreeView bucket={bucket} browserItems={browserItems} />
+      {browserItems ? <FilesTreeView bucket={bucket} browserItems={browserItems} /> : <></>}
     </>
   );
 };

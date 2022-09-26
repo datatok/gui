@@ -22,6 +22,17 @@ const UploadPage: FC = () => {
     path: browserSelectedFile?.path
   })
 
+  const handleInputChange = (event) => {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  }
+
   return (
     <>
       <EuiForm component="form">
@@ -29,18 +40,18 @@ const UploadPage: FC = () => {
         <EuiFlexGroup>
           <EuiFlexItem>
             <EuiFormRow label="Host">
-              <EuiFieldText name="host" value={formData.host} disabled />
+              <EuiFieldText name="host" value={formData.host} onChange={handleInputChange} disabled />
             </EuiFormRow>
             <EuiFormRow label="Bucket">
-              <EuiFieldText name="bucket" value={formData.bucket} disabled />
+              <EuiFieldText name="bucket" value={formData.bucket} onChange={handleInputChange} disabled />
             </EuiFormRow>
             <EuiFormRow label="Path" helpText="full path">
-              <EuiFieldText name="path" value={formData.path} />
+              <EuiFieldText name="path" value={formData.path} onChange={handleInputChange} />
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem>
             <EuiFormRow label="File name" helpText="file name">
-              <EuiFieldText name="first" />
+              <EuiFieldText name="first" onChange={handleInputChange} />
             </EuiFormRow>
             <EuiFormRow>
               <EuiFilePicker
