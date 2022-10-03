@@ -3,7 +3,6 @@ import React, { FC, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
-import { getBucket } from 'services/api';
 
 
 import { BucketProvider, bucketActions, useBucketStateSnapshot } from 'providers/Bucket';
@@ -11,8 +10,6 @@ import { useSiteStateSnapshot } from 'providers/Site';
 import { browserStateActions, BrowserStateProvider, useBrowserStateSnapshot } from 'providers/Browser';
 
 const BucketLayout: FC = () => {
-
-  let routeParams = useParams()
 
   const { 
     bucket: browserBucket,

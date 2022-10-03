@@ -1,22 +1,24 @@
 import { EuiBasicTable } from '@elastic/eui';
 import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
+import EuiCustomLink from 'components/EuiCustomLink';
 import React, { FC, useRef, useState } from 'react';
-import { GuiBrowserFile } from 'types';
+import { Route } from 'services/routing';
+import { GuiBrowserFile, GuiBucket } from 'types';
 
 interface GridProps {
+  bucket: GuiBucket,
   browseFile: GuiBrowserFile
+  browseFiles: GuiBrowserFile[]
   onDeleteItem: (item:GuiBrowserFile) => void
   onEditRenameItem: (item:GuiBrowserFile) => void
   onSelectionChange: (items:GuiBrowserFile[]) => void
 }
 
-const Grid: FC<GridProps> = ({browseFile, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
+const Grid: FC<GridProps> = ({bucket, browseFile, browseFiles, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
   const [selectedItems, setSelectedItems] = useState([]);
-
-  console.log(browseFile)
 
   const tableRef = useRef<EuiBasicTable>()
 
@@ -33,6 +35,24 @@ const Grid: FC<GridProps> = ({browseFile, onDeleteItem, onSelectionChange, onEdi
       name: 'name',
       sortable: true,
       truncateText: true,
+      render: (name, {path}) => {
+        return (<EuiCustomLink to={Route.BucketBrowse} toArgs={{bucket: bucket.id, path}}>{name}</EuiCustomLink>)
+      }
+    },
+    {
+      field: 'type',
+      name: 'type',
+      sortable: true,
+    },
+    {
+      field: 'size',
+      name: 'size',
+      sortable: true,
+    },
+    {
+      field: 'editDate',
+      name: 'editDate',
+      sortable: true,
     },
     {
       name: 'Actions',
@@ -100,13 +120,11 @@ const Grid: FC<GridProps> = ({browseFile, onDeleteItem, onSelectionChange, onEdi
     },
   };
 
-  const items:GuiBrowserFile[] = (browseFile && browseFile.children) ? browseFile.children : []
-
   return (
     <EuiBasicTable
       ref={tableRef}
       tableCaption="Folder children"
-      items={items}
+      items={browseFiles}
       itemId="path"
       columns={columns}
       sorting={sorting}

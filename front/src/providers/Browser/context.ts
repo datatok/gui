@@ -6,13 +6,26 @@ import { GuiBrowserFile, GuiBucket } from "types";
 
 export interface IBrowserContext {
   bucket?: GuiBucket
+  /**
+   * hold the tree-view
+   */
   items: GuiBrowserFile[]
+
+  /**
+   * files to show
+   */
+  currentFolderFiles: GuiBrowserFile[]
+
+  /**
+   * current selected (folder or file)
+   */
   current?: GuiBrowserFile,
   getByPath: (path: string) => GuiBrowserFile|undefined
 }
 
 const defaultData:IBrowserContext = {
   items: [],
+  currentFolderFiles: [],
   getByPath: (path:string): GuiBrowserFile|undefined => {
     return BrowserUtils.searchNaive(StringUtils.trim(path, '/'), state.items)
   }
@@ -22,14 +35,20 @@ export const state = proxy(defaultData)
 
 export const actions = {
 
-  setBucket: (bucket: GuiBucket, items: GuiBrowserFile[]): IBrowserContext => {
+  setBucket: (bucket: GuiBucket, rootFiles: GuiBrowserFile[]): IBrowserContext => {
 
-    BrowserUtils.resolveParentLinks(items)
+    BrowserUtils.resolveParentLinks(rootFiles)
 
-    state.items = items
+    state.items = rootFiles
     state.current = undefined
     state.bucket = bucket
 
+    return state
+  },
+
+  setFiles: (fromPath: string, files: GuiBrowserFile[]): IBrowserContext => {
+    state.currentFolderFiles = files
+    state.items = files
     return state
   },
 

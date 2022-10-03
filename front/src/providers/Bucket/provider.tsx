@@ -1,7 +1,7 @@
 import { useSiteStateSnapshot } from "providers/Site"
 import React from "react"
 import { useParams } from "react-router-dom"
-import { getBuckets } from "services/api"
+import { GetBucketsCommand } from "services/api"
 
 import { actions, BucketContext, state } from "./context"
 
@@ -25,10 +25,8 @@ const BucketStateProvider = ({children}) => {
    * When apiAccessToken changes -> get buckets list
    */
   React.useEffect(() => {
-    getBuckets()
-      .then(response => {
-        const { buckets } = response.data
-
+    GetBucketsCommand()
+      .then(({ buckets }) => {
         actions.setBuckets(buckets)
       })
   }, [authState.apiAccessToken])

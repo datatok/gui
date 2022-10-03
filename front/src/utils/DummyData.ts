@@ -11,6 +11,7 @@ const getFilesR = (generator: string, parent: GuiBrowserFile) :GuiBrowserFile[] 
     return {
       name,
       parent,
+      prefix: StringUtils.trim(`${parent.path}/${name}`, '/'),
       path: StringUtils.trim(`${parent.path}/${name}`, '/'),
       type: 'folder',
     }
@@ -54,8 +55,9 @@ const getFilesR = (generator: string, parent: GuiBrowserFile) :GuiBrowserFile[] 
 
 export const getFiles = (): GuiBrowserFile[] => {
   const root = {
-    name: "root",
-    path: "",
+    name: "",
+    path: "/",
+    prefix: "/",
     type: "root"
   }
 

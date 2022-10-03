@@ -42,7 +42,9 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, browserItems }) => {
     return r
   }
 
-  const treeItems:Node[] = browserItems.map(i => {
+  const treeItems:Node[] = browserItems
+  .filter(f => f.type === 'folder')
+  .map(i => {
     return fileToTreeNode(i)
   })
 

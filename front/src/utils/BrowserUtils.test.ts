@@ -1,9 +1,10 @@
+import path from "path"
 import { GuiBrowserFile } from "types"
 import { BrowserUtils } from "./BrowserUtils"
 import { getFiles } from "./DummyData"
 
-const createItem = (name: string, path: string): GuiBrowserFile => {
-  return {name, path, type : "folder" }
+const createItem = (name: string, prefix: string): GuiBrowserFile => {
+  return {name, path : path.join(prefix, name), prefix, type : "folder" }
 }
 
 test("Search must work", () => {
@@ -27,10 +28,10 @@ test("Search must fail", () => {
 })
 
 test("Delete simple item", () => {
-  const toDelete1 = createItem("c1", "/c1")
-  const toDelete2 = createItem("c2", "/c2")
+  const toDelete1 = createItem("c1", "/")
+  const toDelete2 = createItem("c2", "/")
   const items: GuiBrowserFile[] = [{
-    ...createItem("root", "/"),
+    ...createItem("", "/"),
     children: [
       toDelete1,
       toDelete2
@@ -39,29 +40,29 @@ test("Delete simple item", () => {
 
   let newItems = BrowserUtils.deleteItem(items, toDelete2);
 
-  expect(newItems).toEqual([{"children": [{"name": "c1", "path": "/c1", "type": "folder"}], "name": "root", "path": "/", "type": "folder"}])
+  expect(newItems).toEqual([{"children": [{"name": "c1", "prefix": "/", "path": "/c1", "type": "folder"}], "name": "", "prefix" : "/", "path": "/", "type": "folder"}])
 
   newItems = BrowserUtils.deleteItem(newItems, toDelete1);
 
-  expect(newItems).toEqual([{"children": [], "name": "root", "path": "/", "type": "folder"}])
+  expect(newItems).toEqual([{"children": [], "name": "", "prefix" : "/", "path": "/", "type": "folder"}])
 })
 
 test("Delete complex item", () => {
-  const toDelete1 = createItem("c1", "/c1")
+  const toDelete1 = createItem("c1", "/")
 
   const items: GuiBrowserFile[] = [{
-    ...createItem("root", "/"),
+    ...createItem("", "/"),
     children: [
       {...toDelete1, children: [
-        createItem("c1_s1", "/c2/s1"),
-        createItem("c1_s2", "/c2/s2")
+        createItem("c1_s1", "/c1/"),
+        createItem("c1_s2", "/c1/")
       ]},
-      createItem("c2", "/c2"),
+      createItem("c2", "/"),
 
     ]
   }]
 
   const newItems = BrowserUtils.deleteItem(items, toDelete1);
 
-  expect(newItems).toEqual([{"children": [{"name":"c2", "path":"/c2", "type" : "folder"}], "name": "root", "path": "/", "type": "folder"}])
+  expect(newItems).toEqual([{"children": [{"name":"c2", "prefix": "/", "path":"/c2", "type" : "folder"}], "name": "", "prefix" : "/", "path": "/", "type": "folder"}])
 })

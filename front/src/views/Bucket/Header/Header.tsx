@@ -40,6 +40,7 @@ const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
 
   breadcrumbs.push(fileToBreadcrumbItem({
     name: bucket.name,
+    prefix: "/",
     path: "/",
     type: "folder",
   }))

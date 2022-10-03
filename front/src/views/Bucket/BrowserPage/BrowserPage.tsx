@@ -6,11 +6,9 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import Grid from './Grid';
 import RenameModal from './RenameModal';
 import { browserStateActions, useBrowserStateSnapshot } from 'providers/Browser'
-import { deleteFiles } from 'services/api';
-import { getRouteURL, onClick, Route } from 'services/routing';
-import { useNavigate } from 'react-router-dom';
 import TopBar from './TopBar';
 import NewFolderModal from './NewFolderModal';
+import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
 
 let selectionFromSingle = false
 
@@ -18,6 +16,7 @@ const BrowserPage: FC = () => {
 
   const {
     current: browseFile,
+    currentFolderFiles: browseFiles,
     bucket
   } = useBrowserStateSnapshot()
 
@@ -72,7 +71,7 @@ const BrowserPage: FC = () => {
   const doDeleteSelection = () => {
     setDeleteAPIWorkflow({ step: 'doing', message: ''})
 
-    deleteFiles(bucket, selectedItems)
+    DeleteObjectCommand(bucket, selectedItems)
       .then(response => {
         
         selectedItems.forEach(file => {
@@ -155,7 +154,9 @@ const BrowserPage: FC = () => {
       <EuiSpacer size="l" />
 
       <Grid
+        bucket={bucket}
         browseFile={browseFile}
+        browseFiles={browseFiles}
         onDeleteItem={onDeleteItemAskConfirmation} 
         onSelectionChange={onSelectionChange} 
         onEditRenameItem={onEditRenameItemAsk}

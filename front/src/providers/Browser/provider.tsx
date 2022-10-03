@@ -1,9 +1,9 @@
 import { useBucketStateSnapshot } from "providers/Bucket/context"
-import { useParams } from "react-router-dom"
+import { useLocation, useParams } from "react-router-dom"
 import React, { FC, useState } from 'react';
 import { actions, BrowserContext, state } from "./context"
-import { getBucket } from "services/api";
 import { GuiBucketUtils } from "utils/GuiBucketUtils";
+import { BucketBrowseCommand } from "services/api";
 
 interface BrowserStateProviderProps {
   onRefreshingWorkflowChange: (step: string, message?: string) => void
@@ -13,17 +13,21 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ onRefreshingWorkf
 
   const { current : bucket } = useBucketStateSnapshot()
   const routeParams = useParams()
-  const paramBrowsePath: string | undefined = routeParams['*']
+  const routeLocatioh = useLocation()
+
+  console.log(routeLocatioh, routeParams)
 
   React.useEffect( () => {
+    const paramBrowsePath: string | undefined = routeParams['*']
+
     if (bucket && !GuiBucketUtils.equals(bucket, state.bucket)) {
       actions.setBucket(bucket, [])
 
       onRefreshingWorkflowChange("loading")
 
-      getBucket(bucket)
-        .then(response => {
-          actions.setBucket(bucket, response.data.files)
+      BucketBrowseCommand(bucket, paramBrowsePath || '')
+        .then(({files}) => {
+          actions.setFiles(paramBrowsePath || '', files)
           
           onRefreshingWorkflowChange("done")
         })
@@ -32,8 +36,20 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ onRefreshingWorkf
         })
     }
 
-    if (paramBrowsePath) {
+    if (bucket && paramBrowsePath) {
       actions.setCurrentByPath(paramBrowsePath)
+
+      onRefreshingWorkflowChange("loading")
+
+      BucketBrowseCommand(bucket, paramBrowsePath || '')
+        .then(({files}) => {
+          actions.setFiles(paramBrowsePath || '', files)
+          
+          onRefreshingWorkflowChange("done")
+        })
+        .catch(err => {
+          onRefreshingWorkflowChange("error", err.message)
+        })
     }
   }, [bucket, routeParams]);
 

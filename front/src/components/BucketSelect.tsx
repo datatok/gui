@@ -10,7 +10,7 @@ interface BucketSelectProps {
 
 const bucketToOption = (bucket: GuiBucket): EuiSuperSelectOption<string> => {
   return {
-    inputDisplay: `${bucket.host} ${bucket.name}`,
+    inputDisplay: `${bucket.name} ${bucket.host ? `(${bucket.host})` : ''}`,
     value: bucket.id
   }
 }

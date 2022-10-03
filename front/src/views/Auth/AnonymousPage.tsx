@@ -3,11 +3,11 @@ import {
   EuiPageTemplate
 } from '@elastic/eui';
 import { useEffect } from 'react';
-import { loginUser } from 'services/api'
 import { Route, useRoutingNavigate } from 'services/routing';
 import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
 import { actions as siteActions } from 'providers/Site/context'
+import { AuthLoginCommand } from 'services/api';
 
 const AnonymousLoginPage: FC = () => {
 
@@ -25,9 +25,9 @@ const AnonymousLoginPage: FC = () => {
         message: ""
       })
 
-      loginUser()
-        .then(response => {
-          siteActions.setAPIAccessToken(response.data.token)
+      AuthLoginCommand()
+        .then(({token}) => {
+          siteActions.setAPIAccessToken(token)
 
           navigate(Route.Home);
         })

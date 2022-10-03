@@ -5,13 +5,13 @@ import {
   EuiLoadingSpinner,
   EuiPageTemplate, EuiText,
 } from '@elastic/eui';
-import { getBuckets } from 'services/api';
 import { useRoutingNavigate, Route } from 'services/routing';
 import { bucketActions } from 'providers/Bucket'
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useSiteStateSnapshot } from 'providers/Site';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
+import { GetBucketsCommand } from 'services/api';
 
 const HomeLayout: FC = () => {
 
@@ -32,10 +32,8 @@ const HomeLayout: FC = () => {
         message: ""
       })
 
-      getBuckets()
-        .then(response => {
-          const { buckets } = response.data
-
+      GetBucketsCommand()
+        .then(({ buckets }) => {
           bucketActions.setBuckets(buckets)
           
           navigate(Route.BucketHome, { bucket : buckets[0].id});
