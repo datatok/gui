@@ -9,14 +9,14 @@ import FilesTreeView from 'components/FilesTreeView';
 interface SidebarProps {
   bucket: GuiBucket
   buckets: GuiBucket[]
-  browserItems: GuiBrowserFile[]
+  rootNode: GuiBrowserFile
 }
 
-const Sidebar: FC<SidebarProps> = ({ bucket, buckets, browserItems }) => {
+const Sidebar: FC<SidebarProps> = ({ bucket, buckets, rootNode }) => {
   return (
     <>
       <BucketSelect bucket={bucket} buckets={buckets} />
-      {browserItems ? <FilesTreeView bucket={bucket} browserItems={browserItems} /> : <></>}
+      {rootNode ? <FilesTreeView bucket={bucket} rootNode={rootNode} /> : <></>}
     </>
   );
 };

@@ -9,7 +9,7 @@ export interface IBrowserContext {
   /**
    * hold the tree-view
    */
-  items: GuiBrowserFile[]
+  rootNode: GuiBrowserFile
 
   /**
    * files to show
@@ -19,15 +19,15 @@ export interface IBrowserContext {
   /**
    * current selected (folder or file)
    */
-  current?: GuiBrowserFile,
+  currentNode?: GuiBrowserFile,
   getByPath: (path: string) => GuiBrowserFile|undefined
 }
 
 const defaultData:IBrowserContext = {
-  items: [],
+  rootNode: { name: '', prefix: '', path: '', type: 'folder'},
   currentFolderFiles: [],
   getByPath: (path:string): GuiBrowserFile|undefined => {
-    return BrowserUtils.searchNaive(StringUtils.trim(path, '/'), state.items)
+    return BrowserUtils.searchNaive(StringUtils.trim(path, '/'), state.rootNode.children)
   }
 }
 
@@ -39,34 +39,46 @@ export const actions = {
 
     BrowserUtils.resolveParentLinks(rootFiles)
 
-    state.items = rootFiles
-    state.current = undefined
+    state.currentNode = undefined
     state.bucket = bucket
 
     return state
   },
 
+  /** 
+   * Set current view
+   */
   setFiles: (fromPath: string, files: GuiBrowserFile[]): IBrowserContext => {
     state.currentFolderFiles = files
-    state.items = files
+
+    state.currentNode = {
+      ...BrowserUtils.extractNamePrefix(fromPath),
+      type: 'folder',
+      children: files
+    }
+
+    state.rootNode = BrowserUtils.reconciateHierarchy([], state.currentNode)
+    
+    state.currentNode = BrowserUtils.searchNaive(state.currentNode.path, state.rootNode.children)
+
     return state
   },
 
   setCurrentByPath: (path: string): IBrowserContext => {
     if (path) {
-      state.current = state.getByPath(path)
+      state.currentNode = state.getByPath(path)
     } else {
-      state.current = undefined
+      state.currentNode = undefined
     }
 
     return state
   },
 
   deleteFile: (file: GuiBrowserFile): IBrowserContext => {
-    state.items = BrowserUtils.deleteItem(state.items, file)
+    //state.rootNode = BrowserUtils.deleteItem(state.rootNode, file)
 
-    if (state.current) { 
-      state.current = state.getByPath(state.current.path)
+    if (state.currentNode) { 
+      state.currentNode = state.getByPath(state.currentNode.path)
     }
 
     return state

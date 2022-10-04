@@ -13,37 +13,21 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ onRefreshingWorkf
 
   const { current : bucket } = useBucketStateSnapshot()
   const routeParams = useParams()
-  const routeLocatioh = useLocation()
-
-  console.log(routeLocatioh, routeParams)
 
   React.useEffect( () => {
-    const paramBrowsePath: string | undefined = routeParams['*']
+    const paramBrowsePath: string = routeParams['*'] || ''
 
-    if (bucket && !GuiBucketUtils.equals(bucket, state.bucket)) {
-      actions.setBucket(bucket, [])
-
-      onRefreshingWorkflowChange("loading")
-
-      BucketBrowseCommand(bucket, paramBrowsePath || '')
-        .then(({files}) => {
-          actions.setFiles(paramBrowsePath || '', files)
-          
-          onRefreshingWorkflowChange("done")
-        })
-        .catch(err => {
-          onRefreshingWorkflowChange("error", err.message)
-        })
-    }
-
-    if (bucket && paramBrowsePath) {
-      actions.setCurrentByPath(paramBrowsePath)
+    if (bucket) {
+      
+      if (!GuiBucketUtils.equals(bucket, state.bucket)) {
+        actions.setBucket(bucket, [])
+      }
 
       onRefreshingWorkflowChange("loading")
 
-      BucketBrowseCommand(bucket, paramBrowsePath || '')
+      BucketBrowseCommand(bucket, paramBrowsePath)
         .then(({files}) => {
-          actions.setFiles(paramBrowsePath || '', files)
+          actions.setFiles(paramBrowsePath, files)
           
           onRefreshingWorkflowChange("done")
         })

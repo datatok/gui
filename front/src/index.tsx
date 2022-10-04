@@ -42,8 +42,8 @@ ReactDOM.render(
             }>
               <Route path='upload' element={<UploadPage />} />
               <Route path='upload/*' element={<UploadPage />} />
-              <Route path='browse' element={<BrowserPage />} />
-              <Route path='browse/*' element={<BrowserPage />} />
+              <Route id='bucket-browser' path='browse' element={<BrowserPage />} />
+              <Route id='bucket-browser' path='browse/*' element={<BrowserPage />} />
             </Route>
 
             <Route path='*' element={<NotFoundErrorPage />} />

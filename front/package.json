@@ -17,6 +17,7 @@
     "axios": "^0.27.2",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
+    "ramda": "^0.28.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.4.1",
@@ -29,7 +30,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "api" : "./node_modules/.bin/json-server --port 3001 --routes ./dev/api/routes.json --delay 500 ./dev/api/mock.json"
+    "api": "./node_modules/.bin/json-server --port 3001 --routes ./dev/api/routes.json --delay 500 ./dev/api/mock.json"
   },
   "eslintConfig": {
     "extends": [

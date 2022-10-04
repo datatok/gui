@@ -15,7 +15,7 @@ let selectionFromSingle = false
 const BrowserPage: FC = () => {
 
   const {
-    current: browseFile,
+    currentNode: browseFile,
     currentFolderFiles: browseFiles,
     bucket
   } = useBrowserStateSnapshot()

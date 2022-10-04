@@ -66,3 +66,73 @@ test("Delete complex item", () => {
 
   expect(newItems).toEqual([{"children": [{"name":"c2", "prefix": "/", "path":"/c2", "type" : "folder"}], "name": "", "prefix" : "/", "path": "/", "type": "folder"}])
 })
+
+test("extractNamePrefix", () => {
+  const pairs = [{
+    t: "/toto/child.txt",
+    r: { name: 'child.txt', prefix: '/toto'}
+  }, {
+    t: "/toto/toto/child.txt",
+    r: { name: 'child.txt', prefix: '/toto/toto'}
+  }]
+
+  for (const pair of pairs) {
+    expect(BrowserUtils.extractNamePrefix(pair.t)).toStrictEqual(pair.r)
+  }
+})
+
+test("reconciateHierarchy, empty existing nodes", () => {
+  const current = createItem("child.txt", "grandpa/mama")
+  const existingItems = []
+
+  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
+  const rootPick = BrowserUtils.deepPick(['name', 'children'], root)
+
+  expect(rootPick.children).toEqual([
+    { name: 'grandpa', children: [
+      { name: 'mama', children: [
+        { name: 'child.txt' }
+      ]}
+    ]}
+  ])
+})
+
+test("reconciateHierarchy, with root existing nodes", () => {
+  const current = createItem("child.txt", "grandpa/mama")
+  const existingItems = [{
+    name: '', path: '', prefix: '', type: 'folder',
+    children: [createItem('grandma', '')]
+  }]
+
+  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
+  const rootPick = BrowserUtils.deepPick(['name', 'parent', 'children'], root)
+
+  expect(rootPick.children).toEqual([
+    { name: 'grandma' },
+    { name: 'grandpa', children: [
+      { name: 'mama', children: [
+        { name: 'child.txt' }
+      ]}
+    ]}
+  ])
+})
+
+test("reconciateHierarchy, with grandpa existing nodes", () => {
+  const current = createItem("child.txt", "grandpa/mama")
+  const existingItems = [{
+    name: 'grandpa', path: 'grandpa', prefix: '', type: 'folder',
+    children: [createItem('cousin', '')]
+  }]
+
+  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
+  const rootPick = BrowserUtils.deepPick(['name', 'children'], root)
+
+  expect(rootPick.children).toEqual([
+    { name: 'grandpa', children: [
+      { name: 'cousin' },
+      { name: 'mama', children: [
+        { name: 'child.txt' }
+      ]}
+    ]}
+  ])
+})

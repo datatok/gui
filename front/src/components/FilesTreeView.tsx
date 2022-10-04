@@ -5,11 +5,11 @@ import { Route, useRoutingNavigate } from 'services/routing';
 import { GuiBrowserFile, GuiBucket } from 'types';
 
 interface FilesTreeViewProps {
-  browserItems: GuiBrowserFile[]
+  rootNode: GuiBrowserFile
   bucket: GuiBucket
 }
 
-const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, browserItems }) => {
+const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
 
   const navigate = useRoutingNavigate()
 
@@ -35,19 +35,19 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, browserItems }) => {
     if (f.children) {
       return {
         ...r,
-        children: f.children.map(ff => { return fileToTreeNode(ff) })
+        children: f.children
+          .filter(f => f.type === 'folder')
+          .map(ff => { return fileToTreeNode(ff) })
       }
     }
 
     return r
   }
 
-  const treeItems:Node[] = browserItems
-  .filter(f => f.type === 'folder')
-  .map(i => {
-    return fileToTreeNode(i)
-  })
-
+  const treeItems:Node[] = [
+    fileToTreeNode(rootNode)
+  ]
+  
   return (
     <EuiTreeView items={treeItems} aria-label="files" showExpansionArrows={true} />
   )

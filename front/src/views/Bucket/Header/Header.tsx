@@ -23,8 +23,10 @@ const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
       path: file.path
     })
 
+    const text = (file.name === '' ? 'root' : file.name)
+
     return {
-      text: file.name || "",
+      text,
       href,
       onClick: onClick(() => {
         navigate(href)
@@ -40,8 +42,8 @@ const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
 
   breadcrumbs.push(fileToBreadcrumbItem({
     name: bucket.name,
-    prefix: "/",
-    path: "/",
+    prefix: "",
+    path: "",
     type: "folder",
   }))
 

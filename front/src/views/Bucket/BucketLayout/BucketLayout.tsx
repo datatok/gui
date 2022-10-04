@@ -13,8 +13,8 @@ const BucketLayout: FC = () => {
 
   const { 
     bucket: browserBucket,
-    items: browserItems,
-    current: browserSelectedFile
+    rootNode,
+    currentNode,
   } = useBrowserStateSnapshot()
 
   const {
@@ -41,9 +41,9 @@ const BucketLayout: FC = () => {
   const inner = (bucket) ? (
       <EuiPageTemplate>
         <EuiPageTemplate.Sidebar css={{margin:0,padding:'5px'}}>
-          <Sidebar bucket={bucket} buckets={buckets} browserItems={browserItems} />
+          <Sidebar bucket={bucket} buckets={buckets} rootNode={rootNode} />
         </EuiPageTemplate.Sidebar>
-        <Header bucket={bucket} browserFile={browserSelectedFile} pageTitle={pageTitle} />
+        <Header bucket={bucket} browserFile={currentNode} pageTitle={pageTitle} />
         <EuiPageTemplate.Section>
           {refreshBrowseFilesWorkflow.step === "loading" ? (
             <EuiText textAlign='center'>

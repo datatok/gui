@@ -9,7 +9,7 @@ const UploadPage: FC = () => {
 
   const { 
     bucket: browserBucket,
-    current: browserSelectedFile
+    currentNode: browserSelectedFile
   } = useBrowserStateSnapshot()
 
   useEffect(() => {
