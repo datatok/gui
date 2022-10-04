@@ -83,17 +83,15 @@ export const BrowserUtils = {
    * Link or Build the hierarchy from current to ancestor(s).
    */
   reconciateHierarchy: (items: GuiBrowserFile[], currentNode: GuiBrowserFile): GuiBrowserFile => {
-
+    console.log(currentNode)
     while (currentNode.path && currentNode.path.length > 0) {
       const parentPath = currentNode.prefix
       const parentExisting = searchNaive(parentPath, items)
       let parentNode
-
+      console.log(parentPath, items)
       if (parentExisting) {
-        parentNode = {
-          ...parentExisting,
-          children: [...(parentExisting.children || []), currentNode]
-        }
+        parentNode.children = [...(parentExisting.children || []), currentNode]
+        
       } else {
         const { prefix, name } = extractNamePrefix(parentPath)
         parentNode = {
@@ -103,8 +101,9 @@ export const BrowserUtils = {
           type: 'folder',
           children: [currentNode]
         }
+        console.log(parentNode)
       }
-
+      
       currentNode.parent = parentNode
       currentNode = parentNode
     }

@@ -1,4 +1,4 @@
-import { EuiBasicTable } from '@elastic/eui';
+import { EuiBasicTable, EuiIcon } from '@elastic/eui';
 import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
 import EuiCustomLink from 'components/EuiCustomLink';
 import React, { FC, useRef, useState } from 'react';
@@ -29,14 +29,30 @@ const Grid: FC<GridProps> = ({bucket, browseFile, browseFiles, onDeleteItem, onS
     },
   };
 
+  const resolveIcon = ({name, type}) => {
+
+    if (type === 'file') {
+      return 'document'
+    }
+
+    return 'folderClosed'
+  }
+
   const columns: any[] = [
     {
       field: 'name',
       name: 'name',
       sortable: true,
       truncateText: true,
-      render: (name, {path}) => {
-        return (<EuiCustomLink to={Route.BucketBrowse} toArgs={{bucket: bucket.id, path}}>{name}</EuiCustomLink>)
+      render: (name, {path, type}) => {
+        return (
+          <>
+          <EuiIcon type={resolveIcon({name, type})} />&nbsp;
+          <EuiCustomLink to={Route.BucketBrowse} toArgs={{bucket: bucket.id, path}}>
+           {name}
+          </EuiCustomLink>
+          </>
+        )
       }
     },
     {

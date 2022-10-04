@@ -10,7 +10,7 @@ interface CommandResponse {
 }
 
 export default async (): Promise<CommandResponse> => {
-  const pathURL = `/bucket/list`
+  const pathURL = `/bucket`
   
   const { data } = await get<APIResponse>(pathURL)
 

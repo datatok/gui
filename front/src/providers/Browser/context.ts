@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { BrowserUtils } from "utils/BrowserUtils";
 import { StringUtils } from "utils/StringUtils";
 import { proxy, useSnapshot } from "valtio";
@@ -31,7 +31,7 @@ const defaultData:IBrowserContext = {
   }
 }
 
-export const state = proxy(defaultData)
+export const [state, setState] = useState(defaultData)
 
 export const actions = {
 
@@ -51,15 +51,15 @@ export const actions = {
   setFiles: (fromPath: string, files: GuiBrowserFile[]): IBrowserContext => {
     state.currentFolderFiles = files
 
-    state.currentNode = {
+    const currentNode = {
       ...BrowserUtils.extractNamePrefix(fromPath),
       type: 'folder',
       children: files
     }
 
-    state.rootNode = BrowserUtils.reconciateHierarchy([], state.currentNode)
+    state.rootNode = BrowserUtils.reconciateHierarchy(state.rootNode?.children || [], currentNode)
     
-    state.currentNode = BrowserUtils.searchNaive(state.currentNode.path, state.rootNode.children)
+    state.currentNode = BrowserUtils.searchNaive(currentNode.path, state.rootNode.children)
 
     return state
   },

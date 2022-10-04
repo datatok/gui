@@ -9,6 +9,9 @@ import { browserStateActions, useBrowserStateSnapshot } from 'providers/Browser'
 import TopBar from './TopBar';
 import NewFolderModal from './NewFolderModal';
 import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
+import { CreateFolderCommand } from 'services/api';
+import { BrowserUtils } from 'utils/BrowserUtils';
+import { StringUtils } from 'utils/StringUtils';
 
 let selectionFromSingle = false
 
@@ -66,6 +69,16 @@ const BrowserPage: FC = () => {
     if (selectionFromSingle) {
       setSelectedItems([])
     }
+  }
+
+  const doCreateFolder = (formData: any) => {
+    setDeleteAPIWorkflow({ step: 'doing', message: ''})
+
+    CreateFolderCommand(bucket, StringUtils.pathJoin(formData.path, formData.name))
+      .then(response => {
+        setDeleteAPIWorkflow({ step: 'done', message: ''})
+        closeModal()
+      })
   }
 
   const doDeleteSelection = () => {
@@ -132,7 +145,7 @@ const BrowserPage: FC = () => {
             key={"new-folder-modal"}
             bucket={bucket}
             selectedItem={browseFile}
-            onConfirm={doDeleteSelection}
+            onConfirm={doCreateFolder}
             onCancel={closeModal} 
           />
         )

@@ -18,7 +18,7 @@ import { GuiBrowserFile, GuiBucket } from 'types';
 interface NewFolderModalProps {
   bucket: GuiBucket
   selectedItem: GuiBrowserFile
-  onConfirm: () => void
+  onConfirm: (data: any) => void
   onCancel: () => void
 }
 
@@ -50,7 +50,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
   }
 
   const formSample = (
-    <EuiForm id={modalFormId} component="form">
+    <EuiForm id={modalFormId} component="form" onSubmit={() => onConfirm(formData)}>
 
       <EuiFormRow label="Bucket">
         <EuiFieldText name="bucket" value={formData.bucket} onChange={handleInputChange} />
@@ -83,7 +83,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
       <EuiModalFooter>
         <EuiButtonEmpty onClick={onCancel}>Cancel</EuiButtonEmpty>
 
-        <EuiButton type="submit" fill>
+        <EuiButton type="submit" fill onClick={() => onConfirm(formData)}>
           Save
         </EuiButton>
       </EuiModalFooter>

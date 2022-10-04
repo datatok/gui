@@ -16,7 +16,6 @@ import { DeleteKeysDto } from './dto/delete-keys.dto';
 @Controller('bucket')
 export class BucketController {
   constructor(
-    private configService: ConfigService,
     private bucketProvider: BucketsProviderService
   ) {}
 
@@ -60,9 +59,10 @@ export class BucketController {
     @Param('path') path: string
   ) {
     path += '/'
+    
     return {
-      path: path,
-      files: await storage.listObjectsRecursive(path)
+      prefix: path,
+      files: await storage.listObjects(path)
     }
   }
 

@@ -25,7 +25,12 @@ const getAPIUrl = (service: APIService, args?: {[key:string]: string}): string =
   }
 }
 
-export const get =<T>(pathURL: string) => {
+export const get = <T>(pathURL: string) => {
   const fullURL = `${apiServer}${pathURL}`
   return axios.get<T>(fullURL)
+}
+
+export const post = <T>(pathURL: string, data: any) => {
+  const fullURL = `${apiServer}${pathURL}`
+  return axios.post<T>(fullURL, data)
 }

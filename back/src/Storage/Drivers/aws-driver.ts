@@ -1,6 +1,6 @@
-import { DeleteObjectCommand, DeleteObjectsCommand, DeleteObjectsCommandOutput, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
 import * as R from 'ramda'
-import { DeleteKeysDto } from "../Buckets/dto/delete-keys.dto"
+import { StringUtils } from "src/utils/StringUtils"
 
 export class AWSStorageDriver {
   protected bucket: StorageBucket
@@ -113,31 +113,27 @@ export class AWSStorageDriver {
     ]
   }
 
-  public async listObjects(path: string ): Promise<
+  public async listObjects(argPrefix: string ): Promise<
     {name: string, type: string, size?: number, editDate?: string}[]
   > {
-    if (!R.endsWith('/', path)) {
-      path += '/'
-    }
-    
     const data = await this.client.send(
       new ListObjectsV2Command({
         Delimiter: "/",
         Bucket: this.bucket.name,
-        Prefix: path,
+        Prefix: argPrefix,
       })
     );
     
     return [
       ...(data.CommonPrefixes ? data.CommonPrefixes.map(p => { 
         return {
-          name: this.removePrefix(p.Prefix, path),
+          name: this.removePrefix(p.Prefix, argPrefix),
           type: "folder"
         }
       }) : []),
       ...(data.Contents ? data.Contents.map(f => {
         return {
-          name: this.removePrefix(f.Key, path),
+          name: this.removePrefix(f.Key, argPrefix),
           type: "file",
           size: f.Size,
           editDate: f.LastModified
@@ -231,9 +227,9 @@ export class AWSStorageDriver {
 
   protected removePrefix(str: string, prefix: string): string {
     if (prefix === '/') {
-      return str
+      return StringUtils.trim(str, '/')
     }
-    
-    return str.substring(prefix.length)
+    console.log(StringUtils.trim(str.substring(prefix.length), '/'))
+    return StringUtils.trim(str.substring(prefix.length), '/')
   }
 }
