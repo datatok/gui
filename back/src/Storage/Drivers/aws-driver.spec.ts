@@ -1,6 +1,23 @@
-import { ListObjectsCommand, S3Client } from '@aws-sdk/client-s3';
+import { ListObjectsCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AWSStorageDriver } from './aws-driver';
+
+const getLocalAWSDriver = () => {
+  return new AWSStorageDriver({
+    name: "gui",
+    region: 'us-east-1',
+    endpoint: {
+      hostname: 'localhost',
+      port: 9000,
+      protocol: 'http',
+      path: ''
+    },
+    auth: {
+      accessKey: 'root',
+      secretKey: 'rootroot'
+    }
+  })
+}
 
 describe('AWSStorageService', () => {
 
@@ -86,7 +103,7 @@ describe('AWSStorageService', () => {
   })
 
   it('remove prefix', async () => {
-   mockClient(S3Client).on(ListObjectsCommand).resolvesOnce({
+   mockClient(S3Client).on(ListObjectsV2Command).resolvesOnce({
       "$metadata":{
       },
       "CommonPrefixes":[
@@ -114,5 +131,27 @@ describe('AWSStorageService', () => {
 
 
 
+  })
+
+  it('create folder and list it', async() => {
+    const driver = getLocalAWSDriver()
+    const tmp = 'remove12/a1/b1'
+
+    await driver.createFolder(tmp)
+    
+    const objects = await driver.listObjectsRecursive(`${tmp}/`)
+
+    expect(objects).toHaveLength(1)
+    expect(objects[0].Key).toBe(`${tmp}/_meta.md`)
+  })
+
+  it('remove simple multi keys', async() => {
+    const driver = getLocalAWSDriver()
+
+    await driver.createFolder("remove/simple")
+    await driver.createFolder("remove/simple2")
+    await driver.createFolder("remove/simple3")
+
+    await driver.deleteKeys(["remove/simple"])
   })
 })

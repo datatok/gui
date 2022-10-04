@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as R from 'ramda'
 
@@ -9,6 +9,8 @@ import { AWSStorageDriver } from '../Drivers/aws-driver';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
 import { BucketsProviderService } from './storage.buckets.service';
+import { CreateFolderDto } from './dto/create-folder.dto';
+import { DeleteKeysDto } from './dto/delete-keys.dto';
 
 @ApiTags('bucket')
 @Controller('bucket')
@@ -18,40 +20,66 @@ export class BucketController {
     private bucketProvider: BucketsProviderService
   ) {}
 
-  @Get('list')
+  @Get()
   getBuckets(): any {
     return {
       buckets: this.bucketProvider.findAll()
     }
   }
 
-  @Get('get/:bucket')
+  @Get(':bucket')
   getBucket(@Param('bucket', GetBucketPipe) bucket?: StorageBucket): any {
     return R.omit(['auth'], bucket)
   }
 
-  @Get('status/:bucket')
+  @Get(':bucket/status')
   getStatus(
     @Param('bucket', GetStorageDriverPipe) storage?: AWSStorageDriver
   ): any {
     return storage.status()
   }
 
-  @Get('browse/:bucket')
-  browseRootBucket(@Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver) {
-    return this.browseBucket(storage, '/')
+  @Get(':bucket/browse')
+  async browseRootBucket(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver
+  ) {
+    return this.browseBucket(storage, '')
   }
 
-  @Get('browse/:bucket/:path')
-  async browseBucket(@Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver, @Param('path') path: string) {
+  @Get(':bucket/browse/:path')
+  async browseBucket(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver, 
+    @Param('path') path: string
+  ) {
     return this.browseBucket2(storage, path)
   }
 
-  @Get('browse/:bucket/:path([^/]+/[^/]+)')
-  async browseBucket2(@Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver, @Param('path') path: string) {
+  @Get(':bucket/browse/:path([^/]+/[^/]+)')
+  async browseBucket2(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Param('path') path: string
+  ) {
+    path += '/'
     return {
       path: path,
-      files: await storage.listObjects(path)
+      files: await storage.listObjectsRecursive(path)
     }
   }
+
+  @Post(':bucket/key/create')
+  async createKey(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Body() createFolderDto: CreateFolderDto
+  ) {
+    return await storage.createFolder(createFolderDto.path)
+  }
+
+  @Post(':bucket/key/delete')
+  async deleteKeys(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Body() deleteKeys: DeleteKeysDto
+  ) {
+    return await storage.deleteKeys(deleteKeys.keys)
+  }
+
 }

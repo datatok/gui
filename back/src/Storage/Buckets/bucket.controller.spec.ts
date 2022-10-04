@@ -1,4 +1,4 @@
-import { ListObjectsCommand, S3Client } from '@aws-sdk/client-s3';
+import { ListObjectsCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import configuration from '../../config/configuration';
@@ -53,7 +53,7 @@ describe('BucketController', () => {
   })
 
   it('should browse root objects', async () => {
-    mockClient(S3Client).on(ListObjectsCommand).resolvesOnce({
+    mockClient(S3Client).on(ListObjectsV2Command).resolvesOnce({
       "$metadata":{
       },
       "CommonPrefixes":[
@@ -78,7 +78,6 @@ describe('BucketController', () => {
       ],
       "Delimiter":"/",
       "IsTruncated":false,
-      "Marker":"",
       "MaxKeys":1000,
       "Name":"gui",
       "Prefix":""
@@ -116,7 +115,7 @@ describe('BucketController', () => {
   })
 
   it('should browse nested objects', async () => {
-    mockClient(S3Client).on(ListObjectsCommand).resolvesOnce({
+    mockClient(S3Client).on(ListObjectsV2Command).resolvesOnce({
       "$metadata":{
       },
       "CommonPrefixes":[
@@ -133,7 +132,6 @@ describe('BucketController', () => {
       ],
       "Delimiter":"/",
       "IsTruncated":false,
-      "Marker":"",
       "MaxKeys":1000,
       "Name":"gui",
       "Prefix":""
