@@ -1,20 +1,18 @@
-import { useAuth } from 'providers/Site';
+import { SiteContext } from 'providers/Site/context';
 import {
-    Routes,
-    Route,
-    NavLink,
     Navigate,
-    useNavigate,
   } from 'react-router-dom';
   
-  const ProtectedRoute = ({ children }) => {
-    const { apiAccessToken } = useAuth();
-  
-    if (!apiAccessToken) {
-      return <Navigate to="/" replace />;
-    }
-  
-    return children;
+  const ProtectedRoute = ({ children }) => {  
+    return (
+      <SiteContext.Consumer>
+        {( {apiAccessToken} ) => (
+          apiAccessToken
+          ? <>{children}</>
+          : <Navigate to="/" replace />
+        )}
+      </SiteContext.Consumer>
+    );
   };
 
 export default ProtectedRoute

@@ -2,24 +2,28 @@ import { EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiF
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { setSiteTitle } from 'providers/Site';
-import { useBrowserStateSnapshot } from 'providers/Browser';
+import { GuiBrowserFile, GuiBucket } from 'types';
 
-const UploadPage: FC = () => {
+interface UploadPageProps {
+  selectedBucket: GuiBucket
+  selectedObject: GuiBrowserFile
+  setSiteTitle: (title: string) => void
+}
 
-  const { 
-    bucket: browserBucket,
-    currentNode: browserSelectedFile
-  } = useBrowserStateSnapshot()
+const UploadPage: FC<UploadPageProps> = ({
+  selectedBucket,
+  selectedObject,
+  setSiteTitle
+}) => {
 
   useEffect(() => {
     setSiteTitle("Upload")
-  })
+  }, [])
 
   const [formData, setFormData] = useState({
-    bucket: browserBucket.name,
-    host: browserBucket.host,
-    path: browserSelectedFile?.path
+    bucket: selectedBucket.name,
+    host: selectedBucket.host,
+    path: selectedObject?.path
   })
 
   const handleInputChange = (event) => {

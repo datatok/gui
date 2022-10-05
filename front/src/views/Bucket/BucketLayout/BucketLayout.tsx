@@ -3,28 +3,12 @@ import React, { FC, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
-
-
-import { BucketProvider, bucketActions, useBucketStateSnapshot } from 'providers/Bucket';
-import { useSiteStateSnapshot } from 'providers/Site';
-import { browserStateActions, BrowserStateProvider, useBrowserStateSnapshot } from 'providers/Browser';
+import BucketContextProvider from 'providers/Bucket';
+import { BucketContext } from 'providers/Bucket/context';
+import BrowserStateProvider from 'providers/Browser';
+import { SiteContext } from 'providers/Site/context';
 
 const BucketLayout: FC = () => {
-
-  const { 
-    bucket: browserBucket,
-    rootNode,
-    currentNode,
-  } = useBrowserStateSnapshot()
-
-  const {
-    current: bucket,
-    buckets
-  } = useBucketStateSnapshot()
-
-  const {
-    title: pageTitle
-  } = useSiteStateSnapshot()
 
   const [refreshBrowseFilesWorkflow, setRefreshBrowseFilesWorkflow] = useState({
     step: "start",
@@ -38,12 +22,15 @@ const BucketLayout: FC = () => {
     })
   }
 
-  const inner = (bucket) ? (
-      <EuiPageTemplate>
+  const inner = 
+    <BucketContext.Consumer>
+      {({ current: bucket }) => (
+        (bucket) ? (
+        <EuiPageTemplate>
         <EuiPageTemplate.Sidebar css={{margin:0,padding:'5px'}}>
-          <Sidebar bucket={bucket} buckets={buckets} rootNode={rootNode} />
+          <Sidebar />
         </EuiPageTemplate.Sidebar>
-        <Header bucket={bucket} browserFile={currentNode} pageTitle={pageTitle} />
+        <Header />
         <EuiPageTemplate.Section>
           {refreshBrowseFilesWorkflow.step === "loading" ? (
             <EuiText textAlign='center'>
@@ -56,14 +43,25 @@ const BucketLayout: FC = () => {
           ) : <Outlet />}
         </EuiPageTemplate.Section>
       </EuiPageTemplate>
-    ) : <></>
+      ) : <></>
+      )}
+    </BucketContext.Consumer>
+    
 
   return (
-    <BucketProvider>
-      <BrowserStateProvider onRefreshingWorkflowChange={onRefreshingWorkflowChange}>
-        {inner}
-      </BrowserStateProvider>
-    </BucketProvider>
+    <SiteContext.Consumer>
+      {({ apiAccessToken }) => (
+      <BucketContextProvider apiAccessToken={apiAccessToken}>
+        <BucketContext.Consumer>
+          {({ current: selectedBucket }) => (
+          <BrowserStateProvider selectedBucket={selectedBucket} onRefreshingWorkflowChange={onRefreshingWorkflowChange}>
+            {inner}
+          </BrowserStateProvider>
+          )}
+        </BucketContext.Consumer>
+      </BucketContextProvider>
+      )}
+    </SiteContext.Consumer>
   );
 };
 

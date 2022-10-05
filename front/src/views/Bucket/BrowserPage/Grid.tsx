@@ -7,14 +7,13 @@ import { GuiBrowserFile, GuiBucket } from 'types';
 
 interface GridProps {
   bucket: GuiBucket,
-  browseFile: GuiBrowserFile
-  browseFiles: GuiBrowserFile[]
+  selectedObject: GuiBrowserFile
   onDeleteItem: (item:GuiBrowserFile) => void
   onEditRenameItem: (item:GuiBrowserFile) => void
   onSelectionChange: (items:GuiBrowserFile[]) => void
 }
 
-const Grid: FC<GridProps> = ({bucket, browseFile, browseFiles, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
+const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -130,7 +129,6 @@ const Grid: FC<GridProps> = ({bucket, browseFile, browseFiles, onDeleteItem, onS
     selectableMessage: (selectable:boolean, item:GuiBrowserFile) => "",
     onSelectionChange: (selectedItems: GuiBrowserFile[]) => {
       //setSelectedItems(selectedItems);
-      console.log(selectedItems)
 
       onSelectionChange(selectedItems)
     },
@@ -140,7 +138,7 @@ const Grid: FC<GridProps> = ({bucket, browseFile, browseFiles, onDeleteItem, onS
     <EuiBasicTable
       ref={tableRef}
       tableCaption="Folder children"
-      items={browseFiles}
+      items={selectedObject.children}
       itemId="path"
       columns={columns}
       sorting={sorting}

@@ -5,55 +5,69 @@ import { GuiBrowserFile } from 'types';
 import EuiCustomLink from 'components/EuiCustomLink';
 import { GuiBucket } from 'types';
 import { useNavigate } from 'react-router-dom';
+import { BrowserContext } from 'providers/Browser/context';
+import { SiteContext } from 'providers/Site/context';
 
-interface HeaderProps {
-  browserFile?: GuiBrowserFile
-  bucket: GuiBucket
-  pageTitle: string
-}
-
-const Header: FC<HeaderProps> = ({browserFile, bucket, pageTitle}) => {
+const Header = () => {
 
   const navigate = useNavigate();
 
-  const breadcrumbs = []
-  const fileToBreadcrumbItem = (file: GuiBrowserFile) => {
-    const href = getRouteURL(Route.BucketBrowse, {
-      bucket: bucket.id,
-      path: file.path
-    })
+  const getBreadcrumbs = (selectedBucket: GuiBucket, selectedObject: GuiBrowserFile) => {
 
-    const text = (file.name === '' ? 'root' : file.name)
+    if (!selectedBucket || !selectedObject) {
+      return []
+    }
 
-    return {
-      text,
-      href,
-      onClick: onClick(() => {
-        navigate(href)
+    const breadcrumbs = []
+
+    const fileToBreadcrumbItem = (file: GuiBrowserFile) => {
+      const href = getRouteURL(Route.BucketBrowse, {
+        bucket: selectedBucket.id,
+        path: file.path
       })
+
+      const text = (file.name === '' ? 'root' : file.name)
+
+      return {
+        text,
+        href,
+        onClick: onClick(() => {
+          navigate(href)
+        })
+      }
     }
-  }
 
-  if (browserFile) {
-    for (let it:GuiBrowserFile|undefined = browserFile; typeof it !== "undefined"; it = it.parent) {
-      breadcrumbs.push(fileToBreadcrumbItem(it))
+    if (selectedObject) {
+      for (let it:GuiBrowserFile|undefined = selectedObject; typeof it !== "undefined"; it = it.parent) {
+        breadcrumbs.push(fileToBreadcrumbItem(it))
+      }
     }
+
+    breadcrumbs.push(fileToBreadcrumbItem({
+      name: selectedBucket.name,
+      prefix: "",
+      path: "",
+      type: "folder",
+    }))
+
+    breadcrumbs.reverse()
+
+    return breadcrumbs
   }
-
-  breadcrumbs.push(fileToBreadcrumbItem({
-    name: bucket.name,
-    prefix: "",
-    path: "",
-    type: "folder",
-  }))
-
-  breadcrumbs.reverse()
 
   return (
-    <EuiPageTemplate.Header 
-      breadcrumbs={breadcrumbs}
-      pageTitle={pageTitle}
-    />
+    <BrowserContext.Consumer>
+    {({bucket: selectedBucket, currentNode: selectedObject}) => (
+      <SiteContext.Consumer>
+        {({title}) => (
+          <EuiPageTemplate.Header 
+            breadcrumbs={getBreadcrumbs(selectedBucket, selectedObject)}
+            pageTitle={title}
+          />
+      )}
+      </SiteContext.Consumer>
+    )}
+    </BrowserContext.Consumer>
   );
 };
 

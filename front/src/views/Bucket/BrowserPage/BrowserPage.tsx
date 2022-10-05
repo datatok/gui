@@ -1,11 +1,9 @@
-import { EuiButton, EuiConfirmModal, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
+import { EuiSpacer } from '@elastic/eui';
 import React, { FC, useEffect, useState } from 'react';
-import { GuiBrowserFile } from 'types';
-import { addSiteToast, setSiteTitle } from 'providers/Site';
+import { GuiBrowserFile, GuiBucket } from 'types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import Grid from './Grid';
 import RenameModal from './RenameModal';
-import { browserStateActions, useBrowserStateSnapshot } from 'providers/Browser'
 import TopBar from './TopBar';
 import NewFolderModal from './NewFolderModal';
 import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
@@ -15,13 +13,21 @@ import { StringUtils } from 'utils/StringUtils';
 
 let selectionFromSingle = false
 
-const BrowserPage: FC = () => {
+interface BrowserPageProps {
+  selectedBucket: GuiBucket
+  selectedBrowsingObject: GuiBrowserFile
+  deleteObjects: () => void
+  addSiteToast: (toast: any) => void
+  setSiteTitle: (title: string) => void
+}
 
-  const {
-    currentNode: browseFile,
-    currentFolderFiles: browseFiles,
-    bucket
-  } = useBrowserStateSnapshot()
+const BrowserPage: FC<BrowserPageProps> = ({
+  selectedBucket,
+  selectedBrowsingObject,
+  deleteObjects,
+  addSiteToast,
+  setSiteTitle
+}) => {
 
   const [currentModal, setCurrentModal] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
@@ -32,7 +38,7 @@ const BrowserPage: FC = () => {
 
   useEffect(() => {
     setSiteTitle("Browse")
-  })
+  }, [])
 
   const onDeleteItemAskConfirmation = (file: GuiBrowserFile) => {
     setSelectedItems([file])
@@ -74,7 +80,7 @@ const BrowserPage: FC = () => {
   const doCreateFolder = (formData: any) => {
     setDeleteAPIWorkflow({ step: 'doing', message: ''})
 
-    CreateFolderCommand(bucket, StringUtils.pathJoin(formData.path, formData.name))
+    CreateFolderCommand(selectedBucket, StringUtils.pathJoin(formData.path, formData.name))
       .then(response => {
         setDeleteAPIWorkflow({ step: 'done', message: ''})
         closeModal()
@@ -84,11 +90,11 @@ const BrowserPage: FC = () => {
   const doDeleteSelection = () => {
     setDeleteAPIWorkflow({ step: 'doing', message: ''})
 
-    DeleteObjectCommand(bucket, selectedItems)
+    DeleteObjectCommand(selectedBucket, selectedItems)
       .then(response => {
         
         selectedItems.forEach(file => {
-          browserStateActions.deleteFile(file)
+        //  deleteObjects(file)
         })
 
         setDeleteAPIWorkflow({ step: 'done', message: ''})
@@ -143,8 +149,8 @@ const BrowserPage: FC = () => {
         modal = (
           <NewFolderModal
             key={"new-folder-modal"}
-            bucket={bucket}
-            selectedItem={browseFile}
+            bucket={selectedBucket}
+            selectedItem={selectedBrowsingObject}
             onConfirm={doCreateFolder}
             onCancel={closeModal} 
           />
@@ -158,8 +164,8 @@ const BrowserPage: FC = () => {
   return (
     <>
       <TopBar 
-        bucket={bucket}
-        browserFile={browseFile}
+        bucket={selectedBucket}
+        browserFile={selectedBrowsingObject}
         onShowModal={onShowModal}
         selectedItems={selectedItems}
       />
@@ -167,9 +173,8 @@ const BrowserPage: FC = () => {
       <EuiSpacer size="l" />
 
       <Grid
-        bucket={bucket}
-        browseFile={browseFile}
-        browseFiles={browseFiles}
+        bucket={selectedBucket}
+        selectedObject={selectedBrowsingObject}
         onDeleteItem={onDeleteItemAskConfirmation} 
         onSelectionChange={onSelectionChange} 
         onEditRenameItem={onEditRenameItemAsk}
