@@ -8,11 +8,13 @@ const UploadPageWrapper = () => {
     {({ setTitle }) => (
       <BrowserContext.Consumer>
       {({ bucket, currentNode }) => (
+        bucket ?
         <BrowserPage 
           selectedBucket={bucket}
           selectedObject={currentNode}
           setSiteTitle={setTitle}
         />
+        : <></>
       )}
       </BrowserContext.Consumer>
     )}

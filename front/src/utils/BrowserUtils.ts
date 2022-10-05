@@ -3,15 +3,15 @@ import { GuiBrowserFile } from "types"
 import * as R from 'ramda'
 import { StringUtils } from "./StringUtils"
 
-const searchNaive = (path: string, items:GuiBrowserFile[]): GuiBrowserFile|undefined => {
-  for (const file of items) {
-    if (file.path === path) {
-      
-      return file
-    }
+const searchNaive = (path: string, rootNode?:GuiBrowserFile): GuiBrowserFile|undefined => {
 
-    if (file.children) {
-      const foundChild = BrowserUtils.searchNaive(path, file.children)
+  if (rootNode?.path === path) {
+    return rootNode
+  }
+
+  if (rootNode?.children) {
+    for (const node of rootNode.children) {
+      const foundChild = BrowserUtils.searchNaive(path, node)
 
       if (foundChild) {
         return foundChild
@@ -40,9 +40,9 @@ const deepPick = (properties: string[], currentNode: GuiBrowserFile): any => {
 
   return {
     ...ret,
-    parent: currentNode.parent ? 
+    /*parent: currentNode.parent ? 
       deepPick(properties, currentNode.parent) : 
-      undefined,
+      undefined,*/
     children: currentNode.children ? 
       currentNode.children.map(c => deepPick(properties, c)) : 
       undefined
@@ -57,12 +57,12 @@ export const BrowserUtils = {
 
   deepPick,
 
-  resolveParentLinks: (items: GuiBrowserFile[], parent?: GuiBrowserFile) => {
-    for (const file of items) {
+  resolveParentLinks: (parent: GuiBrowserFile) => {
+    for (const file of parent.children) {
       file.parent = parent
       
       if (file.children) {
-        BrowserUtils.resolveParentLinks(file.children, file)
+        BrowserUtils.resolveParentLinks(file)
       }
     }
   },
@@ -79,20 +79,36 @@ export const BrowserUtils = {
       })
   },
 
+  rootNode: (node: GuiBrowserFile): GuiBrowserFile => {
+    while(node.parent) {
+      node = node.parent
+    }
+
+    return node
+  },
+
   /**
    * Link or Build the hierarchy from current to ancestor(s).
+   * 
+   * Attach "currentNode" to rootNode existing hierarchy, building
    */
-  reconciateHierarchy: (items: GuiBrowserFile[], currentNode: GuiBrowserFile): GuiBrowserFile => {
+   reconciliateHierarchy: (currentNode: GuiBrowserFile, rootNode?: GuiBrowserFile): GuiBrowserFile => {
 
     console.log(currentNode)
     while (currentNode.path && currentNode.path.length > 0) {
       const parentPath = currentNode.prefix
-      const parentExisting = searchNaive(parentPath, items)
+      const parentExisting = rootNode ? searchNaive(parentPath, rootNode) : undefined
       let parentNode
 
       if (parentExisting) {
-        parentNode.children = [...(parentExisting.children || []), currentNode]
-        
+        parentNode = {
+          ...parentExisting,
+          children: [...(parentExisting.children || []), currentNode]
+        }
+
+        currentNode.parent = parentNode
+
+        break
       } else {
         const { prefix, name } = extractNamePrefix(parentPath)
         parentNode = {
@@ -102,13 +118,12 @@ export const BrowserUtils = {
           type: 'folder',
           children: [currentNode]
         }
-        console.log(parentNode)
+        currentNode.parent = parentNode
       }
-      
-      currentNode.parent = parentNode
+
       currentNode = parentNode
     }
 
-    return currentNode
+    return BrowserUtils.rootNode(currentNode)
   }
 }

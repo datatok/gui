@@ -107,7 +107,6 @@ const BrowserPage: FC<BrowserPageProps> = ({
           iconType: 'help',
           text: "File deleted!",
         })
-        console.log("ok")
       })
       .catch(err => {
         setDeleteAPIWorkflow({ step: 'error', message: err.message})
@@ -117,7 +116,6 @@ const BrowserPage: FC<BrowserPageProps> = ({
             iconType: 'help',
             text: `${err.message}`,
         })
-        console.log("error")
       })
 
     closeModal()

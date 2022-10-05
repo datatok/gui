@@ -53,15 +53,17 @@ const getFilesR = (generator: string, parent: GuiBrowserFile) :GuiBrowserFile[] 
   }
 }
 
-export const getFiles = (): GuiBrowserFile[] => {
-  const root = {
+export const getFiles = (): GuiBrowserFile => {
+  const root: GuiBrowserFile = {
     name: "",
     path: "/",
     prefix: "/",
     type: "root"
   }
 
-  return getFilesR("year", root)
+  root.children = getFilesR("year", root)
+
+  return root
 }
 
 export const getBuckets = (): GuiBucket[] => {

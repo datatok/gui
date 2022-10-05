@@ -8,9 +8,9 @@ const createItem = (name: string, prefix: string): GuiBrowserFile => {
 }
 
 test("Search must work", () => {
-  const items = getFiles()
+  const rootNode = getFiles()
 
-  const found = BrowserUtils.searchNaive("2022/2", items)
+  const found = BrowserUtils.searchNaive("2022/2", rootNode)
 
   expect(found).toBeDefined
   expect(found).not.toBeNull
@@ -19,9 +19,9 @@ test("Search must work", () => {
 })
 
 test("Search must fail", () => {
-  const items = getFiles()
+  const rootNode = getFiles()
 
-  const found = BrowserUtils.searchNaive("2022/2/2022", items)
+  const found = BrowserUtils.searchNaive("2022/2/2022", rootNode)
 
   expect(found).toBeDefined
   expect(found).toBeNull
@@ -67,13 +67,39 @@ test("Delete complex item", () => {
   expect(newItems).toEqual([{"children": [{"name":"c2", "prefix": "/", "path":"/c2", "type" : "folder"}], "name": "", "prefix" : "/", "path": "/", "type": "folder"}])
 })
 
+test('rootNode', () => {
+  const son = createItem("", "son")
+  
+  const rootNode = {
+    ...createItem("root", ""),
+    children : [
+      createItem("", "grandpa"),
+      {
+        ...createItem("", "grandma"),
+        children : [
+          {
+            ...createItem("", "pa"),
+            children: [son]
+          }
+        ]
+      }
+    ]
+  }
+  
+  BrowserUtils.resolveParentLinks(rootNode)
+
+  const root = BrowserUtils.rootNode(son)
+
+  expect(root.name).toEqual(rootNode.name)
+})
+
 test("extractNamePrefix", () => {
   const pairs = [{
     t: "/toto/child.txt",
-    r: { name: 'child.txt', prefix: '/toto'}
+    r: { name: 'child.txt', prefix: 'toto', path: 'toto/child.txt'}
   }, {
-    t: "/toto/toto/child.txt",
-    r: { name: 'child.txt', prefix: '/toto/toto'}
+    t: "toto/toto/child.txt",
+    r: { name: 'child.txt', prefix: 'toto/toto', path: 'toto/toto/child.txt'}
   }]
 
   for (const pair of pairs) {
@@ -83,9 +109,7 @@ test("extractNamePrefix", () => {
 
 test("reconciateHierarchy, empty existing nodes", () => {
   const current = createItem("child.txt", "grandpa/mama")
-  const existingItems = []
-
-  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
+  const root = BrowserUtils.reconciliateHierarchy(current)
   const rootPick = BrowserUtils.deepPick(['name', 'children'], root)
 
   expect(rootPick.children).toEqual([
@@ -99,19 +123,24 @@ test("reconciateHierarchy, empty existing nodes", () => {
 
 test("reconciateHierarchy, with root existing nodes", () => {
   const current = createItem("child.txt", "grandpa/mama")
-  const existingItems = [{
-    name: '', path: '', prefix: '', type: 'folder',
-    children: [createItem('grandma', '')]
-  }]
+  const rootNode = {
+    ...createItem('', ''),
+    children: [
+      createItem('grandpa', ''),
+      createItem('grandma', '')
+    ]
+  }
 
-  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
-  const rootPick = BrowserUtils.deepPick(['name', 'parent', 'children'], root)
+  BrowserUtils.resolveParentLinks(rootNode)
+
+  const root = BrowserUtils.reconciliateHierarchy(current, rootNode)
+  const rootPick = BrowserUtils.deepPick(['name', 'children'], root)
 
   expect(rootPick.children).toEqual([
     { name: 'grandma' },
     { name: 'grandpa', children: [
       { name: 'mama', children: [
-        { name: 'child.txt' }
+        { name: 'child.txt', children: undefined }
       ]}
     ]}
   ])
@@ -124,14 +153,14 @@ test("reconciateHierarchy, with grandpa existing nodes", () => {
     children: [createItem('cousin', '')]
   }]
 
-  const root = BrowserUtils.reconciateHierarchy(existingItems, current)
+  const root = BrowserUtils.reconciliateHierarchy(existingItems, current)
   const rootPick = BrowserUtils.deepPick(['name', 'children'], root)
 
   expect(rootPick.children).toEqual([
     { name: 'grandpa', children: [
       { name: 'cousin' },
       { name: 'mama', children: [
-        { name: 'child.txt' }
+        { name: 'child.txt', children: undefined }
       ]}
     ]}
   ])

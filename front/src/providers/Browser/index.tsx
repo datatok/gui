@@ -59,7 +59,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
         currentNode
       })
     } else {
-      const rootNode = BrowserUtils.reconciateHierarchy(state.rootNode?.children || [], currentNode)
+      const rootNode = BrowserUtils.reconciliateHierarchy(state.rootNode?.children || [], currentNode)
 
       setState({
         ...state,
