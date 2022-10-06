@@ -4,7 +4,7 @@ export type GuiBucket = {
   host: string
 }
 
-export type GuiBrowserFile = {
+export type GuiBrowserObject = {
   name: string
   
   /**
@@ -32,7 +32,17 @@ export type GuiBrowserFile = {
    */
   editDate?: string
 
-
-  children?: GuiBrowserFile[]
-  parent?: GuiBrowserFile
 }
+
+/**
+ * Represent object within graph (only children relation)
+ */
+export type GuiBrowserObjectNode = {
+  object: GuiBrowserObject
+  children?: GuiBrowserObjectNode[]
+}
+
+/**
+ * Represent a store of objects
+ */
+export type GuiObjects = {[key:string]: GuiBrowserObject}

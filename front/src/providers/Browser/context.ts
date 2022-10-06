@@ -1,31 +1,32 @@
 import React from "react";
-import { GuiBrowserFile, GuiBucket } from "types";
+import { GuiBrowserObject, GuiBucket, GuiObjects } from "types";
 
 export interface IBrowserContext {
   bucket?: GuiBucket
-  /**
-   * hold the tree-view
-   */
-  rootNode: GuiBrowserFile
 
   /**
-   * files to show
+   * raw list
    */
-  currentFolderFiles: GuiBrowserFile[]
+  objects: GuiObjects
+
+  /**
+   * current path
+   */
+  currentKey: string
 
   /**
    * current selected (folder or file)
    */
-  currentNode?: GuiBrowserFile,
-  getByPath: (path: string) => GuiBrowserFile|undefined
+  currentNode?: GuiBrowserObject,
+
+  getByPath: (path: string) => GuiBrowserObject|undefined
+
 }
 
 const defaultData:IBrowserContext = {
-  rootNode: { name: '', prefix: '', path: '', type: 'folder'},
-  currentFolderFiles: [],
-  getByPath: (path:string): GuiBrowserFile|undefined => {
-    return 
-  }
+  objects: {},
+  currentKey: '',
+  getByPath: (path:string): GuiBrowserObject|undefined => {return}
 }
 
 export const BrowserContext = React.createContext<IBrowserContext>(defaultData);

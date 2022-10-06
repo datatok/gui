@@ -1,5 +1,6 @@
 import { BrowserContext } from "providers/Browser/context"
 import { SiteContext } from "providers/Site/context"
+import UploadPage from "./UploadPage"
 import BrowserPage from "./UploadPage"
 
 const UploadPageWrapper = () => {
@@ -7,11 +8,11 @@ const UploadPageWrapper = () => {
     <SiteContext.Consumer>
     {({ setTitle }) => (
       <BrowserContext.Consumer>
-      {({ bucket, currentNode }) => (
+      {({ bucket, currentKey }) => (
         bucket ?
-        <BrowserPage 
+        <UploadPage 
           selectedBucket={bucket}
-          selectedObject={currentNode}
+          targetKey={currentKey}
           setSiteTitle={setTitle}
         />
         : <></>

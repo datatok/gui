@@ -1,24 +1,7 @@
 import { string } from "prop-types"
-import { GuiBrowserFile } from "types"
+import { GuiBrowserObject, GuiBrowserObjectNode, GuiObjects } from "types"
 import * as R from 'ramda'
 import { StringUtils } from "./StringUtils"
-
-const searchNaive = (path: string, rootNode?:GuiBrowserFile): GuiBrowserFile|undefined => {
-
-  if (rootNode?.path === path) {
-    return rootNode
-  }
-
-  if (rootNode?.children) {
-    for (const node of rootNode.children) {
-      const foundChild = BrowserUtils.searchNaive(path, node)
-
-      if (foundChild) {
-        return foundChild
-      }
-    }
-  }
-}
 
 /**
  * @param path 
@@ -35,17 +18,27 @@ const extractNamePrefix = (path: string): { name: string, prefix: string, path: 
   return { path: fixPath, name: fixPath.substring(pos), prefix: fixPath.substring(0, pos - 1)} 
 }
 
-const deepPick = (properties: string[], currentNode: GuiBrowserFile): any => {
+const deepPick = (properties: string[], currentNode: any): any => {
   const ret = R.pick(properties, currentNode)
+  
+  if (currentNode.children) {
+    ret.children = ret.children.map(c => deepPick(properties, c))
+  }
+
+  return ret
+}
+
+const deepPickNode = (properties: string[], currentNode: GuiBrowserObjectNode): any => {
+
+  if (currentNode.children) {
+    return {
+      object: R.pick(properties, currentNode.object),
+      children: currentNode.children.map(c => deepPickNode(properties, c))
+    }
+  }
 
   return {
-    ...ret,
-    /*parent: currentNode.parent ? 
-      deepPick(properties, currentNode.parent) : 
-      undefined,*/
-    children: currentNode.children ? 
-      currentNode.children.map(c => deepPick(properties, c)) : 
-      undefined
+    object: R.pick(properties, currentNode.object)
   }
 }
 
@@ -53,77 +46,67 @@ export const BrowserUtils = {
   
   extractNamePrefix,
 
-  searchNaive,
-
   deepPick,
 
-  resolveParentLinks: (parent: GuiBrowserFile) => {
-    for (const file of parent.children) {
-      file.parent = parent
-      
-      if (file.children) {
-        BrowserUtils.resolveParentLinks(file)
-      }
-    }
+  deepPickNode,
+
+  deleteItem: (items: GuiBrowserObject[], toDelete: GuiBrowserObject): GuiBrowserObject[] => {
+    return  []
   },
 
-  deleteItem: (items: GuiBrowserFile[], toDelete: GuiBrowserFile): GuiBrowserFile[] => {
-    return  items
-      .filter(i => i.path !== toDelete.path)
-      .map(i => {
-        if (i.children) {
-          return {...i, children: BrowserUtils.deleteItem(i.children, toDelete)}
-        }
-
-        return {...i}
-      })
+  getObjectChildren: (objects: GuiObjects, key: string): GuiBrowserObject[] => {
+    return R.
+      toPairs(objects).
+      filter(([k, v]: [k:string, v:GuiBrowserObject]) => {
+        return k !== key && k.startsWith(key)
+      }).
+      map(([k, v]) => v)
   },
 
-  rootNode: (node: GuiBrowserFile): GuiBrowserFile => {
-    while(node.parent) {
-      node = node.parent
+  splitKeyPrefixes: (key: string): string[] => {
+    const ret = []
+
+    key = StringUtils.trim(key, '/')
+
+    for (let pos = 0; pos !== -1; ) {
+      pos = key.indexOf('/', pos + 1)
+
+      ret.push(pos === -1 ? key : key.substring(0, pos))
     }
 
-    return node
+    return ret
   },
 
   /**
-   * Link or Build the hierarchy from current to ancestor(s).
-   * 
-   * Attach "currentNode" to rootNode existing hierarchy, building
+   * Build a "children" hierarchy, and return the root node.
+   * @param objects 
+   * @param key 
    */
-   reconciliateHierarchy: (currentNode: GuiBrowserFile, rootNode?: GuiBrowserFile): GuiBrowserFile => {
-
-    console.log(currentNode)
-    while (currentNode.path && currentNode.path.length > 0) {
-      const parentPath = currentNode.prefix
-      const parentExisting = rootNode ? searchNaive(parentPath, rootNode) : undefined
-      let parentNode
-
-      if (parentExisting) {
-        parentNode = {
-          ...parentExisting,
-          children: [...(parentExisting.children || []), currentNode]
-        }
-
-        currentNode.parent = parentNode
-
-        break
-      } else {
-        const { prefix, name } = extractNamePrefix(parentPath)
-        parentNode = {
-          name,
-          prefix,
-          path: parentPath,
-          type: 'folder',
-          children: [currentNode]
-        }
-        currentNode.parent = parentNode
+  getHierarchy: (objects: GuiObjects, key: string): GuiBrowserObjectNode => {
+    const rootNode:GuiBrowserObjectNode = {
+      object: {
+        ...BrowserUtils.extractNamePrefix(''),
+        type: 'folder'
       }
-
-      currentNode = parentNode
     }
 
-    return BrowserUtils.rootNode(currentNode)
+    let parentNode = rootNode
+
+    for (let pos = 0; pos !== -1; ) {
+      pos = key.indexOf('/', pos + 1)
+
+      const nodeKey = pos === -1 ? key : key.substring(0, pos)
+      const node: GuiBrowserObjectNode = {
+        object: {
+          ...BrowserUtils.extractNamePrefix(nodeKey),
+          type: 'folder'
+        },
+      }
+
+      parentNode.children = [node]
+      parentNode = node
+    }
+
+    return rootNode
   }
 }

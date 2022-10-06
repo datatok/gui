@@ -1,9 +1,9 @@
 import { EuiConfirmModal } from '@elastic/eui';
 import React, { FC } from 'react';
-import { GuiBrowserFile } from 'types';
+import { GuiBrowserObject } from 'types';
 
 interface DeleteConfirmModalProps {
-  selectedItems: GuiBrowserFile[]
+  selectedItems: GuiBrowserObject[]
   onConfirm: () => void
   onCancel: () => void
 }
@@ -25,7 +25,7 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
     >
       <p>You&rsquo;re about to remove {selectedItems.length} file(s):</p>
       <ul>
-        {selectedItems.map((file:GuiBrowserFile) => (
+        {selectedItems.map((file:GuiBrowserObject) => (
           <li key={file.name}>{file.name}</li>
         ))}
       </ul>

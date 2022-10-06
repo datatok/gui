@@ -2,17 +2,17 @@ import { EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiF
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket } from 'types';
 
 interface UploadPageProps {
   selectedBucket: GuiBucket
-  selectedObject: GuiBrowserFile
+  targetKey: string
   setSiteTitle: (title: string) => void
 }
 
 const UploadPage: FC<UploadPageProps> = ({
   selectedBucket,
-  selectedObject,
+  targetKey,
   setSiteTitle
 }) => {
 
@@ -23,7 +23,7 @@ const UploadPage: FC<UploadPageProps> = ({
   const [formData, setFormData] = useState({
     bucket: selectedBucket.name,
     host: selectedBucket.host,
-    path: selectedObject?.path
+    path: targetKey
   })
 
   const handleInputChange = (event) => {

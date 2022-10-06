@@ -2,22 +2,22 @@ import { EuiButton, EuiFlexGroup, EuiFlexItem } from "@elastic/eui"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
 import { getRouteURL, onClick, Route } from "services/routing"
-import { GuiBrowserFile, GuiBucket } from "types"
+import { GuiBrowserObject, GuiBucket } from "types"
 
 interface TopBarProps {
   bucket: GuiBucket
-  browserFile: GuiBrowserFile
-  selectedItems: GuiBrowserFile[]
+  currentKey: string
+  selectedItems: GuiBrowserObject[]
   onShowModal: (modal: string) => void
 }
 
-const TopBar: FC<TopBarProps> = ({bucket, browserFile, onShowModal, selectedItems}) => {
+const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, selectedItems}) => {
   const navigate = useNavigate();
 
   const getSideUploadButton = () => {
     const href = getRouteURL(Route.BucketUpload, {
       bucket: bucket.id,
-      path: browserFile?.path
+      path: currentKey
     })
   
     return <EuiButton href={href} onClick={onClick(() => {
@@ -34,20 +34,18 @@ const TopBar: FC<TopBarProps> = ({bucket, browserFile, onShowModal, selectedItem
       <EuiFlexItem grow={false}>
 
       </EuiFlexItem>
-      <EuiFlexItem />
+      <EuiFlexItem>
         {getSideUploadButton()}
-
         {getSideNewFolderButton()}
-
-
-      <EuiButton 
-        color="danger"
-        iconType="trash"
-        disabled={selectedItems.length === 0}
-        onClick={() => onShowModal("delete-confirm")}
-      >
-        Delete {selectedItems.length} Items
-      </EuiButton>
+        <EuiButton 
+          color="danger"
+          iconType="trash"
+          disabled={selectedItems.length === 0}
+          onClick={() => onShowModal("delete-confirm")}
+        >
+          Delete {selectedItems.length} Items
+        </EuiButton>
+      </EuiFlexItem>
     </EuiFlexGroup>
   )
 }

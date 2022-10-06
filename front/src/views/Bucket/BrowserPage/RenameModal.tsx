@@ -17,10 +17,10 @@ import {
   useGeneratedHtmlId,
 } from '@elastic/eui';
 
-import { GuiBrowserFile } from 'types';
+import { GuiBrowserObject } from 'types';
 
 interface RenameModalProps {
-  selectedItem: GuiBrowserFile
+  selectedItem: GuiBrowserObject
   onConfirm: () => void
   onCancel: () => void
 }

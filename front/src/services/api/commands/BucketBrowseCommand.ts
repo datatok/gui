@@ -1,4 +1,4 @@
-import { GuiBrowserFile, GuiBucket } from "types"
+import { GuiBrowserObject, GuiBucket } from "types"
 import { StringUtils } from "utils/StringUtils"
 import { get } from '../driver'
 
@@ -14,7 +14,7 @@ interface APIResponse {
 
 interface CommandResponse {
   path: string
-  files: GuiBrowserFile[]
+  files: GuiBrowserObject[]
 }
 
 export default async (bucket: GuiBucket, argPath?: string): Promise<CommandResponse> => {
@@ -30,7 +30,7 @@ export default async (bucket: GuiBucket, argPath?: string): Promise<CommandRespo
         ...f,
         prefix: argPath,
         path: StringUtils.pathJoin(argPath, f.name)
-      } as GuiBrowserFile
+      } as GuiBrowserObject
     })
   }
 }
