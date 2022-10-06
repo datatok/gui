@@ -14,14 +14,15 @@ const BrowserPageWrapper = () => {
     <SiteContext.Consumer>
       {({ setTitle, addSiteToast }) => (
         <BrowserContext.Consumer>
-        {({ bucket, objects, currentKey }) => (
-          (currentKey) ? 
+        {({ bucket, objects, currentKey, refresh }) => (
+          (bucket && currentKey !== null) ? 
           <BrowserPage 
             setSiteTitle={setTitle}
             addSiteToast={addSiteToast}
             selectedBucket={bucket}
             browserCurrentKey={currentKey}
             browserSelectedObjectChildren={BrowserUtils.getObjectChildren(objects, currentKey)}
+            browserRefreshObjects={refresh}
             deleteObjects={() => {}}
           />
           :

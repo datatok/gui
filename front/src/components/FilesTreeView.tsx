@@ -21,7 +21,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
   const fileToTreeNode = (node: GuiBrowserObjectNode): Node => {
     const f = node.object
     const r:Node = {
-      id: f.path || 'root',
+      id: f.path,
       label: f.name || 'root',
       isExpanded: true,
       icon: <EuiIcon type="folderClosed" />,
@@ -39,7 +39,9 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
     }
 
     if (node.children) {
-      const folders = node.children.filter(node => node.object.type === 'folder')
+      const folders = node.children.filter(node => {
+        return node.object.path && node.object.type === 'folder'
+      })
       if (folders.length > 0) {
         return {
           ...r,
@@ -58,7 +60,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
 
   React.useEffect(() => {
       $treeView.current.setState({
-        openItems: ['root']
+        openItems: ['']
       })
   }, [treeItems])
   

@@ -15,7 +15,7 @@ const Header = () => {
 
   const getBreadcrumbs = (selectedBucket: GuiBucket, currentKey: string) => {
 
-    if (!selectedBucket || !currentKey) {
+    if (!selectedBucket || currentKey === null) {
       return []
     }
 
@@ -45,7 +45,7 @@ const Header = () => {
         path: "",
         type: "folder",
       }),
-      ...keyParts.map(key => fileToBreadcrumbItem({
+      ...keyParts.filter(key => key).map(key => fileToBreadcrumbItem({
         ...BrowserUtils.extractNamePrefix(key),
         type: 'folder'
       }))

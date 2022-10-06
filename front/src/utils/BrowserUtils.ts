@@ -54,15 +54,31 @@ export const BrowserUtils = {
     return  []
   },
 
+  /**
+   * Return direct children
+   * @param objects 
+   * @param key 
+   * @returns 
+   */
   getObjectChildren: (objects: GuiObjects, key: string): GuiBrowserObject[] => {
+    const keySlash = key === '' ? '' : `${key}/`
+    const keyLength = keySlash.length
+
     return R.
       toPairs(objects).
       filter(([k, v]: [k:string, v:GuiBrowserObject]) => {
-        return k !== key && k.startsWith(key)
+        return k !== key 
+          && k.startsWith(keySlash) 
+          && k.indexOf('/', keyLength) === -1
       }).
       map(([k, v]) => v)
   },
 
+  /**
+   * "/a/b/c.txt" => ["a, "a/b", "a/b/c.txt"]
+   * @param key 
+   * @returns 
+   */
   splitKeyPrefixes: (key: string): string[] => {
     const ret = []
 

@@ -9,9 +9,10 @@ interface TopBarProps {
   currentKey: string
   selectedItems: GuiBrowserObject[]
   onShowModal: (modal: string) => void
+  onRefresh: () => void
 }
 
-const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, selectedItems}) => {
+const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, onRefresh, selectedItems}) => {
   const navigate = useNavigate();
 
   const getSideUploadButton = () => {
@@ -20,31 +21,46 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, selectedItems
       path: currentKey
     })
   
-    return <EuiButton href={href} onClick={onClick(() => {
+    return <EuiButton fill iconType={'exportAction'} href={href} onClick={onClick(() => {
       navigate(href)
     })} key={'upload'} >Upload</EuiButton>
   }
 
   const getSideNewFolderButton = () => {  
-    return <EuiButton onClick={() => onShowModal("new-folder")} key={'new-dir'} >New folder</EuiButton>
+    return <EuiButton iconType={'plus'} onClick={() => onShowModal("new-folder")} key={'new-dir'} >New folder</EuiButton>
+  }
+
+  const refreshButton = () => {
+    return <EuiButton onClick={() => onRefresh()} key={'refresh'} iconType={'refresh'}>Refresh</EuiButton>
   }
 
   return (
     <EuiFlexGroup alignItems="center">
-      <EuiFlexItem grow={false}>
+      <EuiFlexItem>
 
       </EuiFlexItem>
       <EuiFlexItem>
-        {getSideUploadButton()}
-        {getSideNewFolderButton()}
-        <EuiButton 
-          color="danger"
-          iconType="trash"
-          disabled={selectedItems.length === 0}
-          onClick={() => onShowModal("delete-confirm")}
-        >
-          Delete {selectedItems.length} Items
-        </EuiButton>
+        <EuiFlexGroup wrap gutterSize="s" alignItems="center">
+          <EuiFlexItem  grow={false}>
+            {refreshButton()}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            {getSideUploadButton()}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            {getSideNewFolderButton()}
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiButton 
+              color="danger"
+              iconType="trash"
+              disabled={selectedItems.length === 0}
+              onClick={() => onShowModal("delete-confirm")}
+            >
+              Delete {selectedItems.length} Items
+            </EuiButton>
+          </EuiFlexItem>
+        </EuiFlexGroup>
       </EuiFlexItem>
     </EuiFlexGroup>
   )

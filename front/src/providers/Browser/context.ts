@@ -1,7 +1,7 @@
 import React from "react";
 import { GuiBrowserObject, GuiBucket, GuiObjects } from "types";
 
-export interface IBrowserContext {
+export interface IBrowserState {
   bucket?: GuiBucket
 
   /**
@@ -12,21 +12,24 @@ export interface IBrowserContext {
   /**
    * current path
    */
-  currentKey: string
+  currentKey: string | null
 
   /**
    * current selected (folder or file)
    */
   currentNode?: GuiBrowserObject,
+}
 
+export interface IBrowserContext extends IBrowserState {
   getByPath: (path: string) => GuiBrowserObject|undefined
-
+  refresh: () => void
 }
 
 const defaultData:IBrowserContext = {
   objects: {},
-  currentKey: '',
-  getByPath: (path:string): GuiBrowserObject|undefined => {return}
+  currentKey: null,
+  getByPath: (path:string): GuiBrowserObject|undefined => {return},
+  refresh: () => {}
 }
 
 export const BrowserContext = React.createContext<IBrowserContext>(defaultData);

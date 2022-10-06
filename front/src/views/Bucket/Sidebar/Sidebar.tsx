@@ -14,7 +14,7 @@ const Sidebar = () => {
       </BucketContext.Consumer>
       <BrowserContext.Consumer>
         {({ bucket, objects, currentKey }) => (
-          (objects && currentKey) ? <FilesTreeView bucket={bucket} rootNode={BrowserUtils.getHierarchy(objects, currentKey)} /> : <></>
+          (objects && currentKey !== null) ? <FilesTreeView bucket={bucket} rootNode={BrowserUtils.getHierarchy(objects, currentKey)} /> : <></>
         )}
       </BrowserContext.Consumer>
     </>

@@ -20,12 +20,14 @@ interface BrowserPageProps {
   deleteObjects: () => void
   addSiteToast: (toast: any) => void
   setSiteTitle: (title: string) => void
+  browserRefreshObjects: () => void
 }
 
 const BrowserPage: FC<BrowserPageProps> = ({
   selectedBucket,
   browserCurrentKey,
   browserSelectedObjectChildren,
+  browserRefreshObjects,
   deleteObjects,
   addSiteToast,
   setSiteTitle
@@ -86,6 +88,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
       .then(response => {
         setDeleteAPIWorkflow({ step: 'done', message: ''})
         closeModal()
+        browserRefreshObjects()
       })
   }
 
@@ -95,10 +98,6 @@ const BrowserPage: FC<BrowserPageProps> = ({
     DeleteObjectCommand(selectedBucket, selectedItems)
       .then(response => {
         
-        selectedItems.forEach(file => {
-        //  deleteObjects(file)
-        })
-
         setDeleteAPIWorkflow({ step: 'done', message: ''})
         
         setSelectedItems([])
@@ -109,6 +108,8 @@ const BrowserPage: FC<BrowserPageProps> = ({
           iconType: 'help',
           text: "File deleted!",
         })
+
+        browserRefreshObjects()
       })
       .catch(err => {
         setDeleteAPIWorkflow({ step: 'error', message: err.message})
@@ -165,6 +166,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
         bucket={selectedBucket}
         currentKey={browserCurrentKey}
         onShowModal={onShowModal}
+        onRefresh={browserRefreshObjects}
         selectedItems={selectedItems}
       />
 

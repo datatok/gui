@@ -6,7 +6,7 @@ import { GuiBrowserObject, GuiBucket } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { GuiBucketUtils } from 'utils/GuiBucketUtils';
 import { StringUtils } from 'utils/StringUtils';
-import { IBrowserContext, BrowserContext } from './context';
+import { IBrowserContext, BrowserContext, IBrowserState } from './context';
 import * as R from 'ramda'
 
 interface BrowserStateProviderProps {
@@ -16,13 +16,19 @@ interface BrowserStateProviderProps {
 
 const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, onRefreshingWorkflowChange, children}) => {
 
-  const [state, setState] = useState<IBrowserContext>({
+  const [state, setState] = useState<IBrowserState>({
     objects: {},
-    currentKey: '',
-    getByPath: (path:string): GuiBrowserObject|undefined => {
-      return state.objects[path]
-    }
+    currentKey: ''
   })
+
+  const refresh = () => {
+    console.log(state)
+    getObjectChildren(state.currentKey)
+  }
+
+  const getByPath = (path:string): GuiBrowserObject|undefined => {
+    return state.objects[path]
+  }
 
   /**
    * Actions
@@ -61,24 +67,18 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
     })
   }
 
-  const setCurrentByPath = (path: string): IBrowserContext => {
-    if (path) {
-      state.currentNode = state.getByPath(path)
-    } else {
-      state.currentNode = undefined
-    }
+  const getObjectChildren = (key: string) => {
+    onRefreshingWorkflowChange("loading")
 
-    return state
-  }
-
-  const deleteFile = (file: GuiBrowserObject): IBrowserContext => {
-    //state.rootNode = BrowserUtils.deleteItem(state.rootNode, file)
-
-    if (state.currentNode) { 
-      state.currentNode = state.getByPath(state.currentNode.path)
-    }
-
-    return state
+    BucketBrowseCommand(selectedBucket, key)
+      .then(({files}) => {
+        setFiles(selectedBucket, key, files)
+        
+        onRefreshingWorkflowChange("done")
+      })
+      .catch(err => {
+        onRefreshingWorkflowChange("error", err.message)
+      })
   }
 
   /**
@@ -95,23 +95,13 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
       if (!GuiBucketUtils.equals(selectedBucket, state.bucket)) {
         setBucket(selectedBucket, [])
       }
-
-      onRefreshingWorkflowChange("loading")
-
-      BucketBrowseCommand(selectedBucket, paramBrowsePath)
-        .then(({files}) => {
-          setFiles(selectedBucket, paramBrowsePath, files)
-          
-          onRefreshingWorkflowChange("done")
-        })
-        .catch(err => {
-          onRefreshingWorkflowChange("error", err.message)
-        })
+      
+      getObjectChildren(paramBrowsePath)
     }
   }, [selectedBucket, routeParams]);
 
   return (
-    <BrowserContext.Provider value={state}>
+    <BrowserContext.Provider value={{...state, refresh, getByPath}}>
       {children}
     </BrowserContext.Provider>
   );

@@ -27,6 +27,54 @@ test('splitKeyPrefixes', () => {
   expect(BrowserUtils.splitKeyPrefixes('/toto/tata/toto.txt')).toStrictEqual(['toto', 'toto/tata', 'toto/tata/toto.txt'])
 })
 
+test('getObjectChildren', () => {
+  const objects: GuiObjects = {
+    'gp' : {
+      ...BrowserUtils.extractNamePrefix('gp'),
+      type: 'folder'
+    },
+    'gp/papa' : {
+      ...BrowserUtils.extractNamePrefix('gp/papa'),
+      type: 'folder'
+    },
+    'gp/papa/girl.txt' : {
+      ...BrowserUtils.extractNamePrefix('gp/papa/girl.txt'),
+      type: 'file'
+    },
+    'gp/papa/son.txt' : {
+      ...BrowserUtils.extractNamePrefix('gp/papa/son.txt'),
+      type: 'file'
+    },
+    'gp/papa/girl/girl.txt' : {
+      ...BrowserUtils.extractNamePrefix('gp/papa/girl/girl.txt'),
+      type: 'file'
+    },
+    'gp/tonton/girl' : {
+      ...BrowserUtils.extractNamePrefix('gp/tonton/girl'),
+      type: 'folder'
+    },
+    'gp/papa2/girl' : {
+      ...BrowserUtils.extractNamePrefix('gp/papa2/girl'),
+      type: 'folder'
+    },
+  }
+
+  let children = BrowserUtils.getObjectChildren(objects, 'gp/papa')
+  let childrenPicked = children.map(c => c.path)
+
+  expect(childrenPicked).toStrictEqual([
+    'gp/papa/girl.txt',
+    'gp/papa/son.txt'
+  ])
+
+  children = BrowserUtils.getObjectChildren(objects, '')
+  childrenPicked = children.map(c => c.path)
+
+  expect(childrenPicked).toStrictEqual([
+    'gp'
+  ])
+})
+
 test('getHierarchy', () => {
   const rootNode = BrowserUtils.getHierarchy({}, '/gp/papa/son.txt')
   const rooNodePicked = BrowserUtils.deepPickNode(['path'], rootNode)
@@ -52,7 +100,6 @@ test('getHierarchy', () => {
     }]
   })
 })
-
 
 test('getHierarchy with existing items', () => {
   const objects: GuiObjects = {
