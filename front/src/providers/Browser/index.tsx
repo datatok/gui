@@ -2,11 +2,12 @@
 import React, { FC, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BucketBrowseCommand } from 'services/api';
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { GuiBucketUtils } from 'utils/GuiBucketUtils';
 import { StringUtils } from 'utils/StringUtils';
 import { IBrowserContext, BrowserContext } from './context';
+import * as R from 'ramda'
 
 interface BrowserStateProviderProps {
   selectedBucket: GuiBucket
@@ -16,10 +17,10 @@ interface BrowserStateProviderProps {
 const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, onRefreshingWorkflowChange, children}) => {
 
   const [state, setState] = useState<IBrowserContext>({
-    rootNode: { name: '', prefix: '', path: '', type: 'folder'},
-    currentFolderFiles: [],
-    getByPath: (path:string): GuiBrowserFile|undefined => {
-      return BrowserUtils.searchNaive(StringUtils.trim(path, '/'), state.rootNode.children)
+    objects: {},
+    currentKey: '',
+    getByPath: (path:string): GuiBrowserObject|undefined => {
+      return state.objects[path]
     }
   })
 
@@ -27,14 +28,11 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
    * Actions
    */
 
-   const setBucket = (bucket: GuiBucket, rootFiles: GuiBrowserFile[]) => {
-
-    BrowserUtils.resolveParentLinks(rootFiles)
+   const setBucket = (bucket: GuiBucket, rootFiles: GuiBrowserObject[]) => {
 
     setState({
       ...state,
       bucket,
-      rootNode: undefined,
       currentNode: undefined
     })
   }
@@ -42,8 +40,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
   /** 
    * Set current view
    */
-  const setFiles = (bucket: GuiBucket, fromPath: string, files: GuiBrowserFile[]) => {
-    state.currentFolderFiles = files
+  const setFiles = (bucket: GuiBucket, fromPath: string, files: GuiBrowserObject[]) => {
 
     const currentNode = {
       ...BrowserUtils.extractNamePrefix(fromPath),
@@ -51,23 +48,17 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
       children: files
     }
 
-    if (currentNode.name === '') {
-      setState({
-        ...state,
-        bucket,
-        rootNode: currentNode,
-        currentNode
-      })
-    } else {
-      const rootNode = BrowserUtils.reconciliateHierarchy(state.rootNode?.children || [], currentNode)
-
-      setState({
-        ...state,
-        bucket,
-        rootNode,
-        currentNode
-      })
-    }
+    setState({
+      ...state,
+      bucket,
+      objects: {
+        ...state.objects,
+        [currentNode.path]: currentNode,
+        ...(R.indexBy(R.prop('path'), files))
+      },
+      currentKey: fromPath,
+      currentNode
+    })
   }
 
   const setCurrentByPath = (path: string): IBrowserContext => {
@@ -80,7 +71,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
     return state
   }
 
-  const deleteFile = (file: GuiBrowserFile): IBrowserContext => {
+  const deleteFile = (file: GuiBrowserObject): IBrowserContext => {
     //state.rootNode = BrowserUtils.deleteItem(state.rootNode, file)
 
     if (state.currentNode) { 

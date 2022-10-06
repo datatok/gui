@@ -3,17 +3,17 @@ import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
 import EuiCustomLink from 'components/EuiCustomLink';
 import React, { FC, useRef, useState } from 'react';
 import { Route } from 'services/routing';
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket } from 'types';
 
 interface GridProps {
-  bucket: GuiBucket,
-  selectedObject: GuiBrowserFile
-  onDeleteItem: (item:GuiBrowserFile) => void
-  onEditRenameItem: (item:GuiBrowserFile) => void
-  onSelectionChange: (items:GuiBrowserFile[]) => void
+  bucket: GuiBucket
+  listObjects: GuiBrowserObject[]
+  onDeleteItem: (item:GuiBrowserObject) => void
+  onEditRenameItem: (item:GuiBrowserObject) => void
+  onSelectionChange: (items:GuiBrowserObject[]) => void
 }
 
-const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
+const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -79,7 +79,7 @@ const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionC
           color: 'danger',
           type: 'icon',
           isPrimary: true,
-          onClick: (item:GuiBrowserFile) => {
+          onClick: (item:GuiBrowserObject) => {
             onDeleteItem(item)
           },
           'data-test-subj': 'action-delete',
@@ -90,7 +90,7 @@ const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionC
           description: 'Edit (rename, meta)',
           icon: 'pencil',
           type: 'icon',
-          onClick: (item:GuiBrowserFile) => {
+          onClick: (item:GuiBrowserObject) => {
             onEditRenameItem(item)
           },
           'data-test-subj': 'action-edit',
@@ -124,10 +124,10 @@ const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionC
     setSortDirection(sortDirection);
   };
 
-  const selection: EuiTableSelectionType<GuiBrowserFile> = {
+  const selection: EuiTableSelectionType<GuiBrowserObject> = {
     selectable: (n:any) => true,
-    selectableMessage: (selectable:boolean, item:GuiBrowserFile) => "",
-    onSelectionChange: (selectedItems: GuiBrowserFile[]) => {
+    selectableMessage: (selectable:boolean, item:GuiBrowserObject) => "",
+    onSelectionChange: (selectedItems: GuiBrowserObject[]) => {
       //setSelectedItems(selectedItems);
 
       onSelectionChange(selectedItems)
@@ -138,7 +138,7 @@ const Grid: FC<GridProps> = ({bucket, selectedObject, onDeleteItem, onSelectionC
     <EuiBasicTable
       ref={tableRef}
       tableCaption="Folder children"
-      items={selectedObject.children}
+      items={listObjects}
       itemId="path"
       columns={columns}
       sorting={sorting}

@@ -2,10 +2,10 @@ import { EuiIcon, EuiTreeView } from '@elastic/eui';
 import { Node } from '@elastic/eui/src/components/tree_view/tree_view';
 import React, { FC, useEffect, useRef } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode } from 'types';
 
 interface FilesTreeViewProps {
-  rootNode: GuiBrowserFile
+  rootNode: GuiBrowserObjectNode
   bucket: GuiBucket
 }
 
@@ -18,10 +18,11 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
   /**
    * Recursive function to transform API file to UI node.
    */
-  const fileToTreeNode = (f: GuiBrowserFile): Node => {
+  const fileToTreeNode = (node: GuiBrowserObjectNode): Node => {
+    const f = node.object
     const r:Node = {
       id: f.path || 'root',
-      label: f.name || 'root',
+      label: f.name || 'root',
       isExpanded: true,
       icon: <EuiIcon type="folderClosed" />,
       iconWhenExpanded: <EuiIcon type="folderOpen" />,
@@ -37,13 +38,12 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
       
     }
 
-    if (f.children) {
-      const folders = f.children.filter(f => f.type === 'folder')
+    if (node.children) {
+      const folders = node.children.filter(node => node.object.type === 'folder')
       if (folders.length > 0) {
         return {
           ...r,
-          children: f.children
-            .filter(f => f.type === 'folder')
+          children: folders
             .map(ff => { return fileToTreeNode(ff) })
         }
       }

@@ -1,5 +1,6 @@
 import { BrowserContext } from "providers/Browser/context"
 import { SiteContext } from "providers/Site/context"
+import { BrowserUtils } from "utils/BrowserUtils"
 import BrowserPage from "./BrowserPage"
 
 const Debug = ({bucket, currentNode}) => {
@@ -13,13 +14,14 @@ const BrowserPageWrapper = () => {
     <SiteContext.Consumer>
       {({ setTitle, addSiteToast }) => (
         <BrowserContext.Consumer>
-        {({ bucket, currentNode }) => (
-          (currentNode) ? 
+        {({ bucket, objects, currentKey }) => (
+          (currentKey) ? 
           <BrowserPage 
             setSiteTitle={setTitle}
             addSiteToast={addSiteToast}
             selectedBucket={bucket}
-            selectedBrowsingObject={currentNode}
+            browserCurrentKey={currentKey}
+            browserSelectedObjectChildren={BrowserUtils.getObjectChildren(objects, currentKey)}
             deleteObjects={() => {}}
           />
           :

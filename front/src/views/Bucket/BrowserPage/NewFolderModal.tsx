@@ -13,25 +13,25 @@ import {
   useGeneratedHtmlId,
 } from '@elastic/eui';
 
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket } from 'types';
 
 interface NewFolderModalProps {
   bucket: GuiBucket
-  selectedItem: GuiBrowserFile
+  targetKey: string
   onConfirm: (data: any) => void
   onCancel: () => void
 }
 
 const NewFolderModal: FC<NewFolderModalProps> = ({
   bucket,
-  selectedItem,
+  targetKey,
   onConfirm,
   onCancel
 }) => {
 
   const [formData, setFormData] = useState({
     bucket: bucket.name,
-    path: selectedItem?.path,
+    path: targetKey,
     name: ""
   })
 

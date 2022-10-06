@@ -1,6 +1,6 @@
 import { EuiSpacer } from '@elastic/eui';
 import React, { FC, useEffect, useState } from 'react';
-import { GuiBrowserFile, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket } from 'types';
 import DeleteConfirmModal from './DeleteConfirmModal';
 import Grid from './Grid';
 import RenameModal from './RenameModal';
@@ -15,7 +15,8 @@ let selectionFromSingle = false
 
 interface BrowserPageProps {
   selectedBucket: GuiBucket
-  selectedBrowsingObject: GuiBrowserFile
+  browserCurrentKey: string
+  browserSelectedObjectChildren: GuiBrowserObject[]
   deleteObjects: () => void
   addSiteToast: (toast: any) => void
   setSiteTitle: (title: string) => void
@@ -23,7 +24,8 @@ interface BrowserPageProps {
 
 const BrowserPage: FC<BrowserPageProps> = ({
   selectedBucket,
-  selectedBrowsingObject,
+  browserCurrentKey,
+  browserSelectedObjectChildren,
   deleteObjects,
   addSiteToast,
   setSiteTitle
@@ -40,23 +42,23 @@ const BrowserPage: FC<BrowserPageProps> = ({
     setSiteTitle("Browse")
   }, [])
 
-  const onDeleteItemAskConfirmation = (file: GuiBrowserFile) => {
+  const onDeleteItemAskConfirmation = (file: GuiBrowserObject) => {
     setSelectedItems([file])
     setCurrentModal("delete-confirm")
     selectionFromSingle = true
   }
 
-  const onEditRenameItemAsk = (file: GuiBrowserFile) => {
+  const onEditRenameItemAsk = (file: GuiBrowserObject) => {
     setSelectedItems([file])
     setCurrentModal("edit-rename")
   }
 
-  const onSelectionChange = (files: GuiBrowserFile[]) => {
+  const onSelectionChange = (files: GuiBrowserObject[]) => {
     selectionFromSingle = false
     setSelectedItems(files)
   }
 
-  const onNewFolderClick = (file?: GuiBrowserFile) => {
+  const onNewFolderClick = (file?: GuiBrowserObject) => {
     setCurrentModal("new-folder")
   }
 
@@ -148,7 +150,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
           <NewFolderModal
             key={"new-folder-modal"}
             bucket={selectedBucket}
-            selectedItem={selectedBrowsingObject}
+            targetKey={browserCurrentKey}
             onConfirm={doCreateFolder}
             onCancel={closeModal} 
           />
@@ -157,13 +159,11 @@ const BrowserPage: FC<BrowserPageProps> = ({
     
   }
 
-  
-
   return (
     <>
       <TopBar 
         bucket={selectedBucket}
-        browserFile={selectedBrowsingObject}
+        currentKey={browserCurrentKey}
         onShowModal={onShowModal}
         selectedItems={selectedItems}
       />
@@ -172,7 +172,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
 
       <Grid
         bucket={selectedBucket}
-        selectedObject={selectedBrowsingObject}
+        listObjects={browserSelectedObjectChildren}
         onDeleteItem={onDeleteItemAskConfirmation} 
         onSelectionChange={onSelectionChange} 
         onEditRenameItem={onEditRenameItemAsk}

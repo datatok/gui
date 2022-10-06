@@ -1,4 +1,4 @@
-import { GuiBrowserFile, GuiBucket } from "types"
+import { GuiBrowserObject, GuiBucket } from "types"
 import { get, post } from '../driver'
 
 interface APIResponse {
