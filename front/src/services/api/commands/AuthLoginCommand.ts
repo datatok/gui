@@ -1,19 +1,22 @@
-import { get } from '../driver'
+import { post } from '../driver'
 
 interface APIResponse {
-  token: string
+  access_token: string
 }
 
 interface CommandResponse {
   token: string
 }
 
-export default async (): Promise<CommandResponse> => {
-  const pathURL = `/security/auth/anonymous`
+export default async (username: string, password: string): Promise<CommandResponse> => {
+  const pathURL = `/security/auth/login`
   
-  const { data } = await get<APIResponse>(pathURL)
+  const { data } = await post<APIResponse>(pathURL, {
+    username,
+    password
+  })
 
   return {
-    token: data.token
+    token: data.access_token
   }
 }

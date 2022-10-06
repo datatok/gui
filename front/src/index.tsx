@@ -20,6 +20,7 @@ import SiteProvider from 'providers/Site';
 import ProtectedRoute from 'components/ProtectedRoute';
 import BrowserPageWrapper from 'views/Bucket/BrowserPage/BrowserPageWrapper';
 import UploadPageWrapper from 'views/Bucket/UploadPage/UploadPageWrapper';
+import { SiteContext } from 'providers/Site/context';
 
 
 ReactDOM.render(
@@ -30,11 +31,17 @@ ReactDOM.render(
           <Routes>
             <Route path='' element={<HomeLayout />} />
 
-            <Route path='auth' element={<AuthLayout />}>
-              <Route path='' element={<LoginPage />} />
-              <Route path='anonymous' element={<AnonymousLoginPage />} />
-              <Route path='*' />
-            </Route>
+              <Route path='auth' element={<AuthLayout />}>
+                <Route path='' element={<LoginPage />} />
+                <Route path='anonymous' element={
+                  <SiteContext.Consumer>
+                    {({setApiAccessToken}) => (
+                      <AnonymousLoginPage setApiAccessToken={setApiAccessToken} />
+                    )}
+                  </SiteContext.Consumer>} />
+                <Route path='*' />
+              </Route>
+              
 
             <Route path='bucket/:bucket' element={
               <ProtectedRoute>

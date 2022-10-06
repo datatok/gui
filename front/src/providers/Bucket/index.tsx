@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { GetBucketsCommand } from 'services/api';
 import { GuiBucket } from 'types';
 import { IBucketContext, BucketContext } from './context';
@@ -39,13 +39,13 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
   }
 
     const routeParams = useParams()
+    const routeNavigate = useNavigate()
 
     /**
      * When URL changes -> change current bucket
      */
     React.useEffect(() => {
       const bucketIDFromRoute: string | undefined = routeParams.bucket
-      console.log(routeParams)
 
       if (bucketIDFromRoute) {
         setCurrentByID(bucketIDFromRoute)
@@ -59,6 +59,11 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
       GetBucketsCommand()
         .then(({ buckets }) => {
           setBuckets(buckets)
+        })
+        .catch(({response}) => {
+          if (response.status === 401) {
+            routeNavigate('/')
+          }
         })
     }, [apiAccessToken])
 

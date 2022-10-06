@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from 'react';
+import React, { FC, useState } from 'react';
 import {
   EuiPageTemplate
 } from '@elastic/eui';
@@ -6,13 +6,15 @@ import { useEffect } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
 import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
-import { AuthLoginCommand } from 'services/api';
-import { SiteContext } from 'providers/Site/context';
+import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
 
-const AnonymousLoginPage: FC = () => {
+interface Props {
+  setApiAccessToken: (apiAccessToken: string) => void
+}
+
+const AnonymousLoginPage: FC<Props> = ({setApiAccessToken}) => {
 
   const navigate = useRoutingNavigate()
-  const context = useContext(SiteContext)
   
   const [workflowStep, setWorkflowStep] = useState({
     status: "start",
@@ -27,9 +29,9 @@ const AnonymousLoginPage: FC = () => {
         message: ""
       })
 
-      AuthLoginCommand()
+      AuthLoginAnonymousCommand()
         .then(({token}) => {
-          context.setApiAccessToken(token)
+          setApiAccessToken(token)
 
           navigate(Route.Home);
         })

@@ -19,6 +19,12 @@ const LoginPage: FC = () => {
       size: 's',
     },
     {
+      label: 'Name and password',
+      href: '/auth/name-password',
+      iconType: 'link',
+      size: 's',
+    },
+    {
       label: 'Anonymous',
       href: '/auth/anonymous',
       iconType: 'glasses',

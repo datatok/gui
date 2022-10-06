@@ -1,10 +1,12 @@
 import React from "react"
 
-export interface ISiteContext {
+export interface ISiteState {
   title: string
   apiAccessToken: string
   toasts: any[]
+}
 
+export interface ISiteContext extends ISiteState {
   setTitle: (title: string) => void
   setApiAccessToken: (apiAccessToken: string) => void
 

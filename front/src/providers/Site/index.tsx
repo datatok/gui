@@ -1,14 +1,16 @@
 import { EuiGlobalToastList, EuiText } from '@elastic/eui'
 import { useContext, useState } from 'react'
-import { ISiteContext, SiteContext } from './context'
+import { ISiteContext, ISiteState, SiteContext } from './context'
 
 const SiteStateProvider = ({children}) => {
 
-  const [ state, setState] = useState<ISiteContext>({
+  const [ state, setState] = useState<ISiteState>({
     title: "GUI",
     apiAccessToken: localStorage.getItem('apiAccessToken'),
     toasts: [],
-    
+  })
+
+  const actions = {
     setTitle: (title: string) => {
       if (title !== state.title) {
         setState({
@@ -33,10 +35,10 @@ const SiteStateProvider = ({children}) => {
         ...state,
         apiAccessToken
       })
-  
+
       localStorage.setItem('apiAccessToken', apiAccessToken)
     },
-  })
+  }
   
   const copyToats = state.toasts.map(t => {
     return {
@@ -53,7 +55,7 @@ const SiteStateProvider = ({children}) => {
   }
 
   return (
-    <SiteContext.Provider value={state}>
+    <SiteContext.Provider value={{...state, ...actions}}>
         {children}
         <EuiGlobalToastList
           toasts={copyToats}
