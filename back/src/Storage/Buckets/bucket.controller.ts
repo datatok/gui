@@ -1,5 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import * as R from 'ramda'
 
 import {
@@ -11,9 +10,12 @@ import { GetStorageDriverPipe } from './get-storage-driver.pipe';
 import { BucketsProviderService } from './storage.buckets.service';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { DeleteKeysDto } from './dto/delete-keys.dto';
+import { JwtAuthGuard } from 'src/Security/auth/jwt-auth.guard';
 
 @ApiTags('bucket')
+@ApiBearerAuth('access_token')
 @Controller('bucket')
+@UseGuards(JwtAuthGuard)
 export class BucketController {
   constructor(
     private bucketProvider: BucketsProviderService
@@ -22,7 +24,9 @@ export class BucketController {
   @Get()
   getBuckets(): any {
     return {
-      buckets: this.bucketProvider.findAll()
+      buckets: this.bucketProvider.findAll().map(bucket => {
+        return R.omit(['auth'], bucket)
+      })
     }
   }
 

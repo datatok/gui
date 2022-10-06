@@ -1,22 +1,22 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import configuration from '../config/configuration';
-import { SecurityController } from './auth.controller';
-import { SecurityModule } from './auth.module';
+import configuration from '../../config/configuration';
+import { SecurityAuthController } from './auth.controller';
+import { AuthModule } from './auth.module';
 
 describe('SecurityController', () => {
-  let appController: SecurityController;
+  let appController: SecurityAuthController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
-      controllers: [SecurityController],
+      controllers: [SecurityAuthController],
       providers: [],
-      imports: [SecurityModule, ConfigModule.forRoot({
+      imports: [AuthModule, ConfigModule.forRoot({
         load: [configuration],
       })]
     }).compile();
 
-    appController = app.get<SecurityController>(SecurityController);
+    appController = app.get<SecurityAuthController>(SecurityAuthController);
   });
 
   describe('root', () => {
