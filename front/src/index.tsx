@@ -5,6 +5,7 @@ import {
   Route,
   BrowserRouter,
   Routes,
+  Navigate,
 } from "react-router-dom";
 import BucketLayout from 'views/Bucket/BucketLayout/BucketLayout';
 import LoginPage from 'views/Auth/Login/LoginPage/LoginPage';
@@ -21,6 +22,8 @@ import ProtectedRoute from 'components/ProtectedRoute';
 import BrowserPageWrapper from 'views/Bucket/BrowserPage/BrowserPageWrapper';
 import UploadPageWrapper from 'views/Bucket/UploadPage/UploadPageWrapper';
 import { SiteContext } from 'providers/Site/context';
+import { BucketContext } from 'providers/Bucket/context';
+import HomePage from 'views/Bucket/HomePage/HomePage';
 
 
 ReactDOM.render(
@@ -29,29 +32,44 @@ ReactDOM.render(
       <SiteProvider>
         <BrowserRouter>
           <Routes>
-            <Route path='' element={<HomeLayout />} />
+            
+            <Route path='' element={
+              <SiteContext.Consumer>
+              {({apiAccessToken}) => (
+                apiAccessToken ? <Navigate to="/bucket" replace />
+                : <Navigate to="/auth" replace />
+              )}
+            </SiteContext.Consumer>} />
 
-              <Route path='auth' element={<AuthLayout />}>
-                <Route path='' element={<LoginPage />} />
-                <Route path='anonymous' element={
-                  <SiteContext.Consumer>
-                    {({setApiAccessToken}) => (
-                      <AnonymousLoginPage setApiAccessToken={setApiAccessToken} />
-                    )}
-                  </SiteContext.Consumer>} />
-                <Route path='*' />
-              </Route>
+            <Route path='auth' element={<AuthLayout />}>
+              <Route path='' element={<LoginPage />} />
+              <Route path='anonymous' element={
+                <SiteContext.Consumer>
+                  {({setApiAccessToken}) => (
+                    <AnonymousLoginPage setApiAccessToken={setApiAccessToken} />
+                  )}
+                </SiteContext.Consumer>} />
+              <Route path='*' />
+            </Route>
               
-
-            <Route path='bucket/:bucket' element={
+            <Route path='bucket' element={
               <ProtectedRoute>
                 <BucketLayout />
               </ProtectedRoute>
             }>
-              <Route path='upload' element={<UploadPageWrapper />} />
-              <Route path='upload/*' element={<UploadPageWrapper />} />
-              <Route id='bucket-browser' path='browse' element={<BrowserPageWrapper />} />
-              <Route id='bucket-browser' path='browse/*' element={<BrowserPageWrapper />} />
+              <Route path='' element={
+                <BucketContext.Consumer>
+                  {({buckets}) => (
+                    <HomePage buckets={buckets} />
+                  )}
+                </BucketContext.Consumer>
+              } />
+              <Route path=':bucket'>
+                <Route path='upload' element={<UploadPageWrapper />} />
+                <Route path='upload/*' element={<UploadPageWrapper />} />
+                <Route id='bucket-browser' path='browse' element={<BrowserPageWrapper />} />
+                <Route id='bucket-browser' path='browse/*' element={<BrowserPageWrapper />} />
+              </Route>
             </Route>
 
             <Route path='*' element={<NotFoundErrorPage />} />

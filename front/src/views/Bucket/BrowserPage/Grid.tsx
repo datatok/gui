@@ -26,7 +26,19 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
       field: sortField,
       direction: sortDirection,
     },
-  };
+  }
+
+  const [refreshBrowseFilesWorkflow, setRefreshBrowseFilesWorkflow] = useState({
+    step: "start",
+    message: ""
+  })
+
+  const onRefreshingWorkflowChange = (step: string, message: string) => {
+    setRefreshBrowseFilesWorkflow({
+      step,
+      message
+    })
+  }
 
   const resolveIcon = ({name, type}) => {
 

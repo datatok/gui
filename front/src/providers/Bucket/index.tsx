@@ -14,25 +14,26 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
 }) => {
 
   const [state, setState] = useState<IBucketContext>({
-    buckets: []
+    buckets: [],
+    current: null
   })
 
   const apiGetBuckets = useAPI(GetBucketsCommand)
 
-  const getByID = (path:string): GuiBucket|undefined => {
-    return state.buckets.filter(b => b.id === path).pop()
+  const getByID = (path:string, buckets:GuiBucket[]): GuiBucket|null => {
+    return buckets.find(b => b.id === path) || null
   }
 
-  const setBuckets = (buckets: GuiBucket[]) => {
+  const setBuckets = (buckets: GuiBucket[], currentID?: string) => {
     setState({
       ...state,
       buckets,
-      current: buckets[0]
+      current: currentID ? getByID(currentID, buckets) : null
     })
   }
 
   const setCurrentByID = (path: string) => {
-    const current =  getByID(path)
+    const current =  getByID(path, state.buckets)
 
     setState({
       ...state,
@@ -40,40 +41,40 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
     })
   }
 
-    const routeParams = useParams()
-    const routeNavigate = useNavigate()
+  const routeParams = useParams()
+  const routeNavigate = useNavigate()
 
-    /**
-     * When URL changes -> change current bucket
-     */
-    React.useEffect(() => {
-      const bucketIDFromRoute: string | undefined = routeParams.bucket
+  /**
+   * When URL changes -> change current bucket
+   */
+  React.useEffect(() => {
+    const bucketIDFromRoute: string | undefined = routeParams.bucket
 
-      if (bucketIDFromRoute) {
-        setCurrentByID(bucketIDFromRoute)
-      }
-    }, [routeParams])
+    if (bucketIDFromRoute) {
+      setCurrentByID(bucketIDFromRoute)
+    }
+  }, [routeParams])
 
-    /**
-     * When apiAccessToken changes -> get buckets list
-     */
-    React.useEffect(() => {
-      apiGetBuckets()
-        .then(({ buckets }) => {
-          setBuckets(buckets)
-        })
-        .catch(({response}) => {
-          if (response.status === 401) {
-            routeNavigate('/')
-          }
-        })
-    }, [apiAccessToken])
+  /**
+   * When apiAccessToken changes -> get buckets list
+   */
+  React.useEffect(() => {
+    apiGetBuckets()
+      .then(({ buckets }) => {
+        setBuckets(buckets, routeParams.bucket)
+      })
+      .catch(({response}) => {
+        if (response.status === 401) {
+          routeNavigate('/auth')
+        }
+      })
+  }, [apiAccessToken])
 
-    return (
-      <BucketContext.Provider value={state}>
-        {children}
-      </BucketContext.Provider>
-    );
-  }
+  return (
+    <BucketContext.Provider value={state}>
+      {children}
+    </BucketContext.Provider>
+  );
+}
 
 export default BucketContextProvider

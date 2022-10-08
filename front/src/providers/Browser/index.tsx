@@ -11,14 +11,14 @@ import * as R from 'ramda'
 
 interface BrowserStateProviderProps {
   selectedBucket: GuiBucket
-  onRefreshingWorkflowChange: any
 }
 
-const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, onRefreshingWorkflowChange, children}) => {
+const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, children}) => {
 
   const [state, setState] = useState<IBrowserState>({
     objects: {},
-    currentKey: ''
+    currentKey: '',
+    loadingStatus: null
   })
 
   const apiBucketBrowse = useAPI(BucketBrowseCommand)
@@ -48,7 +48,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
   /** 
    * Set current view
    */
-  const setFiles = (bucket: GuiBucket, fromPath: string, files: GuiBrowserObject[]) => {
+  const setFiles = (fromPath: string, files: GuiBrowserObject[]) => {
 
     const currentNode = {
       ...BrowserUtils.extractNamePrefix(fromPath),
@@ -58,28 +58,32 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
 
     setState({
       ...state,
-      bucket,
       objects: {
         ...state.objects,
         [currentNode.path]: currentNode,
         ...(R.indexBy(R.prop('path'), files))
       },
       currentKey: fromPath,
-      currentNode
+      currentNode,
+      loadingStatus: { status: 'done' }
     })
   }
 
   const getObjectChildren = (key: string) => {
-    onRefreshingWorkflowChange("loading")
+    /*setState({
+      ...state,
+      loadingStatus: { status: 'loading' }
+    })*/
 
     apiBucketBrowse(selectedBucket, key)
       .then(({files}) => {
-        setFiles(selectedBucket, key, files)
-        
-        onRefreshingWorkflowChange("done")
+        setFiles(key, files)
       })
       .catch(err => {
-        onRefreshingWorkflowChange("error", err.message)
+        setState({
+          ...state,
+          loadingStatus: { status: 'error', message: err.message }
+        })
       })
   }
 
@@ -92,15 +96,22 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
   React.useEffect( () => {
     const paramBrowsePath: string = routeParams['*'] || ''
 
+    console.log(selectedBucket)
+
     if (selectedBucket) {
       
       if (!GuiBucketUtils.equals(selectedBucket, state.bucket)) {
         setBucket(selectedBucket, [])
       }
       
-      getObjectChildren(paramBrowsePath)
+      //
     }
-  }, [selectedBucket, routeParams]);
+  }, [selectedBucket]);
+
+  React.useEffect( () => {
+    const paramBrowsePath: string = routeParams['*'] || ''
+    getObjectChildren(paramBrowsePath)
+  }, [ state.bucket, routeParams])
 
   return (
     <BrowserContext.Provider value={{...state, refresh, getByPath}}>

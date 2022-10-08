@@ -11,10 +11,13 @@ import { useState } from 'react';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
 import { GetBucketsCommand } from 'services/api';
 
-const HomeLayout: FC = () => {
+interface Props {
+  apiAccessToken: string
+}
+
+const HomeLayout: FC<Props> = ({apiAccessToken}) => {
 
   const navigate = useRoutingNavigate()
-  const { apiAccessToken } = {apiAccessToken: ""}
   const [workflowStep, setWorkflowStep] = useState({
     status: "start",
     message: ""
