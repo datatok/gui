@@ -7,7 +7,7 @@ import RenameModal from './RenameModal';
 import TopBar from './TopBar';
 import NewFolderModal from './NewFolderModal';
 import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
-import { CreateFolderCommand } from 'services/api';
+import { CreateFolderCommand, useAPI } from 'services/api';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { StringUtils } from 'utils/StringUtils';
 
@@ -39,6 +39,9 @@ const BrowserPage: FC<BrowserPageProps> = ({
     step: "",
     message: ""
   })
+
+  const apiCreateFolder = useAPI(CreateFolderCommand)
+  const apiDeleteObject = useAPI(DeleteObjectCommand)
 
   useEffect(() => {
     setSiteTitle("Browse")
@@ -84,7 +87,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
   const doCreateFolder = (formData: any) => {
     setDeleteAPIWorkflow({ step: 'doing', message: ''})
 
-    CreateFolderCommand(selectedBucket, StringUtils.pathJoin(formData.path, formData.name))
+    apiCreateFolder(selectedBucket, StringUtils.pathJoin(formData.path, formData.name))
       .then(response => {
         setDeleteAPIWorkflow({ step: 'done', message: ''})
         closeModal()
@@ -95,7 +98,7 @@ const BrowserPage: FC<BrowserPageProps> = ({
   const doDeleteSelection = () => {
     setDeleteAPIWorkflow({ step: 'doing', message: ''})
 
-    DeleteObjectCommand(selectedBucket, selectedItems)
+    apiDeleteObject(selectedBucket, selectedItems)
       .then(response => {
         
         setDeleteAPIWorkflow({ step: 'done', message: ''})

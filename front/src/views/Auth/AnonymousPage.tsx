@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
 import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
+import { useAPI, useAuthAnonymousLogin } from 'services/api';
 import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 const AnonymousLoginPage: FC<Props> = ({setApiAccessToken}) => {
 
   const navigate = useRoutingNavigate()
+  const apiAuthLoginAnonymous = useAPI(AuthLoginAnonymousCommand)
   
   const [workflowStep, setWorkflowStep] = useState({
     status: "start",
@@ -29,7 +31,7 @@ const AnonymousLoginPage: FC<Props> = ({setApiAccessToken}) => {
         message: ""
       })
 
-      AuthLoginAnonymousCommand()
+      apiAuthLoginAnonymous()
         .then(({token}) => {
           setApiAccessToken(token)
 

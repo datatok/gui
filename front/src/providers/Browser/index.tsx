@@ -1,7 +1,7 @@
 
 import React, { FC, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { BucketBrowseCommand } from 'services/api';
+import { BucketBrowseCommand, useAPI } from 'services/api';
 import { GuiBrowserObject, GuiBucket } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { GuiBucketUtils } from 'utils/GuiBucketUtils';
@@ -20,6 +20,8 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
     objects: {},
     currentKey: ''
   })
+
+  const apiBucketBrowse = useAPI(BucketBrowseCommand)
 
   const refresh = () => {
     console.log(state)
@@ -70,7 +72,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, on
   const getObjectChildren = (key: string) => {
     onRefreshingWorkflowChange("loading")
 
-    BucketBrowseCommand(selectedBucket, key)
+    apiBucketBrowse(selectedBucket, key)
       .then(({files}) => {
         setFiles(selectedBucket, key, files)
         

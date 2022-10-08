@@ -11,6 +11,8 @@ export interface ISiteContext extends ISiteState {
   setApiAccessToken: (apiAccessToken: string) => void
 
   addSiteToast: (toast: any) => void
+
+  logout: () => void
 }
 
 const defaultData:ISiteContext = {
@@ -19,7 +21,8 @@ const defaultData:ISiteContext = {
   toasts: [],
   setTitle: (title: string) => {},
   setApiAccessToken: (apiAccessToken: string) => {},
-  addSiteToast: (toast: any) => {}
+  addSiteToast: (toast: any) => {},
+  logout: () => {}
 }
 
 export const SiteContext = React.createContext<ISiteContext>(defaultData);

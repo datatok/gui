@@ -1,4 +1,4 @@
-import { post } from '../driver'
+import { ApiCall } from '..'
 
 interface APIResponse {
   access_token: string
@@ -8,15 +8,17 @@ interface CommandResponse {
   token: string
 }
 
-export default async (username: string, password: string): Promise<CommandResponse> => {
-  const pathURL = `/security/auth/login`
-  
-  const { data } = await post<APIResponse>(pathURL, {
-    username,
-    password
-  })
+export default (apiCall: ApiCall) => {
+  return async (username: string, password: string): Promise<CommandResponse> => {
+    const pathURL = `/security/auth/login`
+    
+    const { data } = await apiCall<APIResponse>('post', pathURL, {
+      username,
+      password
+    })
 
-  return {
-    token: data.access_token
+    return {
+      token: data.access_token
+    }
   }
 }

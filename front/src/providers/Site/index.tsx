@@ -1,5 +1,6 @@
 import { EuiGlobalToastList, EuiText } from '@elastic/eui'
 import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ISiteContext, ISiteState, SiteContext } from './context'
 
 const SiteStateProvider = ({children}) => {
@@ -38,6 +39,15 @@ const SiteStateProvider = ({children}) => {
 
       localStorage.setItem('apiAccessToken', apiAccessToken)
     },
+
+    logout: () => {
+      setState({
+        ...state,
+        apiAccessToken: ''
+      })
+
+      localStorage.setItem('apiAccessToken', '')
+    }
   }
   
   const copyToats = state.toasts.map(t => {

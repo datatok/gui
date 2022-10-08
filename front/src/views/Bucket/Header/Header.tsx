@@ -58,10 +58,13 @@ const Header = () => {
     <BrowserContext.Consumer>
     {({bucket: selectedBucket, currentKey}) => (
       <SiteContext.Consumer>
-        {({title}) => (
+        {({title, logout}) => (
           <EuiPageTemplate.Header 
             breadcrumbs={getBreadcrumbs(selectedBucket, currentKey)}
             pageTitle={title}
+            rightSideItems={[
+              <EuiButton onClick={() => { logout(); navigate('/'); }}>Logout</EuiButton>
+            ]}
           />
       )}
       </SiteContext.Consumer>

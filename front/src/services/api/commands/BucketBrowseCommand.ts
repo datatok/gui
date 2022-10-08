@@ -1,6 +1,6 @@
 import { GuiBrowserObject, GuiBucket } from "types"
 import { StringUtils } from "utils/StringUtils"
-import { get } from '../driver'
+import { ApiCall } from '..'
 
 interface APIResponse {
   path: string,
@@ -17,20 +17,22 @@ interface CommandResponse {
   files: GuiBrowserObject[]
 }
 
-export default async (bucket: GuiBucket, argPath?: string): Promise<CommandResponse> => {
-  const p = argPath ? StringUtils.trim(argPath, '/') : ''
-  const pathURL = `/bucket/${bucket.id}/browse/${p}`
-  
-  const { data } = await get<APIResponse>(pathURL)
+export default (apiCall: ApiCall) => {
+  return async (bucket: GuiBucket, argPath?: string): Promise<CommandResponse> => {
+    const p = argPath ? StringUtils.trim(argPath, '/') : ''
+    const pathURL = `/bucket/${bucket.id}/browse/${p}`
+    
+    const { data } = await apiCall<APIResponse>('get', pathURL)
 
-  return {
-    path: data.path,
-    files: data.files.map(f => {
-      return {
-        ...f,
-        prefix: argPath,
-        path: StringUtils.pathJoin(argPath, f.name)
-      } as GuiBrowserObject
-    })
+    return {
+      path: data.path,
+      files: data.files.map(f => {
+        return {
+          ...f,
+          prefix: argPath,
+          path: StringUtils.pathJoin(argPath, f.name)
+        } as GuiBrowserObject
+      })
+    }
   }
 }

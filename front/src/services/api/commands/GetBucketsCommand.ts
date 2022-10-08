@@ -1,5 +1,5 @@
 import { GuiBucket } from "types"
-import { get } from '../driver'
+import { ApiCall } from '..'
 
 interface APIResponse {
   buckets: GuiBucket[]
@@ -9,12 +9,14 @@ interface CommandResponse {
   buckets: GuiBucket[]
 }
 
-export default async (): Promise<CommandResponse> => {
-  const pathURL = `/bucket`
-  
-  const { data } = await get<APIResponse>(pathURL)
+export default (apiCall: ApiCall) => {
+  return async (): Promise<CommandResponse> => {
+    const pathURL = `/bucket`
+    
+    const { data } = await apiCall<APIResponse>('get', pathURL)
 
-  return {
-    buckets: data.buckets
+    return {
+      buckets: data.buckets
+    }
   }
 }

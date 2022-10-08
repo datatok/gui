@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GetBucketsCommand } from 'services/api';
+import { GetBucketsCommand, useAPI } from 'services/api';
 import { GuiBucket } from 'types';
 import { IBucketContext, BucketContext } from './context';
 
@@ -16,6 +16,8 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
   const [state, setState] = useState<IBucketContext>({
     buckets: []
   })
+
+  const apiGetBuckets = useAPI(GetBucketsCommand)
 
   const getByID = (path:string): GuiBucket|undefined => {
     return state.buckets.filter(b => b.id === path).pop()
@@ -56,7 +58,7 @@ const BucketContextProvider: FC<BucketContextProviderProps> = ({
      * When apiAccessToken changes -> get buckets list
      */
     React.useEffect(() => {
-      GetBucketsCommand()
+      apiGetBuckets()
         .then(({ buckets }) => {
           setBuckets(buckets)
         })
