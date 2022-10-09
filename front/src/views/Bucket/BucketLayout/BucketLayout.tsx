@@ -7,7 +7,7 @@ import BucketContextProvider from 'providers/Bucket';
 import { BucketContext } from 'providers/Bucket/context';
 import BrowserStateProvider from 'providers/Browser';
 import { SiteContext } from 'providers/Site/context';
-import { Fallback, If, Then } from 'react-if';
+import { Else, Fallback, If, Then } from 'react-if';
 
 const BucketLayout: FC = () => {
 
@@ -32,19 +32,23 @@ const BucketLayout: FC = () => {
     
 
   return (
-    <SiteContext.Consumer>
-      {({ apiAccessToken }) => (
-      <BucketContextProvider apiAccessToken={apiAccessToken}>
-        <BucketContext.Consumer>
-          {({ current: selectedBucket }) => (
-          <BrowserStateProvider selectedBucket={selectedBucket}>
-            {inner}
-          </BrowserStateProvider>
-          )}
-        </BucketContext.Consumer>
-      </BucketContextProvider>
-      )}
-    </SiteContext.Consumer>
+    <BucketContextProvider>
+      <BucketContext.Consumer>
+        {({ current: selectedBucket }) => (
+          <If condition={selectedBucket !== null}>
+            <Then>
+              <BrowserStateProvider selectedBucket={selectedBucket}>
+                {inner}
+              </BrowserStateProvider>
+            </Then>
+            <Else>
+              <>{inner}</>
+            </Else>
+          </If>
+        
+        )}
+      </BucketContext.Consumer>
+    </BucketContextProvider>
   );
 };
 

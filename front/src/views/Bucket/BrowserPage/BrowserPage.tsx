@@ -10,6 +10,7 @@ import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
 import { CreateFolderCommand, useAPI } from 'services/api';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { StringUtils } from 'utils/StringUtils';
+import { useSetSiteMetaTitle } from 'providers/site-meta.context';
 
 let selectionFromSingle = false
 
@@ -19,7 +20,6 @@ interface BrowserPageProps {
   browserSelectedObjectChildren: GuiBrowserObject[]
   deleteObjects: () => void
   addSiteToast: (toast: any) => void
-  setSiteTitle: (title: string) => void
   browserRefreshObjects: () => void
 }
 
@@ -30,7 +30,6 @@ const BrowserPage: FC<BrowserPageProps> = ({
   browserRefreshObjects,
   deleteObjects,
   addSiteToast,
-  setSiteTitle
 }) => {
 
   const [currentModal, setCurrentModal] = useState("");
@@ -42,6 +41,8 @@ const BrowserPage: FC<BrowserPageProps> = ({
 
   const apiCreateFolder = useAPI(CreateFolderCommand)
   const apiDeleteObject = useAPI(DeleteObjectCommand)
+
+  const setSiteTitle = useSetSiteMetaTitle()
 
   useEffect(() => {
     setSiteTitle("Browse")

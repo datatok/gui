@@ -1,26 +1,17 @@
 import { EuiGlobalToastList, EuiText } from '@elastic/eui'
-import { useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ISiteContext, ISiteState, SiteContext } from './context'
 
 const SiteStateProvider = ({children}) => {
 
   const [ state, setState] = useState<ISiteState>({
-    title: "GUI",
-    apiAccessToken: localStorage.getItem('apiAccessToken'),
     toasts: [],
   })
 
-  const actions = {
-    setTitle: (title: string) => {
-      if (title !== state.title) {
-        setState({
-          ...state,
-          title
-        })
-      }
-    },
-    
+  console.log("Site provider: refresh")
+
+  const actions = {    
     addSiteToast: (toast: any) => {
       setState({
         ...state,
@@ -31,23 +22,7 @@ const SiteStateProvider = ({children}) => {
       })
     },
 
-    setApiAccessToken: (apiAccessToken: string) => {
-      setState({
-        ...state,
-        apiAccessToken
-      })
 
-      localStorage.setItem('apiAccessToken', apiAccessToken)
-    },
-
-    logout: () => {
-      setState({
-        ...state,
-        apiAccessToken: ''
-      })
-
-      localStorage.setItem('apiAccessToken', '')
-    }
   }
   
   const copyToats = state.toasts.map(t => {
@@ -63,6 +38,8 @@ const SiteStateProvider = ({children}) => {
       toasts: state.toasts.filter((toast) => toast.id !== removedToast.id)
     })
   }
+
+
 
   return (
     <SiteContext.Provider value={{...state, ...actions}}>

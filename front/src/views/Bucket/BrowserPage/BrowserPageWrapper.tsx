@@ -12,12 +12,11 @@ const Debug = ({bucket, currentNode}) => {
 const BrowserPageWrapper = () => {
   return (
     <SiteContext.Consumer>
-      {({ setTitle, addSiteToast }) => (
+      {({ addSiteToast }) => (
         <BrowserContext.Consumer>
         {({ bucket, objects, currentKey, refresh }) => (
           (bucket && currentKey !== null) ? 
           <BrowserPage 
-            setSiteTitle={setTitle}
             addSiteToast={addSiteToast}
             selectedBucket={bucket}
             browserCurrentKey={currentKey}

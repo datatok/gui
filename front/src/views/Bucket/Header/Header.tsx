@@ -8,16 +8,23 @@ import { useNavigate } from 'react-router-dom';
 import { BrowserContext } from 'providers/Browser/context';
 import { SiteContext } from 'providers/Site/context';
 import { BrowserUtils } from 'utils/BrowserUtils';
+import { useSiteMetaContext } from 'providers/site-meta.context';
+import { useAuthContext } from 'providers/auth.context';
 
 const Header = () => {
 
+  /**
+   * Hooks
+   */
   const navigate = useNavigate();
 
-  const getBreadcrumbs = (selectedBucket: GuiBucket, currentKey: string) => {
+  /**
+   * Contexts
+   */
+  const { title: siteMetaTitle } = useSiteMetaContext()
+  const { logout } = useAuthContext()
 
-    if (!selectedBucket || currentKey === null) {
-      return []
-    }
+  const getBreadcrumbs = (selectedBucket: GuiBucket, currentKey: string) => {
 
     const fileToBreadcrumbItem = (file: GuiBrowserObject) => {
       const href = getRouteURL(Route.BucketBrowse, {
@@ -36,20 +43,37 @@ const Header = () => {
       }
     }
 
-    const keyParts = BrowserUtils.splitKeyPrefixes(currentKey)
+    
 
     const breadcrumbs = [
-      fileToBreadcrumbItem({
-        name: 'root',
+      {
+        text: 'Buckets',
+        href: '/bucket',
+        onClick: onClick(() => {
+          navigate('/bucket')
+        })
+      }
+    ]
+
+    if (selectedBucket) {
+      breadcrumbs.push(fileToBreadcrumbItem({
+        name: selectedBucket.name,
         prefix: "",
         path: "",
         type: "folder",
-      }),
-      ...keyParts.filter(key => key).map(key => fileToBreadcrumbItem({
-        ...BrowserUtils.extractNamePrefix(key),
-        type: 'folder'
       }))
-    ]
+
+      if (currentKey) {
+        const keyParts = BrowserUtils.splitKeyPrefixes(currentKey)
+
+        keyParts.filter(key => key).forEach(key => {
+          breadcrumbs.push(fileToBreadcrumbItem({
+            ...BrowserUtils.extractNamePrefix(key),
+            type: 'folder'
+          }))
+        })
+      }
+    }
 
     return breadcrumbs
   }
@@ -57,17 +81,13 @@ const Header = () => {
   return (
     <BrowserContext.Consumer>
     {({bucket: selectedBucket, currentKey}) => (
-      <SiteContext.Consumer>
-        {({title, logout}) => (
-          <EuiPageTemplate.Header 
-            breadcrumbs={getBreadcrumbs(selectedBucket, currentKey)}
-            pageTitle={title}
-            rightSideItems={[
-              <EuiButton onClick={() => { logout(); navigate('/'); }}>Logout</EuiButton>
-            ]}
-          />
-      )}
-      </SiteContext.Consumer>
+      <EuiPageTemplate.Header 
+        breadcrumbs={getBreadcrumbs(selectedBucket, currentKey)}
+        pageTitle={siteMetaTitle}
+        rightSideItems={[
+          <EuiButton onClick={() => { logout(); navigate('/'); }}>Logout</EuiButton>
+        ]}
+      />
     )}
     </BrowserContext.Consumer>
   );

@@ -22,11 +22,11 @@ export default (apiCall: ApiCall) => {
     const p = argPath ? StringUtils.trim(argPath, '/') : ''
     const pathURL = `/bucket/${bucket.id}/browse/${p}`
     
-    const { data } = await apiCall<APIResponse>('get', pathURL)
+    const { path, files } = await apiCall<APIResponse>('get', pathURL)
 
     return {
-      path: data.path,
-      files: data.files.map(f => {
+      path,
+      files: files.map(f => {
         return {
           ...f,
           prefix: argPath,

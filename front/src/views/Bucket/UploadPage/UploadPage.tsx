@@ -1,4 +1,5 @@
 import { EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow } from '@elastic/eui';
+import { useSetSiteMetaTitle } from 'providers/site-meta.context';
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -7,14 +8,14 @@ import { GuiBrowserObject, GuiBucket } from 'types';
 interface UploadPageProps {
   selectedBucket: GuiBucket
   targetKey: string
-  setSiteTitle: (title: string) => void
 }
 
 const UploadPage: FC<UploadPageProps> = ({
   selectedBucket,
-  targetKey,
-  setSiteTitle
+  targetKey
 }) => {
+
+  const setSiteTitle = useSetSiteMetaTitle()
 
   useEffect(() => {
     setSiteTitle("Upload")

@@ -12,10 +12,10 @@ export default (apiCall: ApiCall) => {
   return async ():Promise<CommandResponse> => {
     const pathURL = `/security/auth/anonymous`
     
-    const { data } = await apiCall<APIResponse>('post', pathURL, {})
+    const { access_token } = await apiCall<APIResponse>('post', pathURL, {})
 
     return {
-      token: data.access_token
+      token: access_token
     }
   }
 }

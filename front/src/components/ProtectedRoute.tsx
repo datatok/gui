@@ -1,17 +1,17 @@
-import { SiteContext } from 'providers/Site/context';
+import { AuthContext } from 'providers/auth.context';
 import {
     Navigate,
   } from 'react-router-dom';
   
   const ProtectedRoute = ({ children }) => {  
     return (
-      <SiteContext.Consumer>
+      <AuthContext.Consumer>
         {( {apiAccessToken} ) => (
           apiAccessToken
           ? <>{children}</>
           : <Navigate to="/" replace />
         )}
-      </SiteContext.Consumer>
+      </AuthContext.Consumer>
     );
   };
 

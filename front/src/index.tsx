@@ -24,31 +24,31 @@ import UploadPageWrapper from 'views/Bucket/UploadPage/UploadPageWrapper';
 import { SiteContext } from 'providers/Site/context';
 import { BucketContext } from 'providers/Bucket/context';
 import HomePage from 'views/Bucket/HomePage/HomePage';
+import DetailsPage from 'views/Bucket/DetailsPage/DetailsPage';
+import { If, Then } from 'react-if';
+import { SiteMetaContextProvider } from 'providers/site-meta.context';
+import { AuthContext } from 'providers/auth.context';
 
 
 ReactDOM.render(
   <React.StrictMode>
     <EuiProvider colorMode="light">
       <SiteProvider>
+        <SiteMetaContextProvider>
         <BrowserRouter>
           <Routes>
             
             <Route path='' element={
-              <SiteContext.Consumer>
+              <AuthContext.Consumer>
               {({apiAccessToken}) => (
                 apiAccessToken ? <Navigate to="/bucket" replace />
                 : <Navigate to="/auth" replace />
               )}
-            </SiteContext.Consumer>} />
+            </AuthContext.Consumer>} />
 
             <Route path='auth' element={<AuthLayout />}>
               <Route path='' element={<LoginPage />} />
-              <Route path='anonymous' element={
-                <SiteContext.Consumer>
-                  {({setApiAccessToken}) => (
-                    <AnonymousLoginPage setApiAccessToken={setApiAccessToken} />
-                  )}
-                </SiteContext.Consumer>} />
+              <Route path='anonymous' element={<AnonymousLoginPage />} />
               <Route path='*' />
             </Route>
               
@@ -65,6 +65,17 @@ ReactDOM.render(
                 </BucketContext.Consumer>
               } />
               <Route path=':bucket'>
+                <Route path='' element={
+                <BucketContext.Consumer>
+                  {({current}) => (
+                    <If condition={current !== null}>
+                      <Then>
+                        <DetailsPage bucket={current} />
+                      </Then>
+                    </If>
+                  )}
+                </BucketContext.Consumer>
+              } />
                 <Route path='upload' element={<UploadPageWrapper />} />
                 <Route path='upload/*' element={<UploadPageWrapper />} />
                 <Route id='bucket-browser' path='browse' element={<BrowserPageWrapper />} />
@@ -75,6 +86,7 @@ ReactDOM.render(
             <Route path='*' element={<NotFoundErrorPage />} />
           </Routes>
         </BrowserRouter>
+        </SiteMetaContextProvider>
       </SiteProvider>
     </EuiProvider>
   </React.StrictMode>,

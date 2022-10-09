@@ -13,10 +13,6 @@ export default (apiCall: ApiCall) => {
   return async (): Promise<CommandResponse> => {
     const pathURL = `/bucket`
     
-    const { data } = await apiCall<APIResponse>('get', pathURL)
-
-    return {
-      buckets: data.buckets
-    }
+    return await apiCall<APIResponse>('get', pathURL)
   }
 }

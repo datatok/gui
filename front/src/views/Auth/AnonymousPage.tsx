@@ -8,15 +8,13 @@ import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
 import { useAPI, useAuthAnonymousLogin } from 'services/api';
 import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
+import { useAuthContext } from 'providers/auth.context';
 
-interface Props {
-  setApiAccessToken: (apiAccessToken: string) => void
-}
-
-const AnonymousLoginPage: FC<Props> = ({setApiAccessToken}) => {
+const AnonymousLoginPage: FC = () => {
 
   const navigate = useRoutingNavigate()
   const apiAuthLoginAnonymous = useAPI(AuthLoginAnonymousCommand)
+  const { setApiAccessToken } = useAuthContext()
   
   const [workflowStep, setWorkflowStep] = useState({
     status: "start",

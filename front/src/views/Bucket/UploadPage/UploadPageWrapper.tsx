@@ -5,21 +5,16 @@ import BrowserPage from "./UploadPage"
 
 const UploadPageWrapper = () => {
   return (
-    <SiteContext.Consumer>
-    {({ setTitle }) => (
       <BrowserContext.Consumer>
       {({ bucket, currentKey }) => (
         bucket ?
         <UploadPage 
           selectedBucket={bucket}
           targetKey={currentKey}
-          setSiteTitle={setTitle}
         />
         : <></>
       )}
       </BrowserContext.Consumer>
-    )}
-    </SiteContext.Consumer>
   )
 }
 

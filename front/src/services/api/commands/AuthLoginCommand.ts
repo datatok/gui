@@ -12,13 +12,13 @@ export default (apiCall: ApiCall) => {
   return async (username: string, password: string): Promise<CommandResponse> => {
     const pathURL = `/security/auth/login`
     
-    const { data } = await apiCall<APIResponse>('post', pathURL, {
+    const { access_token } = await apiCall<APIResponse>('post', pathURL, {
       username,
       password
     })
 
     return {
-      token: data.access_token
+      token: access_token
     }
   }
 }
