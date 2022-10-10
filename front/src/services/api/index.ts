@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse } from 'axios'
 import axios from 'axios'
-import { SiteContext } from 'providers/Site/context'
 import React from 'react'
 import { useAuthContext } from 'providers/auth.context'
+import { useNotificationContext } from 'providers/notification.context'
 
 export { default as BucketBrowseCommand} from './commands/BucketBrowseCommand'
 export { default as AuthLoginCommand} from './commands/AuthLoginCommand'
@@ -16,8 +16,15 @@ export type ApiCall = <T>(method: string, url: string, data?: any) => Promise<T>
 //export type ApiCommand =  (apiCall: ApiCall) => () => Promise<any>
 
 export const useAPI = (command: any) => {
+  /**
+   * Contexts
+   */
   const apiServer = "http://localhost:3001"
-  const { addSiteToast } = React.useContext(SiteContext)
+  
+  const { 
+    addSiteToast 
+  } = useNotificationContext()
+  
   const authContext = useAuthContext()
 
   const apiCall: ApiCall = <T>(method: string, pathURL: string, data?: any) => {

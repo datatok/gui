@@ -17,23 +17,22 @@ import '@elastic/eui/dist/eui_theme_light.css';
 import AuthLayout from 'views/Auth/Layout';
 import AnonymousLoginPage from 'views/Auth/AnonymousPage';
 import HomeLayout from 'views/Home/Layout';
-import SiteProvider from 'providers/Site';
 import ProtectedRoute from 'components/ProtectedRoute';
-import BrowserPageWrapper from 'views/Bucket/BrowserPage/BrowserPageWrapper';
-import UploadPageWrapper from 'views/Bucket/UploadPage/UploadPageWrapper';
-import { SiteContext } from 'providers/Site/context';
 import { BucketContext } from 'providers/Bucket/context';
 import HomePage from 'views/Bucket/HomePage/HomePage';
 import DetailsPage from 'views/Bucket/DetailsPage/DetailsPage';
 import { If, Then } from 'react-if';
 import { SiteMetaContextProvider } from 'providers/site-meta.context';
 import { AuthContext } from 'providers/auth.context';
+import BrowserPage from 'views/Bucket/BrowserPage/BrowserPage';
+import { NotificationProvider } from 'providers/notification.context';
+import UploadPage from 'views/Bucket/UploadPage/UploadPage';
 
 
 ReactDOM.render(
   <React.StrictMode>
     <EuiProvider colorMode="light">
-      <SiteProvider>
+      <NotificationProvider>
         <SiteMetaContextProvider>
         <BrowserRouter>
           <Routes>
@@ -76,10 +75,10 @@ ReactDOM.render(
                   )}
                 </BucketContext.Consumer>
               } />
-                <Route path='upload' element={<UploadPageWrapper />} />
-                <Route path='upload/*' element={<UploadPageWrapper />} />
-                <Route id='bucket-browser' path='browse' element={<BrowserPageWrapper />} />
-                <Route id='bucket-browser' path='browse/*' element={<BrowserPageWrapper />} />
+                <Route path='upload' element={<UploadPage />} />
+                <Route path='upload/*' element={<UploadPage />} />
+                <Route id='bucket-browser' path='browse' element={<BrowserPage />} />
+                <Route id='bucket-browser' path='browse/*' element={<BrowserPage />} />
               </Route>
             </Route>
 
@@ -87,7 +86,7 @@ ReactDOM.render(
           </Routes>
         </BrowserRouter>
         </SiteMetaContextProvider>
-      </SiteProvider>
+      </NotificationProvider>
     </EuiProvider>
   </React.StrictMode>,
   document.getElementById('root')

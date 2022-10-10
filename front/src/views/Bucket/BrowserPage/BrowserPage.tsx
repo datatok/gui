@@ -11,27 +11,41 @@ import { CreateFolderCommand, useAPI } from 'services/api';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { StringUtils } from 'utils/StringUtils';
 import { useSetSiteMetaTitle } from 'providers/site-meta.context';
+import { useBrowserContext } from 'providers/Browser';
+import { useBucketContext } from 'providers/Bucket';
+import { useNotificationContext } from 'providers/notification.context';
 
 let selectionFromSingle = false
 
-interface BrowserPageProps {
-  selectedBucket: GuiBucket
-  browserCurrentKey: string
-  browserSelectedObjectChildren: GuiBrowserObject[]
-  deleteObjects: () => void
-  addSiteToast: (toast: any) => void
-  browserRefreshObjects: () => void
-}
+const BrowserPage: FC = () => {
 
-const BrowserPage: FC<BrowserPageProps> = ({
-  selectedBucket,
-  browserCurrentKey,
-  browserSelectedObjectChildren,
-  browserRefreshObjects,
-  deleteObjects,
-  addSiteToast,
-}) => {
+  /**
+   * Contexts
+   */
+  const setSiteTitle = useSetSiteMetaTitle()
+  
+  const apiCreateFolder = useAPI(CreateFolderCommand)
+  const apiDeleteObject = useAPI(DeleteObjectCommand)
 
+  const { 
+    refresh: browserRefreshObjects,
+    currentKey: browserCurrentKey,
+    objects: browserObjects
+  } = useBrowserContext()
+
+  const {
+    current: selectedBucket
+  } = useBucketContext()
+
+  const {
+    addSiteToast
+  } = useNotificationContext()
+
+  const browserSelectedObjectChildren = BrowserUtils.getObjectChildren(browserObjects, browserCurrentKey)
+
+  /**
+   * State
+   */
   const [currentModal, setCurrentModal] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [deleteAPIWorkflow, setDeleteAPIWorkflow] = useState({
@@ -39,14 +53,13 @@ const BrowserPage: FC<BrowserPageProps> = ({
     message: ""
   })
 
-  const apiCreateFolder = useAPI(CreateFolderCommand)
-  const apiDeleteObject = useAPI(DeleteObjectCommand)
-
-  const setSiteTitle = useSetSiteMetaTitle()
-
   useEffect(() => {
     setSiteTitle("Browse")
   }, [])
+
+  if (typeof selectedBucket === 'undefined' || selectedBucket === null) {
+    return <></>
+  }
 
   const onDeleteItemAskConfirmation = (file: GuiBrowserObject) => {
     setSelectedItems([file])

@@ -14,6 +14,24 @@ interface BrowserStateProviderProps {
   selectedBucket: GuiBucket
 }
 
+/**
+ * Export helpers
+ */
+ export const useBrowserContext = (): IBrowserContext => {
+  // get the context
+  const context = React.useContext(BrowserContext);
+
+  // if `undefined`, throw an error
+  if (context === undefined) {
+    throw new Error("useUserContext was used outside of its Provider");
+  }
+
+  return context;
+}
+
+/**
+ * Export context provider
+ */
 const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, children}) => {
 
   const apiBucketBrowse = useAPI(BucketBrowseCommand)

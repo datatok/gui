@@ -1,28 +1,25 @@
 import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer, EuiTable } from '@elastic/eui';
+import { useBrowserContext } from 'providers/Browser';
 import { useSetSiteMetaTitle } from 'providers/site-meta.context';
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAPI } from 'services/api';
 import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand';
-import { GuiBrowserObject, GuiBucket } from 'types';
 import { StringUtils } from 'utils/StringUtils';
 
-interface UploadPageProps {
-  selectedBucket: GuiBucket
-  targetKey: string
-}
-
-const UploadPage: FC<UploadPageProps> = ({
-  selectedBucket,
-  targetKey
-}) => {
+const UploadPage: FC = () => {
 
   /**
    * Contexts
    */
   const setSiteTitle = useSetSiteMetaTitle()
   const uploadObjects = useAPI(UploadObjectsCommand)
+
+  const {
+    currentKey: targetKey,
+    bucket: selectedBucket
+  } = useBrowserContext()
 
   useEffect(() => {
     setSiteTitle("Upload")

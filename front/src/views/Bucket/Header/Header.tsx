@@ -6,7 +6,6 @@ import EuiCustomLink from 'components/EuiCustomLink';
 import { GuiBucket } from 'types';
 import { useNavigate } from 'react-router-dom';
 import { BrowserContext } from 'providers/Browser/context';
-import { SiteContext } from 'providers/Site/context';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { useSiteMetaContext } from 'providers/site-meta.context';
 import { useAuthContext } from 'providers/auth.context';

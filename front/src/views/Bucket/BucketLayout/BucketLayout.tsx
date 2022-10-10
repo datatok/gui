@@ -6,7 +6,6 @@ import Sidebar from '../Sidebar/Sidebar';
 import BucketContextProvider from 'providers/Bucket';
 import { BucketContext } from 'providers/Bucket/context';
 import BrowserStateProvider from 'providers/Browser';
-import { SiteContext } from 'providers/Site/context';
 import { Else, Fallback, If, Then } from 'react-if';
 
 const BucketLayout: FC = () => {

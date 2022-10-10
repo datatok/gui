@@ -1,10 +1,27 @@
-import { IBrowserState } from 'providers/Browser/context';
 import React, { FC, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GetBucketsCommand, useAPI } from 'services/api';
 import { GuiBucket } from 'types';
 import { BucketContext, IBucketState } from './context';
 
+/**
+ * Export helpers
+ */
+ export const useBucketContext = (): IBucketState => {
+  // get the context
+  const context = React.useContext(BucketContext);
+
+  // if `undefined`, throw an error
+  if (context === undefined) {
+    throw new Error("useUserContext was used outside of its Provider");
+  }
+
+  return context;
+}
+
+/**
+ * Export context provider
+ */
 const BucketContextProvider: FC = ({
   children
 }) => {
