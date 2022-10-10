@@ -25,3 +25,10 @@ interface StorageBucket {
 
   auth?: StorageAuthBasic
 }
+
+interface FileUpload {
+  key: string
+  contentType: string
+  contentSize: number
+  buffer: Buffer
+}

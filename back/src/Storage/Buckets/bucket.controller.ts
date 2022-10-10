@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import * as R from 'ramda'
 
 import {
@@ -11,6 +11,8 @@ import { BucketsProviderService } from './storage.buckets.service';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { DeleteKeysDto } from './dto/delete-keys.dto';
 import { JwtAuthGuard } from 'src/Security/auth/jwt-auth.guard';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { UploadObjectsDto } from './dto/upload-objects.dto';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -84,6 +86,26 @@ export class BucketController {
     @Body() deleteKeys: DeleteKeysDto
   ) {
     return await storage.deleteKeys(deleteKeys.keys)
+  }
+
+  @Post(':bucket/upload')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadObjects(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() uploadObjects: UploadObjectsDto
+  ) {
+    console.log(files)
+    const files2:FileUpload[] = files.map(file => {
+      return {
+        key: file.originalname,
+        contentType: file.mimetype,
+        contentSize: file.size,
+        buffer: file.buffer
+      }
+    })
+
+    return storage.uploadObjects(uploadObjects.path, files2)
   }
 
 }

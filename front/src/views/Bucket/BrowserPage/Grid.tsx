@@ -1,9 +1,11 @@
 import { EuiBasicTable, EuiIcon } from '@elastic/eui';
 import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
 import EuiCustomLink from 'components/EuiCustomLink';
+import moment from 'moment';
 import React, { FC, useRef, useState } from 'react';
 import { Route } from 'services/routing';
 import { GuiBrowserObject, GuiBucket } from 'types';
+import { StringUtils } from 'utils/StringUtils';
 
 interface GridProps {
   bucket: GuiBucket
@@ -54,7 +56,8 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
       field: 'name',
       name: 'name',
       sortable: true,
-      truncateText: true,
+      truncateText: false,
+      width: '40%',
       render: (name, {path, type}) => {
         return (
           <>
@@ -67,19 +70,16 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
       }
     },
     {
-      field: 'type',
-      name: 'type',
-      sortable: true,
-    },
-    {
       field: 'size',
       name: 'size',
       sortable: true,
+      render: (size: number) => size && StringUtils.formatBytes(size, 2)
     },
     {
       field: 'editDate',
       name: 'editDate',
       sortable: true,
+      render: (date: string) => date && moment(date).fromNow()
     },
     {
       name: 'Actions',
@@ -106,24 +106,6 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
             onEditRenameItem(item)
           },
           'data-test-subj': 'action-edit',
-        },
-        {
-          name: 'Share',
-          isPrimary: true,
-          description: 'Share this user',
-          icon: 'share',
-          type: 'icon',
-          onClick: () => {},
-          'data-test-subj': 'action-share',
-        },
-        {
-          name: 'Elastic.co',
-          description: 'Go to elastic.co',
-          icon: 'logoElastic',
-          type: 'icon',
-          href: 'https://elastic.co',
-          target: '_blank',
-          'data-test-subj': 'action-outboundlink',
         },
       ]
     },

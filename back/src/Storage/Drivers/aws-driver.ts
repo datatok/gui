@@ -1,4 +1,5 @@
-import { DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { CreateMultipartUploadCommand, DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { Body } from "@nestjs/common"
 import * as R from 'ramda'
 import { StringUtils } from "src/utils/StringUtils"
 
@@ -219,6 +220,22 @@ export class AWSStorageDriver {
         }
       })
     })
+  }
+
+  public async uploadObjects(prefix: string, files: FileUpload[]) {
+    const promises = files.map(file => {
+      const command = new PutObjectCommand({
+        Bucket: this.bucket.name,
+        ContentType: file.contentType,
+        ContentLength: file.contentSize,
+        Key: `${prefix}/${file.key}`,
+        Body: file.buffer
+      })
+
+      return this.client.send(command)
+    })
+
+    return await Promise.all(promises)
   }
 
   public getClient() {

@@ -26,9 +26,13 @@ export const useAPI = (command: any) => {
       Authorization: `Bearer ${authContext.apiAccessToken}`
     }
 
+    if (method === 'upload') {
+      headers["Content-Type"] = "multipart/form-data"
+    }
+
     const ret = new Promise<T>((resolve, reject) => {
       axios.request<T>({
-        method,
+        method: method === 'upload' ? 'POST' : method,
         url,
         headers,
         data,

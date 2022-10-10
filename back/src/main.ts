@@ -6,7 +6,9 @@ import { AllExceptionsFilter } from './filters/catch-all.filter'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  app.enableCors();
+  app.enableCors({
+    methods: ['GET', 'POST']
+  });
   //app.use(csurf());
 
   await app.listen(3001);
