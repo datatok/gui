@@ -1,7 +1,5 @@
-import { CreateMultipartUploadCommand, DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
-import { Body } from "@nestjs/common"
-import * as R from 'ramda'
-import { StringUtils } from "src/utils/StringUtils"
+import { DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { StringUtils } from "../../utils/StringUtils"
 
 export class AWSStorageDriver {
   protected bucket: StorageBucket
@@ -77,9 +75,7 @@ export class AWSStorageDriver {
    * @param Prefix 
    * @returns 
    */
-  public async listObjectsRecursive(Prefix: string, ContinuationToken?: string): Promise<
-    {Key: string}[]
-  > {
+  public async listObjectsRecursive(Prefix: string, ContinuationToken?: string) {
     // Get objects for current prefix
     const listObjects = await this.client.send(
       new ListObjectsV2Command({
@@ -94,7 +90,7 @@ export class AWSStorageDriver {
     let deepFiles, nextFiles
 
     // Recurive call to get sub prefixes
-    if (listObjects.CommonPrefixes) {
+    if (listObjects?.CommonPrefixes) {
       const deepFilesPromises = listObjects.CommonPrefixes.flatMap(({Prefix}) => {
         return this.listObjectsRecursive(Prefix)
       })
@@ -103,12 +99,12 @@ export class AWSStorageDriver {
     }
 
     // If we must paginate
-    if (listObjects.IsTruncated) {
+    if (listObjects?.IsTruncated) {
       nextFiles = await this.listObjectsRecursive(Prefix, listObjects.NextContinuationToken)
     }
 
     return [
-      ...(listObjects.Contents || []),
+      ...(listObjects?.Contents || []),
       ...(deepFiles || []),
       ...(nextFiles || [])
     ]
@@ -143,40 +139,23 @@ export class AWSStorageDriver {
     ]
   }
 
-  /**
-   * AWS S3 response: {
-      $metadata: {
-        httpStatusCode: 200,
-        requestId: undefined,
-        extendedRequestId: undefined,
-        cfId: undefined,
-        attempts: 1,
-        totalRetryDelay: 0,
-      },
-      ETag: "\"8876e0f9bd7405e103539649dca68e96\"",
-    }
-   */
   public async createFolder(path: string) {
-    try {
-      const res = await this.client.send(
-        new PutObjectCommand({
-          Bucket: this.bucket.name,
-          Key: `${path}/_meta.md`,
-          ContentType: 'text/html; charset=UTF-8',
-          Metadata: {
-            author: 'Gui',
-            type: 'folder'
-          },
-          Body: path
-        })
-      )
+    const results = await this.client.send(
+      new PutObjectCommand({
+        Bucket: this.bucket.name,
+        Key: `${path}/__meta.md`,
+        ContentType: 'text/html; charset=UTF-8',
+        Metadata: {
+          author: 'Gui',
+          type: 'folder'
+        },
+        Body: path
+      })
+    )
 
-      return {
-        path
-      }
-    }
-    catch(err) {
-      console.log(err)
+    return {
+      path,
+      results
     }
   }
 
@@ -192,9 +171,12 @@ export class AWSStorageDriver {
     }
 
     const allKeysToRemovePromises =  keys.map(k => this.listObjectsRecursive(k))
-    const allKeysToRemove = (await Promise.all(allKeysToRemovePromises)).flatMap(k => k)      
+    const allKeysToRemove = (await Promise.all(allKeysToRemovePromises)).flatMap(k => k)
     const allKeysToRemoveGroups = spliceIntoChunks(allKeysToRemove, 3)
 
+    /**
+     * Map keys chunks to delete in batch
+     */
     const deletePromises = allKeysToRemoveGroups.map(group => {
       return this.client.send(
         new DeleteObjectsCommand({
