@@ -1,8 +1,7 @@
 import BucketSelect from 'components/BucketSelect';
 import FilesTreeView from 'components/FilesTreeView';
-import { BucketContext } from 'providers/Bucket/context';
-import { BrowserContext } from 'providers/Browser/context';
-import { BrowserUtils } from 'utils/BrowserUtils';
+import { BucketContext } from 'providers/BucketContext';
+import { BrowserContext } from 'providers/BucketBrowserContext'
 
 const Sidebar = () => {
   return (
@@ -14,7 +13,7 @@ const Sidebar = () => {
       </BucketContext.Consumer>
       <BrowserContext.Consumer>
         {({ bucket, objects, currentKey }) => (
-          (objects && currentKey !== null) ? <FilesTreeView bucket={bucket} rootNode={BrowserUtils.getHierarchy(objects, currentKey)} /> : <></>
+          (objects && currentKey !== null) ? <FilesTreeView bucket={bucket} objectItems={objects} objectSelectedKey={currentKey} /> : <></>
         )}
       </BrowserContext.Consumer>
     </>

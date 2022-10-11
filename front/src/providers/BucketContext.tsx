@@ -2,7 +2,25 @@ import React, { FC, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GetBucketsCommand, useAPI } from 'services/api';
 import { GuiBucket } from 'types';
-import { BucketContext, IBucketState } from './context';
+
+export interface IBucketState {
+  buckets: GuiBucket[]
+  current: GuiBucket | null
+
+  fetchBucketsStatus: string
+}
+
+export interface IBucketContext extends IBucketState {
+
+}
+
+const defaultData:IBucketState = {
+  buckets: [],
+  current: null,
+  fetchBucketsStatus: ''
+}
+
+export const BucketContext = React.createContext<IBucketContext>(defaultData);
 
 /**
  * Export helpers

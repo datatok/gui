@@ -79,26 +79,95 @@ test('getHierarchy', () => {
   const rootNode = BrowserUtils.getHierarchy({}, '/gp/papa/son.txt')
   const rooNodePicked = BrowserUtils.deepPickNode(['path'], rootNode)
 
-  expect(rooNodePicked).toStrictEqual({
-    object: {
-      path: ''
-    },
-    children: [{
-      object: {
-        path: 'gp'
-      },
-      children: [{
-        object: {
-          path: 'gp/papa'
+  expect(rooNodePicked.children).toStrictEqual(
+    {
+      "gp": {
+        "object": {
+          "path": "gp"
         },
-        children: [{
-          object: {
-            path: 'gp/papa/son.txt'
+        "children": {
+          "gp/papa": {
+            "object": {
+              "path": "gp/papa"
+            },
+            "children": {
+              "gp/papa/son.txt": {
+                "object": {
+                  "path": "gp/papa/son.txt"
+                },
+                "children": {}
+              }
+            }
           }
-        }]
-      }]
-    }]
-  })
+        }
+      }
+    }
+  )
+})
+
+test('getHierarchy 2', () => {
+  const objects:GuiObjects = {
+    "Storage": {
+        "path": "Storage",
+        "name": "Storage",
+        "prefix": "",
+        "type": "folder",
+    },
+    "Storage/Buckets": {
+        "name": "Buckets",
+        "type": "folder",
+        "prefix": "Storage",
+        "path": "Storage/Buckets"
+    },
+    "Storage/Drivers": {
+        "name": "Drivers",
+        "type": "folder",
+        "prefix": "Storage",
+        "path": "Storage/Drivers"
+    },
+    "Storage/storage.module.ts": {
+        "name": "storage.module.ts",
+        "type": "file",
+        "size": 440,
+        "editDate": "2022-10-02T00:55:35.733Z",
+        "prefix": "Storage",
+        "path": "Storage/storage.module.ts"
+    },
+    "Storage/storage.service.spec.ts": {
+        "name": "storage.service.spec.ts",
+        "type": "file",
+        "size": 866,
+        "editDate": "2022-10-02T00:55:35.734Z",
+        "prefix": "Storage",
+        "path": "Storage/storage.service.spec.ts"
+    },
+    "Storage/storage.service.ts": {
+        "name": "storage.service.ts",
+        "type": "file",
+        "size": 258,
+        "editDate": "2022-10-02T00:55:35.736Z",
+        "prefix": "Storage",
+        "path": "Storage/storage.service.ts"
+    },
+    "Storage/storage.ts": {
+        "name": "storage.ts",
+        "type": "file",
+        "size": 1006,
+        "editDate": "2022-09-30T01:53:06.795Z",
+        "prefix": "Storage",
+        "path": "Storage/storage.ts"
+    },
+    "Storage/types.ts": {
+        "name": "types.ts",
+        "type": "file",
+        "size": 348,
+        "editDate": "2022-10-02T00:55:35.740Z",
+        "prefix": "Storage",
+        "path": "Storage/types.ts"
+    }
+  }
+
+  const rootNode = BrowserUtils.getHierarchy(objects, '/gp/papa/boy.txt')
 })
 
 test('getHierarchy with existing items', () => {

@@ -2,18 +2,22 @@ import { EuiIcon, EuiTreeView } from '@elastic/eui';
 import { Node } from '@elastic/eui/src/components/tree_view/tree_view';
 import React, { FC, useEffect, useRef } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
-import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode } from 'types';
+import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode, GuiObjects } from 'types';
+import { BrowserUtils } from 'utils/BrowserUtils';
 
 interface FilesTreeViewProps {
-  rootNode: GuiBrowserObjectNode
+  objectItems: GuiObjects 
+  objectSelectedKey: string
   bucket: GuiBucket
 }
 
-const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
+const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSelectedKey }) => {
 
   const navigate = useRoutingNavigate()
 
   const $treeView = useRef<EuiTreeView>()
+
+  const rootNode = BrowserUtils.getHierarchy(objectItems, objectSelectedKey)
 
   /**
    * Recursive function to transform API file to UI node.
@@ -39,7 +43,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, rootNode }) => {
     }
 
     if (node.children) {
-      const folders = node.children.filter(node => {
+      const folders = Object.values(node.children).filter(node => {
         return node.object.path && node.object.type === 'folder'
       })
       if (folders.length > 0) {

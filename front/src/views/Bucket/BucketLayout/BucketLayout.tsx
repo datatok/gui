@@ -3,9 +3,9 @@ import React, { FC, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
-import BucketContextProvider from 'providers/Bucket';
-import { BucketContext } from 'providers/Bucket/context';
-import BrowserStateProvider from 'providers/Browser';
+import BucketContextProvider from 'providers/BucketContext';
+import { BucketContext } from 'providers/BucketContext';
+import BrowserStateProvider from 'providers/BucketBrowserContext';
 import { Else, Fallback, If, Then } from 'react-if';
 
 const BucketLayout: FC = () => {

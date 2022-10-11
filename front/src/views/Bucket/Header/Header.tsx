@@ -5,10 +5,10 @@ import { GuiBrowserObject } from 'types';
 import EuiCustomLink from 'components/EuiCustomLink';
 import { GuiBucket } from 'types';
 import { useNavigate } from 'react-router-dom';
-import { BrowserContext } from 'providers/Browser/context';
+import { BrowserContext } from 'providers/BucketBrowserContext';
 import { BrowserUtils } from 'utils/BrowserUtils';
-import { useSiteMetaContext } from 'providers/site-meta.context';
-import { useAuthContext } from 'providers/auth.context';
+import { useSiteMetaContext } from 'providers/SiteMetaContext';
+import { useAuthContext } from 'providers/AuthContext';
 
 const Header = () => {
 

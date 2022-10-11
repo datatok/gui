@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse } from 'axios'
 import axios from 'axios'
 import React from 'react'
-import { useAuthContext } from 'providers/auth.context'
-import { useNotificationContext } from 'providers/notification.context'
+import { useAuthContext } from 'providers/AuthContext'
+import { useNotificationContext } from 'providers/NotificationContext'
 
 export { default as BucketBrowseCommand} from './commands/BucketBrowseCommand'
 export { default as AuthLoginCommand} from './commands/AuthLoginCommand'

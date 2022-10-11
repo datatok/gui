@@ -1,6 +1,6 @@
 import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer, EuiTable } from '@elastic/eui';
-import { useBrowserContext } from 'providers/Browser';
-import { useSetSiteMetaTitle } from 'providers/site-meta.context';
+import { useBrowserContext } from 'providers/BucketBrowserContext';
+import { useSetSiteMetaTitle } from 'providers/SiteMetaContext';
 import React, { FC } from 'react';
 import { useState } from 'react';
 import { useEffect } from 'react';

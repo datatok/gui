@@ -1,14 +1,55 @@
-
 import React, { FC, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { BucketBrowseCommand, useAPI } from 'services/api';
-import { GuiBrowserObject, GuiBucket } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { GuiBucketUtils } from 'utils/GuiBucketUtils';
-import { StringUtils } from 'utils/StringUtils';
-import { IBrowserContext, BrowserContext, IBrowserState } from './context';
 import * as R from 'ramda'
-import { string } from 'prop-types';
+import { GuiBrowserObject, GuiBucket, GuiObjects } from "types";
+
+interface LoadingStatus {
+  status: string
+  message?: string
+  data?: any
+}
+
+export interface IBrowserState {
+  bucket?: GuiBucket
+
+  /**
+   * raw list
+   */
+  objects: GuiObjects
+
+  /**
+   * current path
+   */
+  currentKey: string | null
+
+  /**
+   * current selected (folder or file)
+   */
+  currentNode?: GuiBrowserObject,
+
+  /**
+   * loading files status (loading / done)
+   */
+  loadingStatus: LoadingStatus | null,
+}
+
+export interface IBrowserContext extends IBrowserState {
+  getByPath: (path: string) => GuiBrowserObject|undefined
+  refresh: () => void
+}
+
+const defaultData:IBrowserContext = {
+  objects: {},
+  currentKey: null,
+  loadingStatus: null,
+  getByPath: (path:string): GuiBrowserObject|undefined => {return},
+  refresh: () => {}
+}
+
+export const BrowserContext = React.createContext<IBrowserContext>(defaultData);
 
 interface BrowserStateProviderProps {
   selectedBucket: GuiBucket

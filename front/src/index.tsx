@@ -18,14 +18,14 @@ import AuthLayout from 'views/Auth/Layout';
 import AnonymousLoginPage from 'views/Auth/AnonymousPage';
 import HomeLayout from 'views/Home/Layout';
 import ProtectedRoute from 'components/ProtectedRoute';
-import { BucketContext } from 'providers/Bucket/context';
+import { BucketContext } from 'providers/BucketContext';
 import HomePage from 'views/Bucket/HomePage/HomePage';
 import DetailsPage from 'views/Bucket/DetailsPage/DetailsPage';
 import { If, Then } from 'react-if';
-import { SiteMetaContextProvider } from 'providers/site-meta.context';
-import { AuthContext } from 'providers/auth.context';
+import { SiteMetaContextProvider } from 'providers/SiteMetaContext';
+import { AuthContext } from 'providers/AuthContext';
 import BrowserPage from 'views/Bucket/BrowserPage/BrowserPage';
-import { NotificationProvider } from 'providers/notification.context';
+import { NotificationProvider } from 'providers/NotificationContext';
 import UploadPage from 'views/Bucket/UploadPage/UploadPage';
 
 

@@ -8,7 +8,7 @@ import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
 import { useAPI, useAuthAnonymousLogin } from 'services/api';
 import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
-import { useAuthContext } from 'providers/auth.context';
+import { useAuthContext } from 'providers/AuthContext';
 
 const AnonymousLoginPage: FC = () => {
 

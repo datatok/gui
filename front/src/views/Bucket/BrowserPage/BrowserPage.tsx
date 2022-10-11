@@ -10,10 +10,10 @@ import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
 import { CreateFolderCommand, useAPI } from 'services/api';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import { StringUtils } from 'utils/StringUtils';
-import { useSetSiteMetaTitle } from 'providers/site-meta.context';
-import { useBrowserContext } from 'providers/Browser';
-import { useBucketContext } from 'providers/Bucket';
-import { useNotificationContext } from 'providers/notification.context';
+import { useSetSiteMetaTitle } from 'providers/SiteMetaContext';
+import { useBrowserContext } from 'providers/BucketBrowserContext';
+import { useBucketContext } from 'providers/BucketContext';
+import { useNotificationContext } from 'providers/NotificationContext';
 
 let selectionFromSingle = false
 

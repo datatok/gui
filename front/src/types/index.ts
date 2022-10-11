@@ -39,7 +39,7 @@ export type GuiBrowserObject = {
  */
 export type GuiBrowserObjectNode = {
   object: GuiBrowserObject
-  children?: GuiBrowserObjectNode[]
+  children?: {[key:string]: GuiBrowserObjectNode}
 }
 
 /**
