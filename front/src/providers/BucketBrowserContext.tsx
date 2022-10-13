@@ -81,7 +81,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
 
   const [state, setState] = useState<IBrowserState>({
     objects: {},
-    currentKey: '',
+    currentKey: null,
     loadingStatus: null
   })
 
@@ -90,7 +90,6 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
    */
   const actions = {
     refresh: () => {
-      console.log(state)
       getObjectChildren(state.currentKey)
     },
 
@@ -100,9 +99,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
   }
 
 
-
-   const setBucket = (bucket: GuiBucket, rootFiles: GuiBrowserObject[]) => {
-
+  const setBucket = (bucket: GuiBucket, rootFiles: GuiBrowserObject[]) => {
     setState({
       ...state,
       bucket,
@@ -154,6 +151,11 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
       setFiles(key, files)
     } catch (err) {
       browseFetchPointer.current = {status: 'error', cancelToken: null}
+
+      if (err.response.status === 404) {
+        setFiles(key, [])
+      }
+
       /*setState({
         ...state,
         loadingStatus: { status: 'error', message: err.message }

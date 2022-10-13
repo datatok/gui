@@ -5,7 +5,7 @@ import Header from '../Header/Header';
 import Sidebar from '../Sidebar/Sidebar';
 import BucketContextProvider from 'providers/BucketContext';
 import { BucketContext } from 'providers/BucketContext';
-import BrowserStateProvider from 'providers/BucketBrowserContext';
+import BrowserStateProvider, { BrowserContext } from 'providers/BucketBrowserContext';
 import { Else, Fallback, If, Then } from 'react-if';
 
 const BucketLayout: FC = () => {
@@ -31,23 +31,26 @@ const BucketLayout: FC = () => {
     
 
   return (
-    <BucketContextProvider>
-      <BucketContext.Consumer>
-        {({ current: selectedBucket }) => (
-          <If condition={selectedBucket !== null}>
-            <Then>
-              <BrowserStateProvider selectedBucket={selectedBucket}>
-                {inner}
-              </BrowserStateProvider>
-            </Then>
-            <Else>
-              <>{inner}</>
-            </Else>
-          </If>
-        
-        )}
-      </BucketContext.Consumer>
-    </BucketContextProvider>
+    <BucketContext.Consumer>
+      {({ current: selectedBucket }) => (
+        <If condition={selectedBucket && selectedBucket !== null}>
+          <Then>
+            <BrowserStateProvider selectedBucket={selectedBucket}>
+              <BrowserContext.Consumer>
+              {({ bucket, currentKey }) => (
+                <If condition={bucket && bucket !== null && currentKey !== null}>
+                  <Then>
+                    {inner}
+                  </Then>
+                </If>
+              )}
+              </BrowserContext.Consumer>
+            </BrowserStateProvider>
+          </Then>
+        </If>
+      
+      )}
+    </BucketContext.Consumer>
   );
 };
 

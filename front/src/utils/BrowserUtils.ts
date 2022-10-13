@@ -28,21 +28,6 @@ const deepPick = (properties: string[], currentNode: any): any => {
   return ret
 }
 
-const deepPickNode = (properties: string[], currentNode: GuiBrowserObjectNode): any => {
-
-  if (currentNode.children) {
-    const pickChildren = (v: GuiBrowserObjectNode) => deepPickNode(properties, v);
-    return {
-      object: R.pick(properties, currentNode.object),
-      children: R.map(pickChildren, currentNode.children)
-    }
-  }
-
-  return {
-    object: R.pick(properties, currentNode.object)
-  }
-}
-
 const splitKeyPrefixes = (key: string): string[] => {
   const ret = []
 
@@ -57,6 +42,9 @@ const splitKeyPrefixes = (key: string): string[] => {
   return ret
 }
 
+/**
+ * Return direct children from a prefix key
+ */
 const getObjectChildren = (objects: GuiObjects, key: string): GuiBrowserObject[] => {
   const keySlash = key === '' ? '' : `${key}/`
   const keyLength = keySlash.length
@@ -71,17 +59,81 @@ const getObjectChildren = (objects: GuiObjects, key: string): GuiBrowserObject[]
     map(([k, v]) => v)
 }
 
+const hierarchy = (pathsParts: string[][], depth:number, path: string, name: string):GuiBrowserObjectNode => {
+  const lookup = {}
+
+  pathsParts.forEach(p => {
+    if (p.length > depth) {
+      lookup[p[depth]] = [...(lookup[p[depth]] || []), p]
+    }
+  })
+  
+  const m = (v:string[][], k:string) => hierarchy(v, depth + 1, path + (path ? '/' : '') + k, k)
+
+  return { name, path, children: R.mapObjIndexed(m, lookup) }
+}
+
+const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
+
+  const isFolder = (v: GuiBrowserObject, k: string) => v.type === 'folder'
+  const onlyFolders = R.pickBy(isFolder, objects)
+
+  const pathPars = Object.keys(onlyFolders).map(p => p.split('/'), '')
+
+  return hierarchy(pathPars, 0, '', '')
+}
+
+/**
+ * Get all the hierarchy from objects collection.
+ * Only "folder"
+ * @returns The root node
+ */
+/*const getHierarchy = (objects: GuiObjects, key: string): GuiBrowserObjectNode => {
+  const rootNode:GuiBrowserObjectNode = {
+    children: {},
+    object: {
+      ...extractNamePrefix(''),
+      type: 'folder'
+    }
+  }
+
+  const keyParts = splitKeyPrefixes(key)
+
+  let parentNode = rootNode
+
+  keyParts.forEach(keyPart => {
+    const node: GuiBrowserObjectNode = {
+      children: {},
+      object: {
+        ...extractNamePrefix(keyPart),
+        type: 'folder'
+      },
+    }
+
+    getObjectChildren(objects, keyPart)
+      .forEach(object => {
+        node.children[object.path] = {
+          children: {},
+          object
+        }
+      })
+
+    parentNode.children = {
+      [node.object.path]: node,
+      ...parentNode.children
+    }
+
+    parentNode = node
+  })
+
+  return rootNode
+}*/
+
 export const BrowserUtils = {
   
   extractNamePrefix,
 
   deepPick,
-
-  deepPickNode,
-
-  deleteItem: (items: GuiBrowserObject[], toDelete: GuiBrowserObject): GuiBrowserObject[] => {
-    return  []
-  },
 
   /**
    * Return direct children
@@ -104,44 +156,5 @@ export const BrowserUtils = {
    * @param objects 
    * @param key 
    */
-  getHierarchy: (objects: GuiObjects, key: string): GuiBrowserObjectNode => {
-    const rootNode:GuiBrowserObjectNode = {
-      children: {},
-      object: {
-        ...BrowserUtils.extractNamePrefix(''),
-        type: 'folder'
-      }
-    }
-
-    const keyParts = splitKeyPrefixes(key)
-
-    let parentNode = rootNode
-
-    keyParts.forEach(keyPart => {
-      const node: GuiBrowserObjectNode = {
-        children: {},
-        object: {
-          ...BrowserUtils.extractNamePrefix(keyPart),
-          type: 'folder'
-        },
-      }
-
-      getObjectChildren(objects, keyPart)
-        .forEach(object => {
-          node.children[object.path] = {
-            children: {},
-            object
-          }
-        })
-
-      parentNode.children = {
-        [node.object.path]: node,
-        ...parentNode.children
-      }
-
-      parentNode = node
-    })
-
-    return rootNode
-  }
+  getHierarchy: getHierarchy2,
 }

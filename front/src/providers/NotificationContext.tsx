@@ -61,6 +61,8 @@ export const NotificationProvider = ({children}) => {
           ...toast
         }]
       })
+
+      console.log(toast, state)
     },
   }
 

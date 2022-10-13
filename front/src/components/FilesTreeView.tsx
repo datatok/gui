@@ -4,6 +4,7 @@ import React, { FC, useEffect, useRef } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
 import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode, GuiObjects } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
+import * as R from 'ramda'
 
 interface FilesTreeViewProps {
   objectItems: GuiObjects 
@@ -17,16 +18,15 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
 
   const $treeView = useRef<EuiTreeView>()
 
-  const rootNode = BrowserUtils.getHierarchy(objectItems, objectSelectedKey)
+  const rootNode = BrowserUtils.getHierarchy(objectItems)
 
   /**
    * Recursive function to transform API file to UI node.
    */
   const fileToTreeNode = (node: GuiBrowserObjectNode): Node => {
-    const f = node.object
     const r:Node = {
-      id: f.path,
-      label: f.name || 'root',
+      id: node.path,
+      label: node.name || 'root',
       isExpanded: true,
       icon: <EuiIcon type="folderClosed" />,
       iconWhenExpanded: <EuiIcon type="folderOpen" />,
@@ -34,7 +34,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
 
         navigate(Route.BucketBrowse, {
           bucket: bucket.id,
-          path: f.path,
+          path: node.path,
         })
 
         return ""
@@ -43,15 +43,9 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
     }
 
     if (node.children) {
-      const folders = Object.values(node.children).filter(node => {
-        return node.object.path && node.object.type === 'folder'
-      })
-      if (folders.length > 0) {
-        return {
-          ...r,
-          children: folders
-            .map(ff => { return fileToTreeNode(ff) })
-        }
+      return {
+        ...r,
+        children: Object.values(node.children).map( (v: GuiBrowserObjectNode) => fileToTreeNode(v) )
       }
     }
 

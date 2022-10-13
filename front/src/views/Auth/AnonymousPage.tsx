@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
 import { AxiosError } from 'axios';
 import APIWorkflowCallout from 'components/APIWorkflowCallout';
-import { useAPI, useAuthAnonymousLogin } from 'services/api';
+import { useAPI } from 'services/api';
 import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
 import { useAuthContext } from 'providers/AuthContext';
 
@@ -14,7 +14,7 @@ const AnonymousLoginPage: FC = () => {
 
   const navigate = useRoutingNavigate()
   const apiAuthLoginAnonymous = useAPI(AuthLoginAnonymousCommand)
-  const { setApiAccessToken } = useAuthContext()
+  const { apiAccessToken, setApiAccessToken } = useAuthContext()
   
   const [workflowStep, setWorkflowStep] = useState({
     status: "start",
@@ -22,7 +22,6 @@ const AnonymousLoginPage: FC = () => {
   })
 
   useEffect(() => {
-    if (workflowStep.status === "start") {
 
       setWorkflowStep({
         status: "loading",
@@ -32,8 +31,6 @@ const AnonymousLoginPage: FC = () => {
       apiAuthLoginAnonymous()
         .then(({token}) => {
           setApiAccessToken(token)
-
-          navigate(Route.Home);
         })
         .catch((error:AxiosError) => {
           setWorkflowStep({
@@ -41,8 +38,14 @@ const AnonymousLoginPage: FC = () => {
             message: error.message
           })
         })
+
+  }, [])
+
+  useEffect(() => {
+    if (apiAccessToken?.length > 0) {
+      navigate(Route.Home);
     }
-  })
+  }, [apiAccessToken])
 
   const retry = () => {
     setWorkflowStep({

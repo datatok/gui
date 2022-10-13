@@ -38,7 +38,8 @@ export type GuiBrowserObject = {
  * Represent object within graph (only children relation)
  */
 export type GuiBrowserObjectNode = {
-  object: GuiBrowserObject
+  name: string
+  path: string
   children?: {[key:string]: GuiBrowserObjectNode}
 }
 
