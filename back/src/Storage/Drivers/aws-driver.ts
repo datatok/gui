@@ -174,6 +174,8 @@ export class AWSStorageDriver {
     const allKeysToRemove = (await Promise.all(allKeysToRemovePromises)).flatMap(k => k)
     const allKeysToRemoveGroups = spliceIntoChunks(allKeysToRemove, 3)
 
+    console.log(keys, allKeysToRemove)
+
     /**
      * Map keys chunks to delete in batch
      */

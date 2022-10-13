@@ -95,6 +95,18 @@ describe('AWSStorageService', () => {
     }])
   })
 
+  it('should list file', async() => {
+    const driver = getLocalAWSDriver()
+    const fullPath = 'Security/7016930_Facture_NÂ°7016930 F 10220600015140_du_2022-06-29.pdf'
+
+    const res = await driver.listObjectsRecursive(fullPath)
+
+    expect(res).toStrictEqual([{
+        path: fullPath
+      }
+    ])
+  })
+
   it('remove prefix', async () => {
    mockClient(S3Client).on(ListObjectsV2Command).resolvesOnce({
       "$metadata":{
@@ -123,7 +135,6 @@ describe('AWSStorageService', () => {
    ])
 
 
-
   })
 
   it('create folder and list it', async() => {
@@ -139,6 +150,27 @@ describe('AWSStorageService', () => {
 
     expect(objects).toHaveLength(1)
     expect(objects[0].Key).toBe(`${rootPrefix}/__meta.md`)
+  })
+
+  it('remove simple file', async() => {
+    const driver = getLocalAWSDriver()
+    const rootPrefix = `__root__${uuidv4()}`
+    const folderPath = 'remove/sim ple'
+    let res
+
+    res = await driver.createFolder(`${rootPrefix}/${folderPath}`)
+
+    expect(res.results.$metadata.httpStatusCode).toEqual(200)
+
+    res = await driver.deleteKeys([`${rootPrefix}/${folderPath}/__meta.md`])
+
+    expect(res).toStrictEqual([
+      { status: 200, key: `${rootPrefix}/${folderPath}/__meta.md` },
+    ])
+
+    res = await driver.listObjectsRecursive(rootPrefix)
+
+    expect(res).toHaveLength(0)
   })
 
   it('remove simple multi keys', async() => {

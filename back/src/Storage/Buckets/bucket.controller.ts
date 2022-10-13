@@ -53,7 +53,7 @@ export class BucketController {
       forbidNonWhitelisted: true
   })) query: BrowseDto
   ) {
-    let path = query.path
+    let path = query.path || ''
 
     path += '/'
     
@@ -87,16 +87,20 @@ export class BucketController {
     @Body() uploadObjects: UploadObjectsDto
   ) {
     console.log(files)
-    const files2:FileUpload[] = files.map(file => {
-      return {
-        key: file.originalname,
-        contentType: file.mimetype,
-        contentSize: file.size,
-        buffer: file.buffer
-      }
-    })
+    if (files) {
+      const files2:FileUpload[] = files.map(file => {
+        return {
+          key: file.originalname,
+          contentType: file.mimetype,
+          contentSize: file.size,
+          buffer: file.buffer
+        }
+      })
 
-    return storage.uploadObjects(uploadObjects.path, files2)
+      return storage.uploadObjects(uploadObjects.path, files2)
+    }
+
+    return []
   }
 
 }
