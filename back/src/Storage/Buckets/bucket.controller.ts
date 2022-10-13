@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import * as R from 'ramda'
 
 import {
@@ -13,6 +13,7 @@ import { DeleteKeysDto } from './dto/delete-keys.dto';
 import { JwtAuthGuard } from 'src/Security/auth/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadObjectsDto } from './dto/upload-objects.dto';
+import { BrowseDto } from './dto/browse.dto';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -46,24 +47,14 @@ export class BucketController {
 
   @Get(':bucket/browse')
   async browseRootBucket(
-    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver
-  ) {
-    return this.browseBucket(storage, '')
-  }
-
-  @Get(':bucket/browse/:path')
-  async browseBucket(
-    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver, 
-    @Param('path') path: string
-  ) {
-    return this.browseBucket2(storage, path)
-  }
-
-  @Get(':bucket/browse/:path([^/]+/[^/]+)')
-  async browseBucket2(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Param('path') path: string
+    @Query(new ValidationPipe({
+      transform: false,
+      forbidNonWhitelisted: true
+  })) query: BrowseDto
   ) {
+    let path = query.path
+
     path += '/'
     
     return {

@@ -28,7 +28,10 @@ export const useAPI = (command: any) => {
   const authContext = useAuthContext()
 
   const apiCall: ApiCall = <T>(method: string, pathURL: string, data?: any) => {
-    const url = `${apiServer}${pathURL}`
+    let url = `${apiServer}${pathURL}`
+
+    method = method.toUpperCase()
+
     const headers = {
       Authorization: `Bearer ${authContext.apiAccessToken}`
     }
@@ -37,25 +40,40 @@ export const useAPI = (command: any) => {
       headers["Content-Type"] = "multipart/form-data"
     }
 
+    if (method === 'GET') {
+      url += '?' + new URLSearchParams(data).toString()
+    }
+
     const ret = new Promise<T>((resolve, reject) => {
       axios.request<T>({
         method: method === 'upload' ? 'POST' : method,
         url,
         headers,
-        data,
+        data: method === 'POST' ? data : {},
         maxRedirects: 5,
       })
       .then((response:AxiosResponse) => {
         resolve(response.data)
       })
       .catch((err:AxiosError) => {
+        let errorStr
+
         if (err.code === "ERR_NETWORK") {
+          errorStr = err.message
+        } else {
+          if (err?.response?.status === 401) {
+            errorStr = `Unauthorized (status ${err?.response?.status})`
+          } 
+        }
+
+        if (errorStr) {
           addSiteToast({
             title: 'API error',
             color: 'warning',
-            text: err.message,
+            text: `API said "${errorStr}"`,
           })
         }
+        console.log(err)
 
         reject(err)
       })

@@ -19,10 +19,12 @@ interface CommandResponse {
 
 export default (apiCall: ApiCall) => {
   return async (bucket: GuiBucket, argPath?: string): Promise<CommandResponse> => {
-    const p = argPath ? StringUtils.trim(argPath, '/') : ''
-    const pathURL = `/bucket/${bucket.id}/browse/${p}`
+    argPath = argPath ? StringUtils.trim(argPath, '/') : ''
+    const pathURL = `/bucket/${bucket.id}/browse`
     
-    const { path, files } = await apiCall<APIResponse>('get', pathURL)
+    const { path, files } = await apiCall<APIResponse>('get', pathURL, {
+      path: argPath
+    })
 
     return {
       path,
