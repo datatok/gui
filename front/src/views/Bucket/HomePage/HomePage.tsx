@@ -13,26 +13,24 @@ const HomePage: FC = () => {
   const navigate = useRoutingNavigate()
 
   return (
-    <EuiPageTemplate>
-      <EuiPageTemplate.Header pageTitle="Please select a bucket"></EuiPageTemplate.Header>
-      <EuiPageTemplate.Section>
-        <EuiSpacer />
-        <EuiFlexGroup gutterSize="l">
-          {buckets.map(({name, host, id}, index) => (
-            <EuiFlexItem key={index}>
-            <EuiCard
-              title={name}
-              icon={<EuiIcon type={'storage'} size={'xl'} />}
-              description={`host: ${host}`}
-              onClick={() => {
-                navigate(Route.BucketHome, { bucket: id })
-              }}
-            />
-          </EuiFlexItem>
-          ))}
-        </EuiFlexGroup>
-      </EuiPageTemplate.Section>
-    </EuiPageTemplate>
+    <EuiPageTemplate.Section>
+      <EuiText><h3>Select a bucket</h3></EuiText>
+      <EuiSpacer />
+      <EuiFlexGroup gutterSize="l">
+        {buckets.map(({name, host, id}, index) => (
+          <EuiFlexItem key={index}>
+          <EuiCard
+            title={name}
+            icon={<EuiIcon type={'storage'} size={'xl'} />}
+            description={`host: ${host}`}
+            onClick={() => {
+              navigate(Route.BucketBrowse, { bucket: id })
+            }}
+          />
+        </EuiFlexItem>
+        ))}
+      </EuiFlexGroup>
+    </EuiPageTemplate.Section>
   )
 }
 

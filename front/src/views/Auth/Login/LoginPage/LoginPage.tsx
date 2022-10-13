@@ -47,16 +47,6 @@ const LoginPage: FC = () => {
       actions={
         <EuiListGroup listItems={authLinks} />
       }
-      footer={
-        <>
-          <EuiTitle size="xxs">
-            <span>Want to learn more?</span>
-          </EuiTitle>{' '}
-          <EuiLink href="#" target="_blank">
-            Read the docs
-          </EuiLink>
-        </>
-      }
     />
   );
 };

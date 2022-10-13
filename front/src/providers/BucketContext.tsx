@@ -1,7 +1,8 @@
 import React, { FC, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation, matchPath } from 'react-router-dom';
 import { GetBucketsCommand, useAPI } from 'services/api';
 import { GuiBucket } from 'types';
+import { StringUtils } from 'utils/StringUtils';
 
 export interface IBucketState {
   buckets: GuiBucket[]
@@ -87,21 +88,22 @@ const BucketContextProvider: FC = ({
     }
   }
 
-  const routeParams = useParams()
+  const { pathname } = useLocation()
   const routeNavigate = useNavigate()
-
-  /**
-   * When URL changes -> change current bucket
-   */
+  //
+  // When URL changes -> change current bucket
+  //
   React.useEffect(() => {
-    const bucketIDFromRoute: string | undefined = routeParams.bucket
+    if (pathname.startsWith('/bucket/')) {
+      const bucketID = pathname.split('/')[2]
 
-    setCurrentByID(bucketIDFromRoute)
-  }, [routeParams])
+      setCurrentByID(bucketID)
+    }
+  }, [pathname, state.buckets])
 
-  /**
-   * When apiAccessToken changes -> get buckets list
-   */
+  //
+  // When apiAccessToken changes -> get buckets list
+  //
   React.useEffect(() => {
     if (fetchBucketsStatus.current === '') {
 
@@ -109,7 +111,7 @@ const BucketContextProvider: FC = ({
 
       apiGetBuckets()
         .then(({ buckets }) => {
-          setBuckets(buckets, routeParams.bucket)
+          setBuckets(buckets)
         })
         .catch(({response}) => {
           if (response.status === 401) {

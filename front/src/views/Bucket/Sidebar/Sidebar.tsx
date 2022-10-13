@@ -13,7 +13,7 @@ const Sidebar = () => {
       </BucketContext.Consumer>
       <BrowserContext.Consumer>
         {({ bucket, objects, currentKey }) => (
-          (objects && currentKey !== null) ? <FilesTreeView bucket={bucket} objectItems={objects} objectSelectedKey={currentKey} /> : <></>
+          <FilesTreeView bucket={bucket} objectItems={objects} objectSelectedKey={currentKey} />
         )}
       </BrowserContext.Consumer>
     </>
