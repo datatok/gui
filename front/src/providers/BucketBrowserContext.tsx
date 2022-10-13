@@ -118,12 +118,17 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
       children: files
     }
 
+    const newObjects = BrowserUtils.mergeObjects(
+      fromPath,
+      state.objects,
+      R.indexBy(R.prop('path'), files)
+    )
+
     setState({
       ...state,
       objects: {
-        ...state.objects,
         [currentNode.path]: currentNode,
-        ...(R.indexBy(R.prop('path'), files))
+        ...newObjects
       },
       currentKey: fromPath,
       currentNode,

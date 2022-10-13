@@ -102,12 +102,15 @@ test('getHierarchy 2', () => {
   const rootNode = BrowserUtils.getHierarchy(objects)
 
   expect(rootNode).toEqual({
+    name: '',
     path: '',
     children: {
       Storage: {
+        name: 'Storage',
         path: 'Storage',
         children: {
           Drivers: {
+            name: 'Drivers',
             path: 'Storage/Drivers',
             children: {}
           }
@@ -116,4 +119,32 @@ test('getHierarchy 2', () => {
     }
   })
 
+})
+
+test('merge objects', () => {
+  const obj: GuiBrowserObject = {
+    name: '',
+    path: '',
+    prefix: '',
+    type: 'file'
+  }
+
+  const existingObjects: GuiObjects = {
+    'a/b/c.txt': obj,
+    'a/b/d.txt': obj,
+    'a/c/b.txt' : obj
+  }
+
+  const newObjects = {
+    'a/b/d.txt': obj,
+    'a/b/e.txt': obj
+  }
+
+  const res = BrowserUtils.mergeObjects('a/b', existingObjects, newObjects)
+
+  expect(res).toStrictEqual({
+    'a/c/b.txt' : obj,
+    'a/b/d.txt': obj,
+    'a/b/e.txt': obj
+  })
 })

@@ -83,6 +83,18 @@ const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
   return hierarchy(pathPars, 0, '', '')
 }
 
+const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: GuiObjects): GuiObjects => {
+
+  const isNotChild = (_: GuiBrowserObject, key: string) => {
+
+    return !key.startsWith(prefix);
+  }
+
+  const cleanObjects = R.pickBy(isNotChild, currentObjects); //=> {A: 3, B: 4}
+
+  return R.mergeLeft(cleanObjects, newObjects)
+}
+
 /**
  * Get all the hierarchy from objects collection.
  * Only "folder"
@@ -157,4 +169,9 @@ export const BrowserUtils = {
    * @param key 
    */
   getHierarchy: getHierarchy2,
+
+  /**
+   * Merge objects (remove not existing)
+   */
+  mergeObjects
 }
