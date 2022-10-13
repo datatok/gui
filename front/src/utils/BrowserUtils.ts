@@ -85,8 +85,11 @@ const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
 
 const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: GuiObjects): GuiObjects => {
 
-  const isNotChild = (_: GuiBrowserObject, key: string) => {
+  if (prefix !== '') {
+    prefix += '/'
+  }
 
+  const isNotChild = (_: GuiBrowserObject, key: string) => {
     return !key.startsWith(prefix);
   }
 

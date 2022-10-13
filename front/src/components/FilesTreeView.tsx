@@ -1,10 +1,11 @@
-import { EuiIcon, EuiTreeView } from '@elastic/eui';
+import { EuiIcon } from '@elastic/eui';
 import { Node } from '@elastic/eui/src/components/tree_view/tree_view';
-import React, { FC, useEffect, useRef } from 'react';
+import React, { FC, useEffect, useMemo, useRef } from 'react';
 import { Route, useRoutingNavigate } from 'services/routing';
 import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode, GuiObjects } from 'types';
 import { BrowserUtils } from 'utils/BrowserUtils';
 import * as R from 'ramda'
+import { EuiTreeView } from './MyEuiTreeView';
 
 interface FilesTreeViewProps {
   objectItems: GuiObjects 
@@ -18,7 +19,9 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
 
   const $treeView = useRef<EuiTreeView>()
 
-  const rootNode = BrowserUtils.getHierarchy(objectItems)
+  const rootNode = useMemo(() => BrowserUtils.getHierarchy(objectItems), [objectItems])
+
+  const pathParts = useMemo(() => ['', ...BrowserUtils.splitKeyPrefixes(objectSelectedKey)], [objectSelectedKey])
 
   /**
    * Recursive function to transform API file to UI node.
@@ -27,7 +30,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
     const r:Node = {
       id: node.path,
       label: node.name || 'root',
-      isExpanded: true,
+      isExpanded: R.indexOf(node.path, pathParts) !== -1,
       icon: <EuiIcon type="folderClosed" />,
       iconWhenExpanded: <EuiIcon type="folderOpen" />,
       callback: (): string => {
@@ -45,7 +48,10 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
     if (node.children) {
       return {
         ...r,
-        children: Object.values(node.children).map( (v: GuiBrowserObjectNode) => fileToTreeNode(v) )
+        children: 
+          Object.values(node.children)
+          .sort( (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+          .map( (v: GuiBrowserObjectNode) => fileToTreeNode(v) )
       }
     }
 
@@ -56,17 +62,14 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
     fileToTreeNode(rootNode)
   ]
 
-  React.useEffect(() => {
-      $treeView.current.setState({
-        openItems: ['']
-      })
-  }, [treeItems])
+  const openItems = pathParts
   
   return (
     <EuiTreeView items={treeItems} aria-label="files" 
       ref={$treeView}
+      openItems={openItems}
+      activeItem={objectSelectedKey}
       display="compressed"
-      expandByDefault
       showExpansionArrows
     />
   )

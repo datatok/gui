@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.euiTreeView__node--active {
+  background: #103148;
+  color: #36a2ef;
+}
