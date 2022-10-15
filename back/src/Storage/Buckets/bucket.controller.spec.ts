@@ -3,11 +3,14 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import configuration from '../../config/configuration';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
-import { StorageModule } from '../storage.module';
 import { StorageService } from '../storage.service';
 import { BucketController } from './bucket.controller';
 import { BucketsProviderService } from './storage.buckets.service';
 import {mockClient} from 'aws-sdk-client-mock';
+import { BrowseDto } from './dto/browse.dto';
+import { AuthModule } from '../../Security/auth/auth.module';
+import { UsersModule } from '../../Security/users/users.module';
+import * as R from 'ramda'
 
 describe('BucketController', () => {
   let controller: BucketController
@@ -17,9 +20,13 @@ describe('BucketController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [BucketController],
-      imports: [ConfigModule.forRoot({
-        load: [configuration],
-      })],
+      imports: [
+        ConfigModule.forRoot({
+          load: [configuration],
+        }),
+        AuthModule,
+        UsersModule,
+      ],
       providers: [
         BucketsProviderService,
         StorageService,
@@ -83,35 +90,34 @@ describe('BucketController', () => {
       "Prefix":""
    })
 
-    const res = await controller.browseRootBucket(storageService.getInstance({
-      name: 't'
-    }))
+   const rootQuery = new BrowseDto()
 
-    expect(res).toStrictEqual({
-      path: "/",
-      files: [
-        {
-          name: "Bucket/",
-          type: "folder",
-        },
-        {
-          name: "Security/",
-          type: "folder",
-        },
-        {
-          name: "app.controller.spec.ts",
-          type: "file",
-          editDate: undefined,
-          size: 617,
-        },
-        {
-          name: "app.controller.ts",
-          type: "file",
-          editDate: undefined,
-          size: 274,
-        },
-      ],
-    })
+   rootQuery.path = '/'
+
+    const res = await controller.browse(storageService.getInstance({
+      name: 't'
+    }), rootQuery)
+
+    const files = res.files.map(f => R.pick(['name', 'type'], f))
+
+    expect(files).toStrictEqual([
+      {
+        name: "Bucket",
+        type: "folder",
+      },
+      {
+        name: "Security",
+        type: "folder",
+      },
+      {
+        name: "app.controller.spec.ts",
+        type: "file",
+      },
+      {
+        name: "app.controller.ts",
+        type: "file",
+      },
+    ])
   })
 
   it('should browse nested objects', async () => {
@@ -137,15 +143,19 @@ describe('BucketController', () => {
       "Prefix":""
    })
 
-    const res = await controller.browseBucket(storageService.getInstance({
+   const pathQuery = new BrowseDto()
+
+   pathQuery.path = 'Nested'
+
+    const res = await controller.browse(storageService.getInstance({
       name: 't'
-    }), 'Nested')
+    }), pathQuery)
 
     expect(res).toStrictEqual({
-      path: "Nested",
+      prefix: "Nested/",
       files: [
         {
-          name: "Bucket/",
+          name: "Bucket",
           type: "folder",
         },
         {

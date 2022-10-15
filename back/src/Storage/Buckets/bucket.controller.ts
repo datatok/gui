@@ -10,10 +10,11 @@ import { GetStorageDriverPipe } from './get-storage-driver.pipe';
 import { BucketsProviderService } from './storage.buckets.service';
 import { CreateFolderDto } from './dto/create-folder.dto';
 import { DeleteKeysDto } from './dto/delete-keys.dto';
-import { JwtAuthGuard } from 'src/Security/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../Security/auth/jwt-auth.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadObjectsDto } from './dto/upload-objects.dto';
 import { BrowseDto } from './dto/browse.dto';
+import { EditKeyDTO } from './dto/edit-key.dto';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -46,7 +47,7 @@ export class BucketController {
   }
 
   @Get(':bucket/browse')
-  async browseRootBucket(
+  async browse(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Query(new ValidationPipe({
       transform: false,
@@ -79,6 +80,22 @@ export class BucketController {
     return await storage.deleteKeys(deleteKeys.keys)
   }
 
+  @Post(':bucket/key/move')
+  async renameKey(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Body() editKey: EditKeyDTO
+  ) {
+    return await storage.moveKey(editKey.sourceKey, editKey.targetKey)
+  }
+
+  @Post(':bucket/key/copy')
+  async copyKey(
+    @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Body() editKey: EditKeyDTO
+  ) {
+    return await storage.copyKey(editKey.sourceKey, editKey.targetKey)
+  }
+
   @Post(':bucket/upload')
   @UseInterceptors(FilesInterceptor('files'))
   async uploadObjects(
@@ -90,7 +107,7 @@ export class BucketController {
     if (files) {
       const files2:FileUpload[] = files.map(file => {
         return {
-          key: file.originalname,
+          key:  Buffer.from(file.originalname, 'latin1').toString('utf8'),
           contentType: file.mimetype,
           contentSize: file.size,
           buffer: file.buffer

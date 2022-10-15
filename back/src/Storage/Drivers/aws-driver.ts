@@ -1,4 +1,13 @@
-import { DeleteObjectsCommand, GetBucketAclCommand, GetBucketPolicyStatusCommand, ListObjectsV2Command, PutObjectCommand, S3Client, S3ClientConfig } from "@aws-sdk/client-s3"
+import { 
+  CopyObjectCommand, 
+  DeleteObjectsCommand, 
+  GetBucketAclCommand, 
+  GetBucketPolicyStatusCommand, 
+  ListObjectsV2Command, 
+  PutObjectCommand, 
+  S3Client, 
+  S3ClientConfig 
+} from "@aws-sdk/client-s3"
 import { StringUtils } from "../../utils/StringUtils"
 
 export class AWSStorageDriver {
@@ -159,6 +168,35 @@ export class AWSStorageDriver {
     }
   }
 
+  /**
+   * Copy then delete key.
+   */
+  public async moveKey(key: string, newKey: string) {
+    const copyOperation = await this.copyKey(key, newKey)
+    const deleteOperation = await this.deleteKeys([key])
+
+    return { copyOperation,  deleteOperation}
+  }
+
+  /**
+   * Copy key.
+   */
+  public async copyKey(key: string, newKey: string) {
+
+    // See https://github.com/aws/aws-sdk-js/issues/1949
+    const CopySource = encodeURI(`${this.bucket.name}/${key}`)
+
+    const copyCommand = new CopyObjectCommand({
+      Bucket: this.bucket.name,
+      CopySource,
+      Key: newKey,
+    })
+
+    const copyOperation = await this.client.send(copyCommand)
+
+    return { copyOperation }
+  }
+
   public async deleteKeys(keys: string[]): Promise<any[]> {
     
     function spliceIntoChunks(arr: any[], chunkSize: number) {
@@ -222,15 +260,27 @@ export class AWSStorageDriver {
     return await Promise.all(promises)
   }
 
+  public async putObject(key: string, body: any) {
+    return this.client.send(new PutObjectCommand({
+      Bucket: this.bucket.name,
+      Key: key,
+      Body: body
+    }));
+  }
+
   public getClient() {
     return this.client
   }
 
   protected removePrefix(str: string, prefix: string): string {
-    if (prefix === '/') {
+    if (prefix[0] === '/') {
       return StringUtils.trim(str, '/')
     }
-    console.log(StringUtils.trim(str.substring(prefix.length), '/'))
-    return StringUtils.trim(str.substring(prefix.length), '/')
+
+    if (str.startsWith(prefix)) {
+      return StringUtils.trim(str.substring(prefix.length), '/')
+    }
+
+    return StringUtils.trim(str, '/')
   }
 }

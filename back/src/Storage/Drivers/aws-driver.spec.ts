@@ -22,6 +22,10 @@ const getLocalAWSDriver = () => {
 
 describe('AWSStorageService', () => {
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("listing objects", async () => {
     const driver = new AWSStorageDriver({
       name: "gui",
@@ -95,7 +99,7 @@ describe('AWSStorageService', () => {
     }])
   })
 
-  it('should list file', async() => {
+  /*it('should list file', async() => {
     const driver = getLocalAWSDriver()
     const fullPath = 'Security/7016930_Facture_NÂ°7016930 F 10220600015140_du_2022-06-29.pdf'
 
@@ -105,7 +109,7 @@ describe('AWSStorageService', () => {
         path: fullPath
       }
     ])
-  })
+  })*/
 
   it('remove prefix', async () => {
    mockClient(S3Client).on(ListObjectsV2Command).resolvesOnce({
@@ -206,5 +210,43 @@ describe('AWSStorageService', () => {
     res = await driver.listObjectsRecursive(rootPrefix)
 
     expect(res).toHaveLength(0)
+  })
+
+  it('should copy object', async() => {
+    const driver = getLocalAWSDriver()
+    const rootPrefix = `__root__${uuidv4()}`
+
+    await driver.putObject(`${rootPrefix}/hello.txt`, 'hello world')
+
+    await driver.copyKey(`${rootPrefix}/hello.txt`, `${rootPrefix}/hello_copy.txt`)
+
+    const objects = (await driver.listObjects(`${rootPrefix}/`)).map(({name}) => { return {name} })
+
+    expect(objects).toHaveLength(2)
+
+    expect(objects).toContainEqual({
+      name: 'hello.txt',
+    })
+
+    expect(objects).toContainEqual({
+      name: 'hello_copy.txt',
+    })
+  })
+
+  it('should move object', async() => {
+    const driver = getLocalAWSDriver()
+    const rootPrefix = `__root__${uuidv4()}`
+
+    await driver.putObject(`${rootPrefix}/hello.txt`, 'hello world')
+
+    await driver.moveKey(`${rootPrefix}/hello.txt`, `${rootPrefix}/hello_copy.txt`)
+
+    const objects = (await driver.listObjects(`${rootPrefix}/`)).map(({name}) => { return {name} })
+
+    expect(objects).toHaveLength(1)
+
+    expect(objects).toContainEqual({
+      name: 'hello_copy.txt',
+    })
   })
 })
