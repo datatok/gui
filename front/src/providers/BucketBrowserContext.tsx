@@ -5,11 +5,33 @@ import { BrowserUtils } from 'utils/BrowserUtils';
 import { GuiBucketUtils } from 'utils/GuiBucketUtils';
 import * as R from 'ramda'
 import { GuiBrowserObject, GuiBucket, GuiObjects } from "types";
+import { getRouteURL, Route } from 'services/routing';
+import { useSiteMetaContext } from './SiteMetaContext';
 
 interface LoadingStatus {
   status: string
   message?: string
   data?: any
+}
+
+/**
+ * Helpers
+ */
+const objectToBreadcrumbItem = (bucket: GuiBucket, file: GuiBrowserObject) => {
+  const href = getRouteURL(Route.BucketBrowse, {
+    bucket: bucket.id,
+    path: file.path
+  })
+
+  const text = (file.name === '' ? 'root' : file.name)
+
+  return {
+    text,
+    href,
+    /*onClick: onClick(() => {
+      navigate(href)
+    })*/
+  }
 }
 
 export interface IBrowserState {
@@ -75,7 +97,12 @@ interface BrowserStateProviderProps {
  */
 const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, children}) => {
 
+  /**
+   * Contexts
+   */
   const apiBucketBrowse = useAPI(BucketBrowseCommand)
+
+  const siteMetaContext = useSiteMetaContext()
 
   const browseFetchPointer = React.useRef({ status: '', cancelToken: null})
 
@@ -191,6 +218,44 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
       getObjectChildren(paramBrowsePath)
     }
   }, [state.bucket, routeParams])
+
+  /**
+   * Update breadcrumbs
+   */
+  React.useEffect( () => {
+    const breadcrumbs = [
+      {
+        text: 'Buckets',
+        href: '/bucket',
+       /* onClick: onClick(() => {
+          navigate('/bucket')
+        })*/
+      }
+    ]
+
+    if (state.bucket) {
+      breadcrumbs.push(objectToBreadcrumbItem(state.bucket, {
+        name: state.bucket.name,
+        prefix: "",
+        path: "",
+        type: "folder",
+      }))
+
+      if (state.currentKey) {
+        const keyParts = BrowserUtils.splitKeyPrefixes(state.currentKey)
+
+        keyParts.filter(key => key).forEach(key => {
+          breadcrumbs.push(objectToBreadcrumbItem(state.bucket, {
+            ...BrowserUtils.extractNamePrefix(key),
+            type: 'folder'
+          }))
+        })
+      }
+    }
+
+    siteMetaContext.setBreadcrumbs(breadcrumbs)
+
+  }, [state.bucket, state.currentKey])
 
   return (
     <BrowserContext.Provider value={{...state, ...actions}}>

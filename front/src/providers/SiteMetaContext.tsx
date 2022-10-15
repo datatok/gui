@@ -1,11 +1,18 @@
 import React from "react";
 
+type BreadcrumbItem = {
+  text: string
+  href?: string
+}
+
 interface ISiteMetaState {
   title: string
+  breadcrumbs: BreadcrumbItem[]
 }
 
 interface ISiteMetaContext extends ISiteMetaState {
   setTitle: (title: string) => void
+  setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => void
 }
 
 /**
@@ -13,7 +20,9 @@ interface ISiteMetaContext extends ISiteMetaState {
  */
 export const SiteContext = React.createContext<ISiteMetaContext>({
   title: '',
+  breadcrumbs: [],
   setTitle: (title: string) => {},
+  setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => {}
 });
 
 /**
@@ -45,10 +54,19 @@ export const useSetSiteMetaTitle = () => {
 export const SiteMetaContextProvider = ({children}) => {
 
   const [ state, setState] = React.useState<ISiteMetaState>({
-    title: "GUI"
+    title: "GUI",
+    breadcrumbs: []
   })
 
   const actions = {
+
+    setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => {
+      setState({
+        ...state,
+        breadcrumbs
+      })
+    },
+
     setTitle: (title: string) => {
      if (title !== state.title) {
         setState({

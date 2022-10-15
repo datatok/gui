@@ -11,7 +11,7 @@ import {
 import BucketLayout from 'views/Bucket/BucketLayout/BucketLayout';
 import LoginPage from 'views/Auth/Login/LoginPage/LoginPage';
 import NotFoundErrorPage from 'views/Error/ErrorPage/NotFoundErrorPage';
-import { EuiGlobalToastList, EuiPageTemplate, EuiProvider } from '@elastic/eui';
+import { EuiGlobalToastList, EuiHeader, EuiPageTemplate, EuiProvider } from '@elastic/eui';
 
 //import '@elastic/eui/dist/eui_theme_light.css';
 import '@elastic/eui/dist/eui_theme_dark.css';
@@ -30,6 +30,7 @@ import { NotificationProvider } from 'providers/NotificationContext';
 import UploadPage from 'views/Bucket/UploadPage/UploadPage';
 import Header from 'views/Bucket/Header/Header';
 import Sidebar from 'views/Bucket/Sidebar/Sidebar';
+import LayoutHeader from 'components/LayoutHeader';
 
 
 ReactDOM.render(
@@ -39,6 +40,9 @@ ReactDOM.render(
         <SiteMetaContextProvider>
           <AuthContextProvider>
             <BrowserRouter>
+
+              <LayoutHeader />
+
               <BucketContextProvider>
                 
                   <Routes>
@@ -53,7 +57,6 @@ ReactDOM.render(
 
                     <Route path='auth' element={
                       <EuiPageTemplate>
-                        <Header />
                         <EuiPageTemplate.Section>
                           <Outlet />
                         </EuiPageTemplate.Section>
@@ -69,7 +72,6 @@ ReactDOM.render(
                       <Route path='' element={
                         <ProtectedRoute>
                           <EuiPageTemplate>
-                            <Header />
                             <EuiPageTemplate.Section>
                               <HomePage />
                             </EuiPageTemplate.Section>
