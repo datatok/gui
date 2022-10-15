@@ -47,3 +47,12 @@ export type GuiBrowserObjectNode = {
  * Represent a store of objects
  */
 export type GuiObjects = {[key:string]: GuiBrowserObject}
+
+export enum ObjectItemAction {
+  Delete = 1,
+  Move,
+  Copy,
+  Download,
+  Share,
+  NewFolder
+}

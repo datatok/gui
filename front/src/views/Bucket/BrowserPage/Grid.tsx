@@ -4,18 +4,17 @@ import EuiCustomLink from 'components/EuiCustomLink';
 import moment from 'moment';
 import React, { FC, useRef, useState } from 'react';
 import { Route } from 'services/routing';
-import { GuiBrowserObject, GuiBucket } from 'types';
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types';
 import { StringUtils } from 'utils/StringUtils';
 
 interface GridProps {
   bucket: GuiBucket
   listObjects: GuiBrowserObject[]
-  onDeleteItem: (item:GuiBrowserObject) => void
-  onEditRenameItem: (item:GuiBrowserObject) => void
+  onItemAction: (action: ObjectItemAction, item:GuiBrowserObject) => void
   onSelectionChange: (items:GuiBrowserObject[]) => void
 }
 
-const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChange, onEditRenameItem}) => {
+const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChange}) => {
 
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
@@ -34,13 +33,6 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
     step: "start",
     message: ""
   })
-
-  const onRefreshingWorkflowChange = (step: string, message: string) => {
-    setRefreshBrowseFilesWorkflow({
-      step,
-      message
-    })
-  }
 
   const resolveIcon = ({name, type}) => {
 
@@ -85,6 +77,18 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
       name: 'Actions',
       actions : [
         {
+          name: 'Download',
+          description: 'Download file',
+          icon: 'download',
+          color: 'primary',
+          type: 'icon',
+          isPrimary: true,
+          onClick: (item:GuiBrowserObject) => {
+            onItemAction(ObjectItemAction.Download, item)
+          },
+          'data-test-subj': 'action-delete',
+        },
+        {
           name: 'Remove',
           description: 'Remove file',
           icon: 'trash',
@@ -92,20 +96,31 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onDeleteItem, onSelectionChan
           type: 'icon',
           isPrimary: true,
           onClick: (item:GuiBrowserObject) => {
-            onDeleteItem(item)
+            onItemAction(ObjectItemAction.Delete, item)
           },
           'data-test-subj': 'action-delete',
         },
         {
-          name: 'Edit',
+          name: 'Move',
           isPrimary: true,
           description: 'Edit (rename, meta)',
           icon: 'pencil',
           type: 'icon',
           onClick: (item:GuiBrowserObject) => {
-            onEditRenameItem(item)
+            onItemAction(ObjectItemAction.Move, item)
           },
           'data-test-subj': 'action-edit',
+        },
+        {
+          name: 'Copy',
+          isPrimary: true,
+          description: 'Full copy',
+          icon: 'copy',
+          type: 'icon',
+          onClick: (item:GuiBrowserObject) => {
+            onItemAction(ObjectItemAction.Copy, item)
+          },
+          'data-test-subj': 'action-copy',
         },
       ]
     },

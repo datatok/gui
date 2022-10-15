@@ -1,19 +1,17 @@
 import { EuiSpacer } from '@elastic/eui';
-import React, { FC, useEffect, useState } from 'react';
-import { GuiBrowserObject, GuiBucket } from 'types';
-import DeleteConfirmModal from './DeleteConfirmModal';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types';
+import DeleteConfirmModal from './modals/DeleteConfirmModal';
 import Grid from './Grid';
-import RenameModal from './RenameModal';
+import RenameModal from './modals/MoveModal';
 import TopBar from './TopBar';
-import NewFolderModal from './NewFolderModal';
-import DeleteObjectCommand from 'services/api/commands/DeleteObjectCommand';
-import { CreateFolderCommand, useAPI } from 'services/api';
+import NewFolderModal from './modals/NewFolderModal';
 import { BrowserUtils } from 'utils/BrowserUtils';
-import { StringUtils } from 'utils/StringUtils';
 import { useSetSiteMetaTitle } from 'providers/SiteMetaContext';
 import { useBrowserContext } from 'providers/BucketBrowserContext';
 import { useBucketContext } from 'providers/BucketContext';
-import { useNotificationContext } from 'providers/NotificationContext';
+import { If, Then } from 'react-if';
+import CopyModal from './modals/CopyModal';
 
 let selectionFromSingle = false
 
@@ -24,9 +22,6 @@ const BrowserPage: FC = () => {
    */
   const setSiteTitle = useSetSiteMetaTitle()
   
-  const apiCreateFolder = useAPI(CreateFolderCommand)
-  const apiDeleteObject = useAPI(DeleteObjectCommand)
-
   const { 
     refresh: browserRefreshObjects,
     currentKey: browserCurrentKey,
@@ -37,39 +32,87 @@ const BrowserPage: FC = () => {
     current: selectedBucket
   } = useBucketContext()
 
-  const {
-    addSiteToast
-  } = useNotificationContext()
+  enum ModalType {
+    None = 1,
+    Delete,
+    Move,
+    Copy,
+    NewFolder,
+  }
 
   const browserSelectedObjectChildren = BrowserUtils.getObjectChildren(browserObjects, browserCurrentKey)
 
   /**
    * State
    */
-  const [currentModal, setCurrentModal] = useState("");
+  const [currentModal, setCurrentModal] = useState(ModalType.None);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [deleteAPIWorkflow, setDeleteAPIWorkflow] = useState({
-    step: "",
-    message: ""
-  })
-
+  
   useEffect(() => {
     setSiteTitle("Browse")
   }, [])
+
+  const getModal = useCallback( (modal: ModalType) => {
+    switch (modal) {
+      case ModalType.Delete:
+        return (
+          <DeleteConfirmModal
+            key={"delete-modal"}
+            bucket={selectedBucket}
+            selectedItems={selectedItems}
+            onClose={closeModal}
+          />
+        )
+      case ModalType.Move:
+        return (
+          <RenameModal
+            key={"rename-modal"}
+            bucket={selectedBucket}
+            selectedItem={selectedItems[0]}
+            onClose={closeModal} 
+          />
+        )
+      case ModalType.Copy:
+        return (
+          <CopyModal
+            key={"copy-modal"}
+            bucket={selectedBucket}
+            selectedItem={selectedItems[0]}
+            onClose={closeModal} 
+          />
+        )
+      case ModalType.NewFolder:
+        return (
+          <NewFolderModal
+            key={"new-folder-modal"}
+            bucket={selectedBucket}
+            targetKey={browserCurrentKey}
+            onClose={closeModal} 
+          />
+        )
+    }
+  }, [selectedBucket, browserCurrentKey, selectedItems])
 
   if (typeof selectedBucket === 'undefined' || selectedBucket === null) {
     return <></>
   }
 
-  const onDeleteItemAskConfirmation = (file: GuiBrowserObject) => {
-    setSelectedItems([file])
-    setCurrentModal("delete-confirm")
-    selectionFromSingle = true
-  }
+  const onItemAction = (action: ObjectItemAction, item?: GuiBrowserObject) => {
+    const actionToModal = {
+      [ObjectItemAction.Delete]: ModalType.Delete,
+      [ObjectItemAction.Copy]: ModalType.Copy,
+      [ObjectItemAction.Download]: ModalType.Delete,
+      [ObjectItemAction.NewFolder]: ModalType.NewFolder,
+      [ObjectItemAction.Move]: ModalType.Move,
+      [ObjectItemAction.Share]: ModalType.Delete,
+    }
+    
+    setCurrentModal(actionToModal[action])
 
-  const onEditRenameItemAsk = (file: GuiBrowserObject) => {
-    setSelectedItems([file])
-    setCurrentModal("edit-rename")
+    if (item) {
+      setSelectedItems([item])
+      selectionFromSingle = true
+    }
   }
 
   const onSelectionChange = (files: GuiBrowserObject[]) => {
@@ -77,104 +120,14 @@ const BrowserPage: FC = () => {
     setSelectedItems(files)
   }
 
-  const onNewFolderClick = (file?: GuiBrowserObject) => {
-    setCurrentModal("new-folder")
-  }
-
-  /** 
-   * Delete stuff 
-   */
-  let modal;
-
-  const onShowModal = (modal:string) => {
-    setCurrentModal(modal)
-  }
-
   const closeModal = () => {
-    setCurrentModal("")
+    setCurrentModal(ModalType.None)
 
     if (selectionFromSingle) {
       setSelectedItems([])
     }
-  }
 
-  const doCreateFolder = (formData: any) => {
-    setDeleteAPIWorkflow({ step: 'doing', message: ''})
-
-    apiCreateFolder(selectedBucket, StringUtils.pathJoin(formData.path, formData.name))
-      .then(response => {
-        setDeleteAPIWorkflow({ step: 'done', message: ''})
-        closeModal()
-        browserRefreshObjects()
-      })
-  }
-
-  const doDeleteSelection = () => {
-    setDeleteAPIWorkflow({ step: 'doing', message: ''})
-
-    apiDeleteObject(selectedBucket, selectedItems)
-      .then(response => {
-        
-        setDeleteAPIWorkflow({ step: 'done', message: ''})
-        
-        setSelectedItems([])
-        
-        addSiteToast({
-          title: 'Success',
-          color: 'success',
-          iconType: 'help',
-          text: "File deleted!",
-        })
-
-        browserRefreshObjects()
-      })
-      .catch(err => {
-        setDeleteAPIWorkflow({ step: 'error', message: err.message})
-        addSiteToast({
-            title: 'Oops, there was an error',
-            color: 'danger',
-            iconType: 'help',
-            text: `${err.message}`,
-        })
-      })
-
-    closeModal()
-  }
-
-  if (currentModal !== "") {
-    switch (currentModal) {
-      case "delete-confirm":
-        modal = (
-          <DeleteConfirmModal
-            key={"delete-modal"}
-            selectedItems={selectedItems}
-            onConfirm={doDeleteSelection}
-            onCancel={closeModal}
-          />
-        );
-        break
-      case "edit-rename":
-        modal = (
-          <RenameModal
-            key={"rename-modal"}
-            selectedItem={selectedItems[0]}
-            onConfirm={doDeleteSelection}
-            onCancel={closeModal} 
-          />
-        );
-        break
-      case "new-folder":
-        modal = (
-          <NewFolderModal
-            key={"new-folder-modal"}
-            bucket={selectedBucket}
-            targetKey={browserCurrentKey}
-            onConfirm={doCreateFolder}
-            onCancel={closeModal} 
-          />
-        )
-    }
-    
+    browserRefreshObjects()
   }
 
   return (
@@ -182,7 +135,7 @@ const BrowserPage: FC = () => {
       <TopBar 
         bucket={selectedBucket}
         currentKey={browserCurrentKey}
-        onShowModal={onShowModal}
+        onItemAction={onItemAction}
         onRefresh={browserRefreshObjects}
         selectedItems={selectedItems}
       />
@@ -192,12 +145,15 @@ const BrowserPage: FC = () => {
       <Grid
         bucket={selectedBucket}
         listObjects={browserSelectedObjectChildren}
-        onDeleteItem={onDeleteItemAskConfirmation} 
-        onSelectionChange={onSelectionChange} 
-        onEditRenameItem={onEditRenameItemAsk}
+        onSelectionChange={onSelectionChange}
+        onItemAction={onItemAction}
       />
 
-      {modal}
+      <If condition={currentModal !== ModalType.None}>
+        <Then>
+          {getModal(currentModal)}
+        </Then>
+      </If>
     </>
   );
 };

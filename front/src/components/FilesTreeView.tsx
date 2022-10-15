@@ -50,6 +50,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
         ...r,
         children: 
           Object.values(node.children)
+          .filter(c => c.name)
           .sort( (a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
           .map( (v: GuiBrowserObjectNode) => fileToTreeNode(v) )
       }
@@ -58,9 +59,9 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
     return r
   }
 
-  const treeItems:Node[] = [
+  const treeItems:Node[] = useMemo( () => [
     fileToTreeNode(rootNode)
-  ]
+  ], [rootNode])
 
   const openItems = pathParts
   

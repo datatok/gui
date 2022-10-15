@@ -2,17 +2,17 @@ import { EuiButton, EuiFlexGroup, EuiFlexItem } from "@elastic/eui"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
 import { getRouteURL, onClick, Route } from "services/routing"
-import { GuiBrowserObject, GuiBucket } from "types"
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from "types"
 
 interface TopBarProps {
   bucket: GuiBucket
   currentKey: string
   selectedItems: GuiBrowserObject[]
-  onShowModal: (modal: string) => void
+  onItemAction: (action: ObjectItemAction) => void
   onRefresh: () => void
 }
 
-const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, onRefresh, selectedItems}) => {
+const TopBar: FC<TopBarProps> = ({bucket, currentKey, onItemAction, onRefresh, selectedItems}) => {
   const navigate = useNavigate();
 
   const getSideUploadButton = () => {
@@ -27,7 +27,7 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, onRefresh, se
   }
 
   const getSideNewFolderButton = () => {  
-    return <EuiButton iconType={'plus'} onClick={() => onShowModal("new-folder")} key={'new-dir'} >New folder</EuiButton>
+    return <EuiButton iconType={'plus'} onClick={() => onItemAction(ObjectItemAction.NewFolder)} key={'new-dir'} >New folder</EuiButton>
   }
 
   const refreshButton = () => {
@@ -55,7 +55,7 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onShowModal, onRefresh, se
               color="danger"
               iconType="trash"
               disabled={selectedItems.length === 0}
-              onClick={() => onShowModal("delete-confirm")}
+              onClick={() => onItemAction(ObjectItemAction.Delete)}
             >
               Delete {selectedItems.length} Items
             </EuiButton>

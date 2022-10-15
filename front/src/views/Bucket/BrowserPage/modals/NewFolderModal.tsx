@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -14,20 +14,27 @@ import {
 } from '@elastic/eui';
 
 import { GuiBrowserObject, GuiBucket } from 'types';
+import { CreateFolderCommand, useAPI } from 'services/api';
+import { StringUtils } from 'utils/StringUtils';
 
 interface NewFolderModalProps {
   bucket: GuiBucket
   targetKey: string
-  onConfirm: (data: any) => void
-  onCancel: () => void
+  onClose: () => void
 }
 
 const NewFolderModal: FC<NewFolderModalProps> = ({
   bucket,
   targetKey,
-  onConfirm,
-  onCancel
+  onClose
 }) => {
+
+  const apiCreateFolder = useAPI(CreateFolderCommand)
+
+  const [processStatus, setProcessStatus] = useState({
+    step: '',
+    message: ''
+  })
 
   const [formData, setFormData] = useState({
     bucket: bucket.name,
@@ -49,8 +56,18 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
     });
   }
 
+  const doCreateFolder = useCallback(async () => {
+    setProcessStatus({ step: 'doing', message: ''})
+
+    const response = await apiCreateFolder(bucket, StringUtils.pathJoin(formData.path, formData.name))
+
+    setProcessStatus({ step: 'success', message: ''})
+    
+    onClose()
+  }, [formData])
+
   const formSample = (
-    <EuiForm id={modalFormId} component="form" onSubmit={() => onConfirm(formData)}>
+    <EuiForm id={modalFormId} component="form" onSubmit={doCreateFolder}>
 
       <EuiFormRow label="Bucket">
         <EuiFieldText name="bucket" value={formData.bucket} onChange={handleInputChange} />
@@ -70,7 +87,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
   return (
     <EuiModal
       title="Do this destructive thing"
-      onClose={onCancel}
+      onClose={onClose}
     >
      <EuiModalHeader>
         <EuiModalHeaderTitle>
@@ -81,9 +98,11 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
       <EuiModalBody>{formSample}</EuiModalBody>
 
       <EuiModalFooter>
-        <EuiButtonEmpty onClick={onCancel}>Cancel</EuiButtonEmpty>
+        <EuiButtonEmpty onClick={onClose}>Cancel</EuiButtonEmpty>
 
-        <EuiButton type="submit" fill onClick={() => onConfirm(formData)}>
+        <EuiButton type="submit" fill 
+          onClick={doCreateFolder}
+          isLoading={processStatus.step === 'doing'}>
           Save
         </EuiButton>
       </EuiModalFooter>
