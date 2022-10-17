@@ -1,18 +1,36 @@
 import { GuiBucket } from "types"
 import { ApiCall } from '..'
 
-interface APIResponse {
-  buckets: GuiBucket[]
+interface APIBucket {
+  endpoint: {
+    hostname: string
+    protocol: string
+    port: number
+  }
+  
+  id: string
+  name: string
+  region: string
 }
 
-interface CommandResponse {
-  buckets: GuiBucket[]
+interface APIResponse {
+  buckets: APIBucket[]
 }
 
 export default (apiCall: ApiCall) => {
-  return async (): Promise<CommandResponse> => {
+  return async (): Promise<GuiBucket[]> => {
     const pathURL = `/bucket`
     
-    return await apiCall<APIResponse>('get', pathURL)
+    const response = await apiCall<APIResponse>('get', pathURL)
+
+    return response.buckets.map(({
+      id, name, endpoint
+    }): GuiBucket => {
+      return {
+        id,
+        name,
+        host: endpoint?.hostname
+      }
+    })
   }
 }

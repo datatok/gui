@@ -2,6 +2,7 @@ import BucketSelect from 'components/BucketSelect';
 import FilesTreeView from 'components/FilesTreeView';
 import { BucketContext } from 'providers/BucketContext';
 import { BrowserContext } from 'providers/BucketBrowserContext'
+import { EuiSpacer } from '@elastic/eui';
 
 const Sidebar = () => {
   return (
@@ -11,6 +12,7 @@ const Sidebar = () => {
           <BucketSelect bucket={bucket} buckets={buckets} />
         )}
       </BucketContext.Consumer>
+      <EuiSpacer />
       <BrowserContext.Consumer>
         {({ bucket, objects, currentKey }) => (
           <FilesTreeView bucket={bucket} objectItems={objects} objectSelectedKey={currentKey} />

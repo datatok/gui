@@ -105,18 +105,24 @@ const BucketContextProvider: FC = ({
   // When apiAccessToken changes -> get buckets list
   //
   React.useEffect(() => {
+
+    const fetchData = async () => {
+      const buckets = await apiGetBuckets()
+
+      setBuckets(buckets)
+    }
+
     if (fetchBucketsStatus.current === '') {
 
       fetchBucketsStatus.current = 'progress'
 
-      apiGetBuckets()
-        .then(({ buckets }) => {
-          setBuckets(buckets)
-        })
-        .catch(({response}) => {
-          if (response.status === 401) {
+      fetchData()
+        .catch(err => {
+          if (err?.response?.status === 401) {
             routeNavigate('/auth')
           }
+
+          console.log(err)
         })
     }
   }, [state.buckets])

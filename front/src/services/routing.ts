@@ -70,16 +70,19 @@ export const onClick = (targetFct) => (event) => {
  targetFct();
 }
 
-export const useNavigateProps = (to: Route, toArgs) => {
+export const useNavigateProps = () => {
   const navigate = useRoutingNavigate();
-  const fullURL = getRouteURL(to, toArgs)
-  const toClick = onClick(() => {
-    navigate(to, toArgs);
-  })
 
-  // Generate the correct link href (with basename accounted for)
-  const href = useHref(fullURL);
+  return (to: Route, toArgs) => {
+    const fullURL = getRouteURL(to, toArgs)
+    const toClick = onClick(() => {
+      navigate(to, toArgs);
+    })
 
-  return { href, onClick: toClick };
+    // Generate the correct link href (with basename accounted for)
+    const href = fullURL;
+
+    return { href, onClick: toClick }
+  }
 }
 
