@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('security', 'auth')
-@Controller('security/auth')
+@Controller('api/security/auth')
 export class SecurityAuthController {
   constructor(
     private configService: ConfigService,

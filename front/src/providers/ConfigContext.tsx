@@ -36,7 +36,7 @@ export const useConfigContext = (): IConfigContext => {
 export const ConfigContextProvider = ({children}) => {
 
   const [ state, setState] = React.useState<IConfigState>({
-    apiBaseURL: "http://localhost:3001"
+    apiBaseURL: "/api"
   })
 
   const actions = {

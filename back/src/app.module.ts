@@ -9,6 +9,8 @@ import { AllExceptionsFilter } from './filters/catch-all.filter';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './Security/auth/auth.module';
 import { UsersModule } from './Security/users/users.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import path from 'path';
 
 
 @Module({
@@ -23,6 +25,12 @@ import { UsersModule } from './Security/users/users.module';
       ttl: 10,
       limit: 500,
     }),*/
+    ServeStaticModule.forRoot({
+      rootPath: process.env.GUI_PUBLIC_DIR || (path.join(__dirname, 'public')),
+      serveStaticOptions: {
+        index: false,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [

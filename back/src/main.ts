@@ -11,6 +11,6 @@ async function bootstrap() {
   });
   //app.use(csurf());
 
-  await app.listen(3001);
+  await app.listen(process.env.GUI_PORT || 3001);
 }
 bootstrap();

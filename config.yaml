@@ -1,0 +1,41 @@
+security:
+  auth:
+    anonymous:
+      enabled: true
+
+  rbac:
+    enabled: true
+    items:
+    - entity: anonymous
+      rules:
+      - list
+      - read
+      - write
+      - delete
+      buckets:
+      - host: "*"
+        name: "*"
+
+storage:
+  auth:
+  - name: root
+    basic:
+      accessKey: root
+      secretKey: rootroot
+
+  endpoints:
+  - name: minio
+    host: minio
+    port: 9000
+    protocol: http
+
+  buckets:
+  - endpoint: minio
+    region: us-east-1
+    name: gui
+    auth: root
+
+  - endpoint: minio
+    region: us-east-1
+    name: test1
+    auth: root

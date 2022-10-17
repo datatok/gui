@@ -18,7 +18,7 @@ import { EditKeyDTO } from './dto/edit-key.dto';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
-@Controller('bucket')
+@Controller('api/bucket')
 @UseGuards(JwtAuthGuard)
 export class BucketController {
   constructor(
