@@ -34,3 +34,33 @@ jobs:
 
     - run: npm run build
       working-directory: front
+
+  back:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: back/package-lock.json
+
+    - run: npm ci
+      working-directory: back
+
+    - run: npm test
+      working-directory: back
+
+    - run: npm run build
+      working-directory: back
+
+      

@@ -1,18 +1,17 @@
-import { EuiPageTemplate } from '@elastic/eui';
-import { useSiteMetaContext } from 'providers/SiteMetaContext';
+import { EuiPageTemplate } from '@elastic/eui'
+import { useSiteMetaContext } from 'providers/SiteMetaContext'
 
-const Header = () => {
-
+function Header () {
   /**
    * Contexts
    */
   const siteMetaContext = useSiteMetaContext()
 
   return (
-    <EuiPageTemplate.Header 
+    <EuiPageTemplate.Header
       breadcrumbs={siteMetaContext.breadcrumbs}
     />
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

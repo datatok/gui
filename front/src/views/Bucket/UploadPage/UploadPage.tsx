@@ -1,18 +1,14 @@
-import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer, EuiTable } from '@elastic/eui';
-import { useBrowserContext } from 'providers/BucketBrowserContext';
-import { useNotificationContext } from 'providers/NotificationContext';
-import { useSetSiteMetaTitle } from 'providers/SiteMetaContext';
-import React, { FC } from 'react';
-import { useCallback } from 'react';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import { If, Then } from 'react-if';
-import { useAPI } from 'services/api';
-import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand';
-import { StringUtils } from 'utils/StringUtils';
+import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer, EuiTable } from '@elastic/eui'
+import { useBrowserContext } from 'providers/BucketBrowserContext'
+import { useNotificationContext } from 'providers/NotificationContext'
+import { useSetSiteMetaTitle } from 'providers/SiteMetaContext'
+import React, { FC, useCallback, useState, useEffect } from 'react'
+import { If, Then } from 'react-if'
+import { useAPI } from 'services/api'
+import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand'
+import { StringUtils } from 'utils/StringUtils'
 
 const UploadPage: FC = () => {
-
   /**
    * Contexts
    */
@@ -26,7 +22,7 @@ const UploadPage: FC = () => {
   } = useBrowserContext()
 
   useEffect(() => {
-    setSiteTitle("Upload")
+    setSiteTitle('Upload')
   }, [])
 
   const [formData, setFormData] = useState({
@@ -41,21 +37,21 @@ const UploadPage: FC = () => {
   }
 
   const handleInputChange = (event) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
+
     setFormData({
       ...formData,
       [name]: value
-    });
+    })
   }
 
-  const handleFilesChange = (files:FileList) => {
+  const handleFilesChange = (files: FileList) => {
     setFormData({
       ...formData,
       files: Array.from(files)
-    });
+    })
   }
 
   const submitForm = async () => {
@@ -68,10 +64,10 @@ const UploadPage: FC = () => {
     } else {
       const res = await uploadObjects(selectedBucket, formData.path, formData.files)
 
-     /* navigate(Route.BucketBrowse, {
+      /* navigate(Route.BucketBrowse, {
         bucket: selectedBucket.id,
         path: targetKey
-      })*/
+      }) */
 
       addSiteToast({
         color: 'success',
@@ -135,16 +131,16 @@ const UploadPage: FC = () => {
               <EuiBasicTable
                 items={formData.files}
                 columns={[
-                  {field: 'name', name: 'Name'},
-                  {field: 'size', name: 'size', render: (size: number) => StringUtils.formatBytes(size, 2)}
+                  { field: 'name', name: 'Name' },
+                  { field: 'size', name: 'size', render: (size: number) => StringUtils.formatBytes(size, 2) }
                 ]}
               />
           </Then>
         </If>
-        
+
       </EuiForm>
     </>
-  );
-};
+  )
+}
 
-export default UploadPage;
+export default UploadPage

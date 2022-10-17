@@ -1,18 +1,18 @@
-import path from "path"
-import { GuiBrowserObject, GuiObjects } from "types"
-import { BrowserUtils } from "./BrowserUtils"
+import path from 'path'
+import { GuiBrowserObject, GuiObjects } from 'types'
+import { BrowserUtils } from './BrowserUtils'
 
 const createItem = (name: string, prefix: string): GuiBrowserObject => {
-  return {name, path : path.join(prefix, name), prefix, type : "folder" }
+  return { name, path: path.join(prefix, name), prefix, type: 'folder' }
 }
 
-test("extractNamePrefix", () => {
+test('extractNamePrefix', () => {
   const pairs = [{
-    t: "/toto/child.txt",
-    r: { name: 'child.txt', prefix: 'toto', path: 'toto/child.txt'}
+    t: '/toto/child.txt',
+    r: { name: 'child.txt', prefix: 'toto', path: 'toto/child.txt' }
   }, {
-    t: "toto/toto/child.txt",
-    r: { name: 'child.txt', prefix: 'toto/toto', path: 'toto/toto/child.txt'}
+    t: 'toto/toto/child.txt',
+    r: { name: 'child.txt', prefix: 'toto/toto', path: 'toto/toto/child.txt' }
   }]
 
   for (const pair of pairs) {
@@ -29,34 +29,34 @@ test('splitKeyPrefixes', () => {
 
 test('getObjectChildren', () => {
   const objects: GuiObjects = {
-    'gp' : {
+    gp: {
       ...BrowserUtils.extractNamePrefix('gp'),
       type: 'folder'
     },
-    'gp/papa' : {
+    'gp/papa': {
       ...BrowserUtils.extractNamePrefix('gp/papa'),
       type: 'folder'
     },
-    'gp/papa/girl.txt' : {
+    'gp/papa/girl.txt': {
       ...BrowserUtils.extractNamePrefix('gp/papa/girl.txt'),
       type: 'file'
     },
-    'gp/papa/son.txt' : {
+    'gp/papa/son.txt': {
       ...BrowserUtils.extractNamePrefix('gp/papa/son.txt'),
       type: 'file'
     },
-    'gp/papa/girl/girl.txt' : {
+    'gp/papa/girl/girl.txt': {
       ...BrowserUtils.extractNamePrefix('gp/papa/girl/girl.txt'),
       type: 'file'
     },
-    'gp/tonton/girl' : {
+    'gp/tonton/girl': {
       ...BrowserUtils.extractNamePrefix('gp/tonton/girl'),
       type: 'folder'
     },
-    'gp/papa2/girl' : {
+    'gp/papa2/girl': {
       ...BrowserUtils.extractNamePrefix('gp/papa2/girl'),
       type: 'folder'
-    },
+    }
   }
 
   let children = BrowserUtils.getObjectChildren(objects, 'gp/papa')
@@ -76,27 +76,27 @@ test('getObjectChildren', () => {
 })
 
 test('getHierarchy 2', () => {
-  const objects:GuiObjects = {
-    "Storage": {
-        "path": "Storage",
-        "name": "Storage",
-        "prefix": "",
-        "type": "folder",
+  const objects: GuiObjects = {
+    Storage: {
+      path: 'Storage',
+      name: 'Storage',
+      prefix: '',
+      type: 'folder'
     },
-    "Storage/Drivers": {
-        "name": "Drivers",
-        "type": "folder",
-        "prefix": "Storage",
-        "path": "Storage/Drivers"
+    'Storage/Drivers': {
+      name: 'Drivers',
+      type: 'folder',
+      prefix: 'Storage',
+      path: 'Storage/Drivers'
     },
-    "Storage/storage.service.spec.ts": {
-        "name": "storage.service.spec.ts",
-        "type": "file",
-        "size": 866,
-        "editDate": "2022-10-02T00:55:35.734Z",
-        "prefix": "Storage",
-        "path": "Storage/storage.service.spec.ts"
-    },
+    'Storage/storage.service.spec.ts': {
+      name: 'storage.service.spec.ts',
+      type: 'file',
+      size: 866,
+      editDate: '2022-10-02T00:55:35.734Z',
+      prefix: 'Storage',
+      path: 'Storage/storage.service.spec.ts'
+    }
   }
 
   const rootNode = BrowserUtils.getHierarchy(objects)
@@ -118,7 +118,6 @@ test('getHierarchy 2', () => {
       }
     }
   })
-
 })
 
 test('merge objects', () => {
@@ -132,7 +131,7 @@ test('merge objects', () => {
   const existingObjects: GuiObjects = {
     'a/b/c.txt': obj,
     'a/b/d.txt': obj,
-    'a/c/b.txt' : obj
+    'a/c/b.txt': obj
   }
 
   const newObjects = {
@@ -143,7 +142,7 @@ test('merge objects', () => {
   const res = BrowserUtils.mergeObjects('a/b', existingObjects, newObjects)
 
   expect(res).toStrictEqual({
-    'a/c/b.txt' : obj,
+    'a/c/b.txt': obj,
     'a/b/d.txt': obj,
     'a/b/e.txt': obj
   })

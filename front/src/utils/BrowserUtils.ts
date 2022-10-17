@@ -1,26 +1,26 @@
-import { string } from "prop-types"
-import { GuiBrowserObject, GuiBrowserObjectNode, GuiObjects } from "types"
+import { string } from 'prop-types'
+import { GuiBrowserObject, GuiBrowserObjectNode, GuiObjects } from 'types'
 import * as R from 'ramda'
-import { StringUtils } from "./StringUtils"
+import { StringUtils } from './StringUtils'
 
 /**
- * @param path 
- * @returns 
+ * @param path
+ * @returns
  */
 const extractNamePrefix = (path: string): { name: string, prefix: string, path: string } => {
   if (path === '') {
-    return {path: '', name: '', prefix: ''}
+    return { path: '', name: '', prefix: '' }
   }
 
   const fixPath = StringUtils.trim(path, '/')
   const pos = fixPath.lastIndexOf('/') + 1
 
-  return { path: fixPath, name: fixPath.substring(pos), prefix: fixPath.substring(0, pos - 1)} 
+  return { path: fixPath, name: fixPath.substring(pos), prefix: fixPath.substring(0, pos - 1) }
 }
 
 const deepPick = (properties: string[], currentNode: any): any => {
   const ret = R.pick(properties, currentNode)
-  
+
   if (currentNode.children) {
     ret.children = ret.children.map(c => deepPick(properties, c))
   }
@@ -33,7 +33,7 @@ const splitKeyPrefixes = (key: string): string[] => {
 
   key = StringUtils.trim(key, '/')
 
-  for (let pos = 0; pos !== -1; ) {
+  for (let pos = 0; pos !== -1;) {
     pos = key.indexOf('/', pos + 1)
 
     ret.push(pos === -1 ? key : key.substring(0, pos))
@@ -49,17 +49,17 @@ const getObjectChildren = (objects: GuiObjects, key: string): GuiBrowserObject[]
   const keySlash = key === '' ? '' : `${key}/`
   const keyLength = keySlash.length
 
-  return R.
-    toPairs(objects).
-    filter(([k, v]: [k:string, v:GuiBrowserObject]) => {
-      return k !== key 
-        && k.startsWith(keySlash) 
-        && k.indexOf('/', keyLength) === -1
-    }).
-    map(([k, v]) => v)
+  return R
+    .toPairs(objects)
+    .filter(([k, v]: [k:string, v:GuiBrowserObject]) => {
+      return k !== key &&
+        k.startsWith(keySlash) &&
+        !k.includes('/', keyLength)
+    })
+    .map(([k, v]) => v)
 }
 
-const hierarchy = (pathsParts: string[][], depth:number, path: string, name: string):GuiBrowserObjectNode => {
+const hierarchy = (pathsParts: string[][], depth: number, path: string, name: string): GuiBrowserObjectNode => {
   const lookup = {}
 
   pathsParts.forEach(p => {
@@ -67,14 +67,13 @@ const hierarchy = (pathsParts: string[][], depth:number, path: string, name: str
       lookup[p[depth]] = [...(lookup[p[depth]] || []), p]
     }
   })
-  
-  const m = (v:string[][], k:string) => hierarchy(v, depth + 1, path + (path ? '/' : '') + k, k)
+
+  const m = (v: string[][], k: string) => hierarchy(v, depth + 1, path + (path ? '/' : '') + k, k)
 
   return { name, path, children: R.mapObjIndexed(m, lookup) }
 }
 
 const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
-
   const isFolder = (v: GuiBrowserObject, k: string) => v.type === 'folder'
   const onlyFolders = R.pickBy(isFolder, objects)
 
@@ -84,16 +83,15 @@ const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
 }
 
 const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: GuiObjects): GuiObjects => {
-
   if (prefix !== '') {
     prefix += '/'
   }
 
   const isNotChild = (_: GuiBrowserObject, key: string) => {
-    return !key.startsWith(prefix);
+    return !key.startsWith(prefix)
   }
 
-  const cleanObjects = R.pickBy(isNotChild, currentObjects); //=> {A: 3, B: 4}
+  const cleanObjects = R.pickBy(isNotChild, currentObjects) //= > {A: 3, B: 4}
 
   return R.mergeLeft(cleanObjects, newObjects)
 }
@@ -103,7 +101,7 @@ const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: Gu
  * Only "folder"
  * @returns The root node
  */
-/*const getHierarchy = (objects: GuiObjects, key: string): GuiBrowserObjectNode => {
+/* const getHierarchy = (objects: GuiObjects, key: string): GuiBrowserObjectNode => {
   const rootNode:GuiBrowserObjectNode = {
     children: {},
     object: {
@@ -142,34 +140,34 @@ const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: Gu
   })
 
   return rootNode
-}*/
+} */
 
 export const BrowserUtils = {
-  
+
   extractNamePrefix,
 
   deepPick,
 
   /**
    * Return direct children
-   * @param objects 
-   * @param key 
-   * @returns 
+   * @param objects
+   * @param key
+   * @returns
    */
   getObjectChildren,
 
   /**
    * "/a/b/c.txt" => ["a, "a/b", "a/b/c.txt"]
-   * @param key 
-   * @returns 
+   * @param key
+   * @returns
    */
   splitKeyPrefixes,
 
   /**
    * Build a "children" hierarchy, with only "folder", and return the root node.
    * From all objects
-   * @param objects 
-   * @param key 
+   * @param objects
+   * @param key
    */
   getHierarchy: getHierarchy2,
 

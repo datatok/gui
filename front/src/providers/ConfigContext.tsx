@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 interface IConfigState {
   apiBaseURL: string
@@ -13,30 +13,29 @@ interface IConfigContext extends IConfigState {
  */
 export const ConfigContext = React.createContext<IConfigContext>({
   apiBaseURL: ''
-});
+})
 
 /**
  * Export helpers
  */
 export const useConfigContext = (): IConfigContext => {
   // get the context
-  const context = React.useContext(ConfigContext);
+  const context = React.useContext(ConfigContext)
 
   // if `undefined`, throw an error
   if (context === undefined) {
-    throw new Error("useConfigContext was used outside of its Provider");
+    throw new Error('useConfigContext was used outside of its Provider')
   }
 
-  return context;
+  return context
 }
 
 /**
  * Export context provider
  */
-export const ConfigContextProvider = ({children}) => {
-
-  const [ state, setState] = React.useState<IConfigState>({
-    apiBaseURL: "/api"
+export const ConfigContextProvider = ({ children }) => {
+  const [state, setState] = React.useState<IConfigState>({
+    apiBaseURL: '/api'
   })
 
   const actions = {
@@ -44,7 +43,7 @@ export const ConfigContextProvider = ({children}) => {
   }
 
   return (
-    <ConfigContext.Provider value={{...state, ...actions}}>
+    <ConfigContext.Provider value={{ ...state, ...actions }}>
       {children}
     </ConfigContext.Provider>
   )

@@ -1,54 +1,51 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react'
 import {
   EuiPageTemplate
-} from '@elastic/eui';
-import { useEffect } from 'react';
-import { Route, useRoutingNavigate } from 'services/routing';
-import { AxiosError } from 'axios';
-import APIWorkflowCallout from 'components/APIWorkflowCallout';
-import { useAPI } from 'services/api';
-import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand';
-import { useAuthContext } from 'providers/AuthContext';
+} from '@elastic/eui'
+import { Route, useRoutingNavigate } from 'services/routing'
+import { AxiosError } from 'axios'
+import APIWorkflowCallout from 'components/APIWorkflowCallout'
+import { useAPI } from 'services/api'
+import AuthLoginAnonymousCommand from 'services/api/commands/AuthLoginAnonymousCommand'
+import { useAuthContext } from 'providers/AuthContext'
 
 const AnonymousLoginPage: FC = () => {
-
   const navigate = useRoutingNavigate()
   const apiAuthLoginAnonymous = useAPI(AuthLoginAnonymousCommand)
   const { apiAccessToken, setApiAccessToken } = useAuthContext()
-  
+
   const [workflowStep, setWorkflowStep] = useState({
-    status: "start",
-    message: ""
+    status: 'start',
+    message: ''
   })
 
   useEffect(() => {
-    const fetchData = async() => {
+    const fetchData = async () => {
       setWorkflowStep({
-        status: "loading",
-        message: ""
+        status: 'loading',
+        message: ''
       })
 
       const { token } = await apiAuthLoginAnonymous()
-      
+
       setApiAccessToken(token)
 
       navigate(Route.Home)
     }
 
     fetchData()
-      .catch((error:AxiosError) => {
+      .catch((error: AxiosError) => {
         setWorkflowStep({
-          status: "error",
+          status: 'error',
           message: error.message
         })
       })
-
   }, [])
 
   const retry = () => {
     setWorkflowStep({
-      status: "start",
-      message: ""
+      status: 'start',
+      message: ''
     })
   }
 
@@ -59,14 +56,13 @@ const AnonymousLoginPage: FC = () => {
       layout="horizontal"
       body={
         <APIWorkflowCallout
-          status={workflowStep.status} 
-          message={workflowStep.message} 
+          status={workflowStep.status}
+          message={workflowStep.message}
           onRetry={retry}
         />
       }
     />
-    )
-
+  )
 }
 
 export default AnonymousLoginPage

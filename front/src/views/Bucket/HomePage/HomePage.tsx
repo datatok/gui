@@ -1,8 +1,8 @@
-import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPage, EuiPageTemplate, EuiSpacer, EuiText } from "@elastic/eui";
-import { useBucketContext } from "providers/BucketContext";
-import { FC, useMemo } from "react";
-import { Route, useNavigateProps, useRoutingNavigate } from "services/routing";
-import { GuiBucket } from "types";
+import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPage, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
+import { useBucketContext } from 'providers/BucketContext'
+import { FC, useMemo } from 'react'
+import { Route, useNavigateProps, useRoutingNavigate } from 'services/routing'
+import { GuiBucket } from 'types'
 
 const HomePage: FC = () => {
   /**
@@ -14,7 +14,6 @@ const HomePage: FC = () => {
 
   const items = useMemo(() => {
     return bucketContext.buckets.map(bucket => {
-
       const navProps = navigateProps(Route.BucketBrowse, { bucket: bucket.id, path: '/' })
 
       return {
@@ -29,7 +28,7 @@ const HomePage: FC = () => {
       <EuiText><h3>Select a bucket</h3></EuiText>
       <EuiSpacer />
       <EuiFlexGroup gutterSize="l">
-        {items.map(({name, host, nav}, index) => (
+        {items.map(({ name, host, nav }, index) => (
           <EuiFlexItem key={index}>
           <EuiCard
             title={name}

@@ -1,10 +1,10 @@
-import BucketSelect from 'components/BucketSelect';
-import FilesTreeView from 'components/FilesTreeView';
-import { BucketContext } from 'providers/BucketContext';
+import BucketSelect from 'components/BucketSelect'
+import FilesTreeView from 'components/FilesTreeView'
+import { BucketContext } from 'providers/BucketContext'
 import { BrowserContext } from 'providers/BucketBrowserContext'
-import { EuiSpacer } from '@elastic/eui';
+import { EuiSpacer } from '@elastic/eui'
 
-const Sidebar = () => {
+function Sidebar () {
   return (
     <>
       <BucketContext.Consumer>

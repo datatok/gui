@@ -1,8 +1,8 @@
-import React, { FC, useState } from 'react';
-import { useParams, useNavigate, useLocation, matchPath } from 'react-router-dom';
-import { GetBucketsCommand, useAPI } from 'services/api';
-import { GuiBucket } from 'types';
-import { StringUtils } from 'utils/StringUtils';
+import React, { FC, useState } from 'react'
+import { useParams, useNavigate, useLocation, matchPath } from 'react-router-dom'
+import { GetBucketsCommand, useAPI } from 'services/api'
+import { GuiBucket } from 'types'
+import { StringUtils } from 'utils/StringUtils'
 
 export interface IBucketState {
   buckets: GuiBucket[]
@@ -15,27 +15,27 @@ export interface IBucketContext extends IBucketState {
 
 }
 
-const defaultData:IBucketState = {
+const defaultData: IBucketState = {
   buckets: [],
   current: null,
   fetchBucketsStatus: ''
 }
 
-export const BucketContext = React.createContext<IBucketContext>(defaultData);
+export const BucketContext = React.createContext<IBucketContext>(defaultData)
 
 /**
  * Export helpers
  */
- export const useBucketContext = (): IBucketState => {
+export const useBucketContext = (): IBucketState => {
   // get the context
-  const context = React.useContext(BucketContext);
+  const context = React.useContext(BucketContext)
 
   // if `undefined`, throw an error
   if (context === undefined) {
-    throw new Error("useUserContext was used outside of its Provider");
+    throw new Error('useUserContext was used outside of its Provider')
   }
 
-  return context;
+  return context
 }
 
 /**
@@ -44,7 +44,6 @@ export const BucketContext = React.createContext<IBucketContext>(defaultData);
 const BucketContextProvider: FC = ({
   children
 }) => {
-
   const [state, setState] = useState<IBucketState>({
     buckets: [],
     current: null,
@@ -53,11 +52,11 @@ const BucketContextProvider: FC = ({
 
   const fetchBucketsStatus = React.useRef('')
 
-  console.log("bucket provider: refresh")
+  console.log('bucket provider: refresh')
 
   const apiGetBuckets = useAPI(GetBucketsCommand)
 
-  const getByID = (path:string, buckets:GuiBucket[]): GuiBucket|null => {
+  const getByID = (path: string, buckets: GuiBucket[]): GuiBucket | null => {
     return buckets.find(b => b.id === path) || null
   }
 
@@ -70,7 +69,6 @@ const BucketContextProvider: FC = ({
   }
 
   const setCurrentByID = (path?: string | null) => {
-    
     if (path === null || typeof path === 'undefined') {
       setState({
         ...state,
@@ -78,7 +76,7 @@ const BucketContextProvider: FC = ({
       })
     } else {
       if (state?.current?.id !== path) {
-        const current =  getByID(path, state.buckets)
+        const current = getByID(path, state.buckets)
 
         setState({
           ...state,
@@ -105,7 +103,6 @@ const BucketContextProvider: FC = ({
   // When apiAccessToken changes -> get buckets list
   //
   React.useEffect(() => {
-
     const fetchData = async () => {
       const buckets = await apiGetBuckets()
 
@@ -113,7 +110,6 @@ const BucketContextProvider: FC = ({
     }
 
     if (fetchBucketsStatus.current === '') {
-
       fetchBucketsStatus.current = 'progress'
 
       fetchData()
@@ -131,7 +127,7 @@ const BucketContextProvider: FC = ({
     <BucketContext.Provider value={state}>
       {children}
     </BucketContext.Provider>
-  );
+  )
 }
 
 export default BucketContextProvider

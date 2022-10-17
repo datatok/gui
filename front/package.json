@@ -24,7 +24,6 @@
     "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
     "store": "^2.0.12",
-    "typescript": "^4.5.3",
     "valtio": "^1.7.0"
   },
   "scripts": {
@@ -32,7 +31,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "api": "./node_modules/.bin/json-server --port 3001 --routes ./dev/api/routes.json --delay 500 ./dev/api/mock.json"
+    "lint": "eslint './src/**/*.{ts,tsx}' --ignore-path .gitignore",
+    "lint:fix": "npm run lint -- --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -54,8 +54,20 @@
   },
   "devDependencies": {
     "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^5.40.1",
+    "eslint": "^8.25.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-n": "^15.3.0",
+    "eslint-plugin-promise": "^6.1.0",
+    "eslint-plugin-react": "^7.31.10",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "jest": "^27.5.1",
     "json-server": "^0.17.0",
-    "ts-jest": "^27.1.5"
+    "prettier": "^2.7.1",
+    "ts-jest": "^27.1.5",
+    "typescript": "^4.8.4"
   }
 }

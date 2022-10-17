@@ -1,4 +1,4 @@
-import { GuiBrowserObject, GuiBucket } from "types"
+import { GuiBrowserObject, GuiBucket } from 'types'
 import { ApiCall } from '..'
 
 interface APIResponse {
@@ -6,7 +6,7 @@ interface APIResponse {
 }
 
 interface CommandResponse {
-  
+
 }
 
 export default (apiCall: ApiCall) => {
@@ -21,7 +21,7 @@ export default (apiCall: ApiCall) => {
     files.forEach(file => {
       formDataSubmit.append('files', file, file.name)
     })
-    
+
     return await apiCall<APIResponse>('upload', pathURL, formDataSubmit)
   }
 }

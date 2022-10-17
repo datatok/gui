@@ -1,4 +1,4 @@
-import { NavigateOptions, useHref, useNavigate } from "react-router-dom"
+import { NavigateOptions, useHref, useNavigate } from 'react-router-dom'
 
 export enum Route {
   Home = 1,
@@ -10,19 +10,19 @@ export enum Route {
 }
 
 const isModifiedEvent = (event) =>
-  !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
+  !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
 
-const isLeftClickEvent = (event) => event.button === 0;
+const isLeftClickEvent = (event) => event.button === 0
 
 const isTargetBlank = (event) => {
-  const target = event.target.getAttribute('target');
-  return target && target !== '_self';
-};
+  const target = event.target.getAttribute('target')
+  return target && target !== '_self'
+}
 
-export const getRouteURL = (route: Route, args?: {[key:string]: string}): string => {
-  switch(route) {
+export const getRouteURL = (route: Route, args?: { [key: string]: string }): string => {
+  switch (route) {
     case Route.Home:
-      return `/`
+      return '/'
     case Route.BucketHome:
       return `/bucket/${args.bucket}`
     case Route.BucketBrowse:
@@ -34,9 +34,9 @@ export const getRouteURL = (route: Route, args?: {[key:string]: string}): string
 
       return `/bucket/${args.bucket}/upload`
     case Route.AuthAnonymous:
-      return `/auth/anonymous`
+      return '/auth/anonymous'
     case Route.AuthHome:
-      return `/auth`
+      return '/auth'
   }
 
   return '/404'
@@ -45,44 +45,43 @@ export const getRouteURL = (route: Route, args?: {[key:string]: string}): string
 export const useRoutingNavigate = () => {
   const navigate = useNavigate()
 
-  return (route: Route, args?: {[key:string]: string}, options?: NavigateOptions) => {
+  return (route: Route, args?: { [key: string]: string }, options?: NavigateOptions) => {
     const URL = getRouteURL(route, args)
 
-    navigate(URL, options)  
+    navigate(URL, options)
   }
 }
 
 //  navigate(to, toArgs);
 export const onClick = (targetFct) => (event) => {
   if (event.defaultPrevented) {
-    return;
+    return
   }
 
   // Let the browser handle links that open new tabs/windows
   if (isModifiedEvent(event) || !isLeftClickEvent(event) || isTargetBlank(event)) {
-    return;
+    return
   }
 
   // Prevent regular link behavior, which causes a browser refresh.
-  event.preventDefault();
+  event.preventDefault()
 
   // Push the route to the history.
- targetFct();
+  targetFct()
 }
 
 export const useNavigateProps = () => {
-  const navigate = useRoutingNavigate();
+  const navigate = useRoutingNavigate()
 
   return (to: Route, toArgs) => {
     const fullURL = getRouteURL(to, toArgs)
     const toClick = onClick(() => {
-      navigate(to, toArgs);
+      navigate(to, toArgs)
     })
 
     // Generate the correct link href (with basename accounted for)
-    const href = fullURL;
+    const href = fullURL
 
     return { href, onClick: toClick }
   }
 }
-

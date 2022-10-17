@@ -1,9 +1,8 @@
-import { EuiConfirmModal } from '@elastic/eui';
-import { useNotificationContext } from 'providers/NotificationContext';
-import React, { FC, useState } from 'react';
-import { useCallback } from 'react';
-import { DeleteObjectCommand, useAPI } from 'services/api';
-import { GuiBrowserObject, GuiBucket } from 'types';
+import { EuiConfirmModal } from '@elastic/eui'
+import { useNotificationContext } from 'providers/NotificationContext'
+import React, { FC, useState, useCallback } from 'react'
+import { DeleteObjectCommand, useAPI } from 'services/api'
+import { GuiBrowserObject, GuiBucket } from 'types'
 
 interface DeleteConfirmModalProps {
   bucket: GuiBucket
@@ -16,7 +15,6 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
   selectedItems,
   onClose
 }) => {
-
   const apiDeleteObject = useAPI(DeleteObjectCommand)
 
   const { addSiteToast } = useNotificationContext()
@@ -27,24 +25,23 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
   })
 
   const doDeleteSelection = useCallback(async () => {
-    setProcessStatus({ step: 'doing', message: ''})
+    setProcessStatus({ step: 'doing', message: '' })
 
     try {
       const response = await apiDeleteObject(bucket, selectedItems)
-          
-      setProcessStatus({ step: 'done', message: ''})
-          
+
+      setProcessStatus({ step: 'done', message: '' })
+
       addSiteToast({
         title: 'Success',
         color: 'success',
         iconType: 'help',
-        text: "File deleted!",
+        text: 'File deleted!'
       })
 
       onClose()
-    }
-    catch(err) {
-      setProcessStatus({ step: 'error', message: err.message})
+    } catch (err) {
+      setProcessStatus({ step: 'error', message: err.message })
     }
   }, [bucket, selectedItems])
 
@@ -59,7 +56,7 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
     >
       <p>You&rsquo;re about to remove {selectedItems.length} file(s):</p>
       <ul>
-        {selectedItems.map((file:GuiBrowserObject) => (
+        {selectedItems.map((file: GuiBrowserObject) => (
           <li key={file.name}>{file.name}</li>
         ))}
       </ul>

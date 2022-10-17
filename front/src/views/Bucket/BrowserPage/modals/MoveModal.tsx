@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState } from 'react'
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -14,12 +14,12 @@ import {
   EuiSwitch,
   EuiSuperSelect,
   EuiText,
-  useGeneratedHtmlId,
-} from '@elastic/eui';
+  useGeneratedHtmlId
+} from '@elastic/eui'
 
-import { GuiBrowserObject, GuiBucket } from 'types';
-import MoveObjectCommand from 'services/api/commands/MoveObjectCommand';
-import { useAPI } from 'services/api';
+import { GuiBrowserObject, GuiBucket } from 'types'
+import MoveObjectCommand from 'services/api/commands/MoveObjectCommand'
+import { useAPI } from 'services/api'
 
 interface RenameModalProps {
   selectedItem: GuiBrowserObject
@@ -32,25 +32,24 @@ const RenameModal: FC<RenameModalProps> = ({
   selectedItem,
   onClose
 }) => {
-
   const apiRenameKey = useAPI(MoveObjectCommand)
 
   const [formData, setFormData] = useState({
     name: selectedItem.name,
     path: selectedItem.prefix
-  });
+  })
 
-  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' });
+  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
 
   const onFormNameChange = (event: any) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
+
     setFormData({
       ...formData,
       [name]: value
-    });
+    })
   }
 
   const onSubmit = async () => {
@@ -71,7 +70,7 @@ const RenameModal: FC<RenameModalProps> = ({
       </EuiFormRow>
 
     </EuiForm>
-  );
+  )
 
   return (
     <EuiModal

@@ -1,10 +1,9 @@
-import React, { FC } from 'react';
-import { useRouteError } from "react-router-dom";
-
+import React, { FC } from 'react'
+import { useRouteError } from 'react-router-dom'
 
 const NotFoundErrorPage: FC = () => {
-  const error = useRouteError();
-  console.error(error);
+  const error = useRouteError()
+  console.error(error)
 
   return (
     <div id="error-page">
@@ -13,7 +12,7 @@ const NotFoundErrorPage: FC = () => {
       <p>
       </p>
     </div>
-  );
+  )
 }
 
 export default NotFoundErrorPage

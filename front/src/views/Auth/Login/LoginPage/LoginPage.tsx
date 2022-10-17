@@ -1,29 +1,28 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react'
 import {
   EuiPageTemplate,
   EuiListGroup,
   EuiListGroupItemProps,
-  EuiIcon,
-} from '@elastic/eui';
+  EuiIcon
+} from '@elastic/eui'
 
 import logoSVG from '../../../../logo.svg'
-import { AuthLoginMethodsCommand, useAPI } from 'services/api';
-import { useNavigate } from 'react-router-dom';
+import { AuthLoginMethodsCommand, useAPI } from 'services/api'
+import { useNavigate } from 'react-router-dom'
 
 const AUTH_PROVIDERS = {
   gitlab: {
     href: '/auth/gitlab',
-    iconType: 'link',
+    iconType: 'link'
   },
   anonymous: {
     label: 'Anonymous',
     href: '/auth/anonymous',
-    iconType: 'glasses',
-  },
+    iconType: 'glasses'
+  }
 }
 
 const LoginPage: FC = () => {
-
   const [authMethods, setAuthMethods] = useState([])
 
   const getAuthMethods = useAPI(AuthLoginMethodsCommand)
@@ -40,8 +39,8 @@ const LoginPage: FC = () => {
     fetchData()
   }, [])
 
-  const authLinks:EuiListGroupItemProps[] = authMethods.map(
-    (method):EuiListGroupItemProps => {
+  const authLinks: EuiListGroupItemProps[] = authMethods.map(
+    (method): EuiListGroupItemProps => {
       const dd = AUTH_PROVIDERS[method.provider]
 
       return {
@@ -59,7 +58,7 @@ const LoginPage: FC = () => {
 
   return (
     <>
-      <div style={{textAlign: 'center'}}>
+      <div style={{ textAlign: 'center' }}>
         <EuiIcon type={logoSVG} size="xxl" />
       </div>
       <EuiPageTemplate.EmptyPrompt
@@ -78,7 +77,7 @@ const LoginPage: FC = () => {
         }
       />
     </>
-  );
-};
+  )
+}
 
-export default LoginPage;
+export default LoginPage

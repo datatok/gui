@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react'
 
-type BreadcrumbItem = {
+interface BreadcrumbItem {
   text: string
   href?: string
 }
@@ -23,26 +23,26 @@ export const SiteContext = React.createContext<ISiteMetaContext>({
   breadcrumbs: [],
   setTitle: (title: string) => {},
   setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => {}
-});
+})
 
 /**
  * Export helpers
  */
 export const useSiteMetaContext = () => {
   // get the context
-  const context = React.useContext(SiteContext);
+  const context = React.useContext(SiteContext)
 
   // if `undefined`, throw an error
   if (context === undefined) {
-    throw new Error("useUserContext was used outside of its Provider");
+    throw new Error('useUserContext was used outside of its Provider')
   }
 
-  return context;
+  return context
 }
 
 export const useSetSiteMetaTitle = () => {
   const ctx = React.useContext(SiteContext)
-  
+
   return (title: string) => {
     ctx.setTitle(title)
   }
@@ -51,10 +51,9 @@ export const useSetSiteMetaTitle = () => {
 /**
  * Export context provider
  */
-export const SiteMetaContextProvider = ({children}) => {
-
-  const [ state, setState] = React.useState<ISiteMetaState>({
-    title: "GUI",
+export const SiteMetaContextProvider = ({ children }) => {
+  const [state, setState] = React.useState<ISiteMetaState>({
+    title: 'GUI',
     breadcrumbs: []
   })
 
@@ -68,7 +67,7 @@ export const SiteMetaContextProvider = ({children}) => {
     },
 
     setTitle: (title: string) => {
-     if (title !== state.title) {
+      if (title !== state.title) {
         setState({
           ...state,
           title
@@ -78,7 +77,7 @@ export const SiteMetaContextProvider = ({children}) => {
   }
 
   return (
-    <SiteContext.Provider value={{...state, ...actions}}>
+    <SiteContext.Provider value={{ ...state, ...actions }}>
       {children}
     </SiteContext.Provider>
   )

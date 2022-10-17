@@ -1,25 +1,25 @@
-import { EuiAvatar, EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiIcon, EuiLink, EuiPageTemplate, EuiPopover, EuiSpacer, EuiText, useGeneratedHtmlId } from '@elastic/eui';
-import { useNavigate } from 'react-router-dom';
-import { useSiteMetaContext } from 'providers/SiteMetaContext';
-import { useAuthContext } from 'providers/AuthContext';
-import { FC, useMemo, useState } from 'react';
-import { If, Then } from 'react-if';
+import { EuiAvatar, EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiIcon, EuiLink, EuiPageTemplate, EuiPopover, EuiSpacer, EuiText, useGeneratedHtmlId } from '@elastic/eui'
+import { useNavigate } from 'react-router-dom'
+import { useSiteMetaContext } from 'providers/SiteMetaContext'
+import { useAuthContext } from 'providers/AuthContext'
+import { FC, useMemo, useState } from 'react'
+import { If, Then } from 'react-if'
 
 import logoSVG from '../logo.svg'
 
-const HeaderUserMenu = ({username}: {username: string}) => {
+const HeaderUserMenu = ({ username }: { username: string }) => {
   const headerUserPopoverId = useGeneratedHtmlId({
-    prefix: 'headerUserPopover',
-  });
-  const [isOpen, setIsOpen] = useState(false);
+    prefix: 'headerUserPopover'
+  })
+  const [isOpen, setIsOpen] = useState(false)
 
   const onMenuButtonClick = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
   const closeMenu = () => {
-    setIsOpen(false);
-  };
+    setIsOpen(false)
+  }
 
   if (!username) {
     return (
@@ -39,7 +39,7 @@ const HeaderUserMenu = ({username}: {username: string}) => {
     >
       <EuiAvatar name={username} size="s" />
     </EuiHeaderSectionItemButton>
-  );
+  )
 
   return (
     <EuiPopover
@@ -68,23 +68,22 @@ const HeaderUserMenu = ({username}: {username: string}) => {
         </EuiFlexGroup>
       </div>
     </EuiPopover>
-  );
-};
-
+  )
+}
 
 const HeaderAboutMenu = () => {
   const headerUserPopoverId = useGeneratedHtmlId({
-    prefix: 'headerAboutPopover',
-  });
-  const [isOpen, setIsOpen] = useState(false);
+    prefix: 'headerAboutPopover'
+  })
+  const [isOpen, setIsOpen] = useState(false)
 
   const onMenuButtonClick = () => {
-    setIsOpen(!isOpen);
-  };
+    setIsOpen(!isOpen)
+  }
 
   const closeMenu = () => {
-    setIsOpen(false);
-  };
+    setIsOpen(false)
+  }
 
   const button = (
     <EuiButtonEmpty
@@ -96,7 +95,7 @@ const HeaderAboutMenu = () => {
       iconType='help'
     >
     </EuiButtonEmpty>
-  );
+  )
 
   return (
     <EuiPopover
@@ -126,15 +125,14 @@ const HeaderAboutMenu = () => {
         </EuiText>
       </div>
     </EuiPopover>
-  );
-};
+  )
+}
 
 const LayoutHeader = () => {
-
   /**
    * Hooks
    */
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   /**
    * Contexts
@@ -142,20 +140,20 @@ const LayoutHeader = () => {
   const siteMetaContext = useSiteMetaContext()
   const authContext = useAuthContext()
 
-  const logo = useMemo(() => 
+  const logo = useMemo(() =>
     <EuiHeaderLogo
       iconType={logoSVG}
       href="#"
       onClick={(e) => e.preventDefault()}
       aria-label="Go to home page"
     />
-  , []);
+  , [])
 
   const userMenu = useMemo(() =>
     <HeaderUserMenu username={authContext.username} />
-  , [authContext.username]);
+  , [authContext.username])
 
-  const aboutMenu = useMemo(() => 
+  const aboutMenu = useMemo(() =>
     <HeaderAboutMenu />
   , [])
 
@@ -172,21 +170,21 @@ const LayoutHeader = () => {
           GUI / {siteMetaContext.title}
         </EuiHeaderSectionItem>
       </EuiHeaderSection>
-      
+
       <EuiHeaderSection side="right">
         <EuiHeaderSectionItem>{aboutMenu}</EuiHeaderSectionItem>
         <EuiHeaderSectionItem>{userMenu}</EuiHeaderSectionItem>
         <If condition={authContext.apiAccessToken !== ''}>
           <Then>
             <EuiHeaderSectionItem>
-              <EuiLink onClick={() => { authContext.logout(); navigate('/')}}>Log out</EuiLink>
+              <EuiLink onClick={() => { authContext.logout(); navigate('/') }}>Log out</EuiLink>
             </EuiHeaderSectionItem>
           </Then>
         </If>
       </EuiHeaderSection>
-    
-    </EuiHeader>
-  );
-};
 
-export default LayoutHeader;
+    </EuiHeader>
+  )
+}
+
+export default LayoutHeader

@@ -1,22 +1,22 @@
-export type GuiBucket = {
+export interface GuiBucket {
   id: string
   name: string
   host: string
 }
 
-export type GuiBrowserObject = {
+export interface GuiBrowserObject {
   name: string
-  
+
   /**
    * parent
    */
   prefix: string
-  
+
   /**
    * prefix + name
    */
   path: string
-  
+
   /**
    * file / folder
    */
@@ -37,16 +37,16 @@ export type GuiBrowserObject = {
 /**
  * Represent object within graph (only children relation)
  */
-export type GuiBrowserObjectNode = {
+export interface GuiBrowserObjectNode {
   name: string
   path: string
-  children?: {[key:string]: GuiBrowserObjectNode}
+  children?: { [key: string]: GuiBrowserObjectNode }
 }
 
 /**
  * Represent a store of objects
  */
-export type GuiObjects = {[key:string]: GuiBrowserObject}
+export interface GuiObjects { [key: string]: GuiBrowserObject }
 
 export enum ObjectItemAction {
   Delete = 1,
