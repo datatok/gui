@@ -31,10 +31,12 @@ import UploadPage from 'views/Bucket/UploadPage/UploadPage';
 import Header from 'views/Bucket/Header/Header';
 import Sidebar from 'views/Bucket/Sidebar/Sidebar';
 import LayoutHeader from 'components/LayoutHeader';
+import { ConfigContextProvider } from 'providers/ConfigContext';
 
 
 ReactDOM.render(
   <React.StrictMode>
+    <ConfigContextProvider>
     <EuiProvider colorMode="DARK">
       <NotificationProvider>
         <SiteMetaContextProvider>
@@ -43,8 +45,7 @@ ReactDOM.render(
 
               <LayoutHeader />
 
-              <BucketContextProvider>
-                
+
                   <Routes>
                     
                     <Route path='' element={
@@ -67,7 +68,13 @@ ReactDOM.render(
                       <Route path='*' />
                     </Route>
                       
-                    <Route path='bucket'>
+                    <Route path='bucket' element={
+                      <ProtectedRoute>
+                        <BucketContextProvider>
+                          <Outlet />
+                        </BucketContextProvider>
+                      </ProtectedRoute>
+                    }>
 
                       <Route path='' element={
                         <ProtectedRoute>
@@ -80,11 +87,7 @@ ReactDOM.render(
                         </ProtectedRoute>
                       }/>
 
-                      <Route path=':bucket' element={
-                        <ProtectedRoute>
-                          <BucketLayout />
-                        </ProtectedRoute>
-                      }>
+                      <Route path=':bucket' element={<BucketLayout />}>
                         <Route path='' element={
                           <BucketContext.Consumer>
                             {({current}) => (
@@ -106,12 +109,12 @@ ReactDOM.render(
                     <Route path='*' element={<NotFoundErrorPage />} />
                   </Routes>
 
-              </BucketContextProvider>
             </BrowserRouter>
           </AuthContextProvider>
         </SiteMetaContextProvider>
       </NotificationProvider>
     </EuiProvider>
+    </ConfigContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );

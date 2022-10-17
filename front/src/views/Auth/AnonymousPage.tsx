@@ -22,30 +22,28 @@ const AnonymousLoginPage: FC = () => {
   })
 
   useEffect(() => {
-
+    const fetchData = async() => {
       setWorkflowStep({
         status: "loading",
         message: ""
       })
 
-      apiAuthLoginAnonymous()
-        .then(({token}) => {
-          setApiAccessToken(token)
+      const { token } = await apiAuthLoginAnonymous()
+      
+      setApiAccessToken(token)
+
+      navigate(Route.Home)
+    }
+
+    fetchData()
+      .catch((error:AxiosError) => {
+        setWorkflowStep({
+          status: "error",
+          message: error.message
         })
-        .catch((error:AxiosError) => {
-          setWorkflowStep({
-            status: "error",
-            message: error.message
-          })
-        })
+      })
 
   }, [])
-
-  useEffect(() => {
-    if (apiAccessToken?.length > 0) {
-      navigate(Route.Home);
-    }
-  }, [apiAccessToken])
 
   const retry = () => {
     setWorkflowStep({

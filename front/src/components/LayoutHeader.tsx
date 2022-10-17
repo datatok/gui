@@ -2,12 +2,12 @@ import { EuiAvatar, EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHea
 import { useNavigate } from 'react-router-dom';
 import { useSiteMetaContext } from 'providers/SiteMetaContext';
 import { useAuthContext } from 'providers/AuthContext';
-import { useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { If, Then } from 'react-if';
 
 import logoSVG from '../logo.svg'
 
-const HeaderUserMenu = () => {
+const HeaderUserMenu = ({username}: {username: string}) => {
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: 'headerUserPopover',
   });
@@ -21,6 +21,14 @@ const HeaderUserMenu = () => {
     setIsOpen(false);
   };
 
+  if (!username) {
+    return (
+      <EuiHeaderSectionItemButton>
+        <EuiAvatar name="?" size="s" />
+      </EuiHeaderSectionItemButton>
+    )
+  }
+
   const button = (
     <EuiHeaderSectionItemButton
       aria-controls={headerUserPopoverId}
@@ -29,7 +37,7 @@ const HeaderUserMenu = () => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
     >
-      <EuiAvatar name="John Username" size="s" />
+      <EuiAvatar name={username} size="s" />
     </EuiHeaderSectionItemButton>
   );
 
@@ -49,12 +57,12 @@ const HeaderUserMenu = () => {
           responsive={false}
         >
           <EuiFlexItem grow={false}>
-            <EuiAvatar name="John Username" size="xl" />
+            <EuiAvatar name={username} size="xl" />
           </EuiFlexItem>
 
           <EuiFlexItem>
             <EuiText>
-              <p>John Username</p>
+              <p>{username}</p>
             </EuiText>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -144,8 +152,8 @@ const LayoutHeader = () => {
   , []);
 
   const userMenu = useMemo(() =>
-    <HeaderUserMenu />
-  , []);
+    <HeaderUserMenu username={authContext.username} />
+  , [authContext.username]);
 
   const aboutMenu = useMemo(() => 
     <HeaderAboutMenu />
@@ -164,17 +172,19 @@ const LayoutHeader = () => {
           GUI / {siteMetaContext.title}
         </EuiHeaderSectionItem>
       </EuiHeaderSection>
-      <If condition={authContext.apiAccessToken !== ''}>
-        <Then>
-          <EuiHeaderSection side="right">
-            <EuiHeaderSectionItem>{aboutMenu}</EuiHeaderSectionItem>
-            <EuiHeaderSectionItem>{userMenu}</EuiHeaderSectionItem>
+      
+      <EuiHeaderSection side="right">
+        <EuiHeaderSectionItem>{aboutMenu}</EuiHeaderSectionItem>
+        <EuiHeaderSectionItem>{userMenu}</EuiHeaderSectionItem>
+        <If condition={authContext.apiAccessToken !== ''}>
+          <Then>
             <EuiHeaderSectionItem>
               <EuiLink onClick={() => { authContext.logout(); navigate('/')}}>Log out</EuiLink>
             </EuiHeaderSectionItem>
-          </EuiHeaderSection>
-        </Then>
-      </If>
+          </Then>
+        </If>
+      </EuiHeaderSection>
+    
     </EuiHeader>
   );
 };

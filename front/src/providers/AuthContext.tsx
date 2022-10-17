@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { AuthGetUser, useAPI } from "services/api";
+import store from 'store'
+
+/**
+ * Represent the state to secure API
+ */
+export interface IAPISecurityState {
+  apiAccessToken: string
+}
 
 interface IAuthState {
   apiAccessToken: string
+  username: string
 }
 
 interface IAuthContext extends IAuthState {
@@ -13,7 +23,8 @@ interface IAuthContext extends IAuthState {
  * Export context
  */
 export const AuthContext = React.createContext<IAuthContext>({
-  apiAccessToken: localStorage.getItem('apiAccessToken'),
+  apiAccessToken: '',
+  username: '',
   setApiAccessToken: (apiAccessToken: string) => {},
   logout: () => {}
 });
@@ -39,27 +50,54 @@ export const useAuthContext = () => {
 export const AuthContextProvider = ({children}) => {
 
   const [ state, setState] = React.useState<IAuthState>({
-    apiAccessToken: localStorage.getItem('apiAccessToken')
+    apiAccessToken:store.get('access_token'),
+    username: '',
   })
+
+  const authGetUser = useAPI(AuthGetUser, state)
 
   const actions = {
     setApiAccessToken: (apiAccessToken: string) => {
+      if (apiAccessToken) {
+        store.set('access_token', apiAccessToken)
+      } else {
+        store.clearAll()
+      }
+
       setState({
         ...state,
-        apiAccessToken
+        apiAccessToken,
+        username: ''
       })
     },
 
     logout: () => {
       setState({
         ...state,
-        apiAccessToken: ''
+        apiAccessToken: '',
+        username: ''
       })
-    }
+    },
+
   }
 
-  React.useEffect(() => {
-    localStorage.setItem('apiAccessToken', state.apiAccessToken)
+  /**
+   * Render
+   */
+  useEffect(() => {
+
+    const fetchData = async () => {
+      const { username } = await authGetUser()
+
+      setState({
+        ...state,
+        username
+      })
+    }
+
+    if (state.apiAccessToken) {
+      fetchData()
+    }
   }, [state.apiAccessToken])
 
   return (

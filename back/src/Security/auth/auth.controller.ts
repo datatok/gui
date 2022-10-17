@@ -7,6 +7,7 @@ import {
   } from '@nestjs/swagger';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @ApiTags('security', 'auth')
 @Controller('security/auth')
@@ -24,6 +25,33 @@ export class SecurityAuthController {
     }
 
     throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+  }
+
+  @Get('methods')
+  getMethods() {
+    const methods = []
+    const securityConfig = this.configService.get<SecurityConfig>("security")
+
+    if (securityConfig.auth?.anonymous?.enabled) {
+      methods.push({
+        provider: 'anonymous'
+      })
+    }
+
+    if (securityConfig.auth?.gitlab?.enabled) {
+      methods.push({
+        provider: 'gitlab',
+        baseURL: securityConfig.auth.gitlab.baseURL
+      })
+    }
+
+    return methods
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('user')
+  async user(@Request() req) {
+    return req.user;
   }
 
   @UseGuards(AuthGuard('local'))

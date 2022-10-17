@@ -3,6 +3,13 @@ interface SecurityConfig {
     anonymous: {
       enabled: boolean
     }
+
+    gitlab: {
+      enabled: boolean
+      clientID: string
+      clientSecret: string
+      baseURL: string
+    }
   }
 
   rbac: {
