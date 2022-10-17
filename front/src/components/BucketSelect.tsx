@@ -1,7 +1,7 @@
-import { EuiSuperSelect, EuiSuperSelectOption } from '@elastic/eui';
-import React, { FC, useState } from 'react';
-import { Route, useRoutingNavigate } from 'services/routing';
-import { GuiBucket } from 'types';
+import { EuiSuperSelect, EuiSuperSelectOption } from '@elastic/eui'
+import React, { FC, useState } from 'react'
+import { Route, useRoutingNavigate } from 'services/routing'
+import { GuiBucket } from 'types'
 
 interface BucketSelectProps {
   buckets: GuiBucket[]
@@ -14,9 +14,8 @@ const bucketToOption = (bucket: GuiBucket): EuiSuperSelectOption<string> => {
     value: bucket.id
   }
 }
-  
-const BucketSelect: FC<BucketSelectProps> = ({ buckets, bucket }) => {
 
+const BucketSelect: FC<BucketSelectProps> = ({ buckets, bucket }) => {
   const labels = buckets.map(bucketToOption)
 
   const navigate = useRoutingNavigate()
@@ -25,7 +24,7 @@ const BucketSelect: FC<BucketSelectProps> = ({ buckets, bucket }) => {
 
   const onChange = (bucket: string) => {
     navigate(Route.BucketHome, { bucket })
-  };
+  }
 
   React.useEffect(() => {
     setSelectedValue(bucket?.id)

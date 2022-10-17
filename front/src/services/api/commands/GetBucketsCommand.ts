@@ -1,4 +1,4 @@
-import { GuiBucket } from "types"
+import { GuiBucket } from 'types'
 import { ApiCall } from '..'
 
 interface APIBucket {
@@ -7,7 +7,7 @@ interface APIBucket {
     protocol: string
     port: number
   }
-  
+
   id: string
   name: string
   region: string
@@ -19,8 +19,8 @@ interface APIResponse {
 
 export default (apiCall: ApiCall) => {
   return async (): Promise<GuiBucket[]> => {
-    const pathURL = `/bucket`
-    
+    const pathURL = '/bucket'
+
     const response = await apiCall<APIResponse>('get', pathURL)
 
     return response.buckets.map(({

@@ -1,12 +1,12 @@
-import React, { FC, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { BucketBrowseCommand, useAPI } from 'services/api';
-import { BrowserUtils } from 'utils/BrowserUtils';
-import { GuiBucketUtils } from 'utils/GuiBucketUtils';
+import React, { FC, useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { BucketBrowseCommand, useAPI } from 'services/api'
+import { BrowserUtils } from 'utils/BrowserUtils'
+import { GuiBucketUtils } from 'utils/GuiBucketUtils'
 import * as R from 'ramda'
-import { GuiBrowserObject, GuiBucket, GuiObjects } from "types";
-import { getRouteURL, Route } from 'services/routing';
-import { useSiteMetaContext } from './SiteMetaContext';
+import { GuiBrowserObject, GuiBucket, GuiObjects } from 'types'
+import { getRouteURL, Route } from 'services/routing'
+import { useSiteMetaContext } from './SiteMetaContext'
 
 interface LoadingStatus {
   status: string
@@ -27,10 +27,10 @@ const objectToBreadcrumbItem = (bucket: GuiBucket, file: GuiBrowserObject) => {
 
   return {
     text,
-    href,
-    /*onClick: onClick(() => {
+    href
+    /* onClick: onClick(() => {
       navigate(href)
-    })*/
+    }) */
   }
 }
 
@@ -50,28 +50,28 @@ export interface IBrowserState {
   /**
    * current selected (folder or file)
    */
-  currentNode?: GuiBrowserObject,
+  currentNode?: GuiBrowserObject
 
   /**
    * loading files status (loading / done)
    */
-  loadingStatus: LoadingStatus | null,
+  loadingStatus: LoadingStatus | null
 }
 
 export interface IBrowserContext extends IBrowserState {
-  getByPath: (path: string) => GuiBrowserObject|undefined
+  getByPath: (path: string) => GuiBrowserObject | undefined
   refresh: () => void
 }
 
-const defaultData:IBrowserContext = {
+const defaultData: IBrowserContext = {
   objects: {},
   currentKey: null,
   loadingStatus: null,
-  getByPath: (path:string): GuiBrowserObject|undefined => {return},
+  getByPath: (path: string): GuiBrowserObject | undefined => {},
   refresh: () => {}
 }
 
-export const BrowserContext = React.createContext<IBrowserContext>(defaultData);
+export const BrowserContext = React.createContext<IBrowserContext>(defaultData)
 
 interface BrowserStateProviderProps {
   selectedBucket: GuiBucket
@@ -80,23 +80,22 @@ interface BrowserStateProviderProps {
 /**
  * Export helpers
  */
- export const useBrowserContext = (): IBrowserContext => {
+export const useBrowserContext = (): IBrowserContext => {
   // get the context
-  const context = React.useContext(BrowserContext);
+  const context = React.useContext(BrowserContext)
 
   // if `undefined`, throw an error
   if (context === undefined) {
-    throw new Error("useUserContext was used outside of its Provider");
+    throw new Error('useUserContext was used outside of its Provider')
   }
 
-  return context;
+  return context
 }
 
 /**
  * Export context provider
  */
-const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, children}) => {
-
+const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, children }) => {
   /**
    * Contexts
    */
@@ -104,7 +103,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
 
   const siteMetaContext = useSiteMetaContext()
 
-  const browseFetchPointer = React.useRef({ status: '', cancelToken: null})
+  const browseFetchPointer = React.useRef({ status: '', cancelToken: null })
 
   const [state, setState] = useState<IBrowserState>({
     objects: {},
@@ -120,11 +119,10 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
       getObjectChildren(state.currentKey)
     },
 
-    getByPath: (path:string): GuiBrowserObject|undefined => {
+    getByPath: (path: string): GuiBrowserObject | undefined => {
       return state.objects[path]
     }
   }
-
 
   const setBucket = (bucket: GuiBucket, rootFiles: GuiBrowserObject[]) => {
     setState({
@@ -134,11 +132,10 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
     })
   }
 
-  /** 
+  /**
    * Set current view
    */
   const setFiles = (fromPath: string, files: GuiBrowserObject[]) => {
-
     const currentNode = {
       ...BrowserUtils.extractNamePrefix(fromPath),
       type: 'folder',
@@ -164,34 +161,34 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
   }
 
   const getObjectChildren = async (key: string) => {
-    /*setState({
+    /* setState({
       ...state,
       loadingStatus: { status: 'loading' }
-    })*/
+    }) */
 
     if (browseFetchPointer.current.status === 'progress') {
-      return 
+      return
     }
 
-    browseFetchPointer.current = {status: 'progress', cancelToken: null}
+    browseFetchPointer.current = { status: 'progress', cancelToken: null }
 
     try {
-      const {files} = await apiBucketBrowse(selectedBucket, key)
+      const { files } = await apiBucketBrowse(selectedBucket, key)
 
-      browseFetchPointer.current = {status: 'success', cancelToken: null}
+      browseFetchPointer.current = { status: 'success', cancelToken: null }
 
       setFiles(key, files)
     } catch (err) {
-      browseFetchPointer.current = {status: 'error', cancelToken: null}
+      browseFetchPointer.current = { status: 'error', cancelToken: null }
 
       if (err.response.status === 404) {
         setFiles(key, [])
       }
 
-      /*setState({
+      /* setState({
         ...state,
         loadingStatus: { status: 'error', message: err.message }
-      })*/
+      }) */
     }
   }
 
@@ -201,15 +198,15 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
 
   const routeParams = useParams()
 
-  console.log("browser provider: refresh")
+  console.log('browser provider: refresh')
 
-  React.useEffect( () => {
+  React.useEffect(() => {
     if (!GuiBucketUtils.equals(selectedBucket, state.bucket)) {
       setBucket(selectedBucket, [])
     }
-  }, [selectedBucket]);
+  }, [selectedBucket])
 
-  React.useEffect( () => {
+  React.useEffect(() => {
     const bucketFromRoute = routeParams.bucket
 
     if (bucketFromRoute && state.bucket && GuiBucketUtils.equals(selectedBucket, state.bucket)) {
@@ -222,23 +219,23 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
   /**
    * Update breadcrumbs
    */
-  React.useEffect( () => {
+  React.useEffect(() => {
     const breadcrumbs = [
       {
         text: 'Buckets',
-        href: '/bucket',
-       /* onClick: onClick(() => {
+        href: '/bucket'
+        /* onClick: onClick(() => {
           navigate('/bucket')
-        })*/
+        }) */
       }
     ]
 
     if (state.bucket) {
       breadcrumbs.push(objectToBreadcrumbItem(state.bucket, {
         name: state.bucket.name,
-        prefix: "",
-        path: "",
-        type: "folder",
+        prefix: '',
+        path: '',
+        type: 'folder'
       }))
 
       if (state.currentKey) {
@@ -254,14 +251,13 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({selectedBucket, ch
     }
 
     siteMetaContext.setBreadcrumbs(breadcrumbs)
-
   }, [state.bucket, state.currentKey])
 
   return (
-    <BrowserContext.Provider value={{...state, ...actions}}>
+    <BrowserContext.Provider value={{ ...state, ...actions }}>
       {children}
     </BrowserContext.Provider>
-  );
+  )
 }
 
 export default BrowserStateProvider

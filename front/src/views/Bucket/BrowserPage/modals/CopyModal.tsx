@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react'
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -11,14 +11,14 @@ import {
   EuiModalFooter,
   EuiModalHeader,
   EuiModalHeaderTitle,
-  useGeneratedHtmlId,
-} from '@elastic/eui';
+  useGeneratedHtmlId
+} from '@elastic/eui'
 
-import { GuiBrowserObject, GuiBucket } from 'types';
-import MoveObjectCommand from 'services/api/commands/MoveObjectCommand';
-import { useAPI } from 'services/api';
-import CopyObjectCommand from 'services/api/commands/CopyObjectCommand';
-import { If, Then } from 'react-if';
+import { GuiBrowserObject, GuiBucket } from 'types'
+import MoveObjectCommand from 'services/api/commands/MoveObjectCommand'
+import { useAPI } from 'services/api'
+import CopyObjectCommand from 'services/api/commands/CopyObjectCommand'
+import { If, Then } from 'react-if'
 
 interface CopyModalProps {
   selectedItem: GuiBrowserObject
@@ -31,30 +31,29 @@ const CopyModal: FC<CopyModalProps> = ({
   selectedItem,
   onClose
 }) => {
-
   const apiRenameKey = useAPI(CopyObjectCommand)
 
   const [formData, setFormData] = useState({
     name: selectedItem.name,
     path: selectedItem.prefix
-  });
+  })
 
   const [apiStatus, setAPIStatus] = useState({
     step: '',
     message: ''
   })
 
-  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' });
+  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
 
   const onFormNameChange = (event: any) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
-    
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
+
     setFormData({
       ...formData,
       [name]: value
-    });
+    })
   }
 
   const onSubmit = useCallback(async () => {
@@ -72,13 +71,13 @@ const CopyModal: FC<CopyModalProps> = ({
       })
 
       onClose()
-    } catch(err) {
+    } catch (err) {
       setAPIStatus({
         step: 'error',
         message: err.message
       })
     }
-  }, [ bucket, selectedItem, formData.path, formData.name ])
+  }, [bucket, selectedItem, formData.path, formData.name])
 
   const formSample = (
     <EuiForm id={modalFormId} component="form">
@@ -92,7 +91,7 @@ const CopyModal: FC<CopyModalProps> = ({
       </EuiFormRow>
 
     </EuiForm>
-  );
+  )
 
   return (
     <EuiModal

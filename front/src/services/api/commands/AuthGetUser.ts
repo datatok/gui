@@ -10,8 +10,8 @@ interface CommandResponse {
 
 export default (apiCall: ApiCall) => {
   return async (): Promise<CommandResponse> => {
-    const pathURL = `/security/auth/user`
-    
+    const pathURL = '/security/auth/user'
+
     const response = await apiCall<APIResponse>('get', pathURL)
 
     return {

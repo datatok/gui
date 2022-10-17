@@ -1,22 +1,18 @@
-import { EuiLoadingSpinner, EuiModal, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui';
-import React, { FC, useState } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
-import Header from '../Header/Header';
-import Sidebar from '../Sidebar/Sidebar';
-import BucketContextProvider from 'providers/BucketContext';
-import { BucketContext } from 'providers/BucketContext';
-import BrowserStateProvider, { BrowserContext } from 'providers/BucketBrowserContext';
-import { Else, Fallback, If, Then } from 'react-if';
+import { EuiLoadingSpinner, EuiModal, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
+import React, { FC, useState } from 'react'
+import { Outlet, useParams } from 'react-router-dom'
+import Header from '../Header/Header'
+import Sidebar from '../Sidebar/Sidebar'
+import BucketContextProvider, { BucketContext } from 'providers/BucketContext'
+import BrowserStateProvider, { BrowserContext } from 'providers/BucketBrowserContext'
+import { Else, Fallback, If, Then } from 'react-if'
 
 const BucketLayout: FC = () => {
-
-  
-
-  const inner = 
+  const inner =
     <BucketContext.Consumer>
       {({ current: bucket }) => (
         <EuiPageTemplate>
-          <EuiPageTemplate.Sidebar css={{margin:0,padding:'5px'}}>
+          <EuiPageTemplate.Sidebar css={{ margin: 0, padding: '5px' }}>
           <If condition={bucket !== null}>
             <Then>
               <Sidebar />
@@ -30,7 +26,6 @@ const BucketLayout: FC = () => {
       </EuiPageTemplate>
       )}
     </BucketContext.Consumer>
-    
 
   return (
     <BucketContext.Consumer>
@@ -50,10 +45,10 @@ const BucketLayout: FC = () => {
             </BrowserStateProvider>
           </Then>
         </If>
-      
+
       )}
     </BucketContext.Consumer>
-  );
-};
+  )
+}
 
-export default BucketLayout;
+export default BucketLayout

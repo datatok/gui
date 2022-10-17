@@ -9,8 +9,6 @@ import { ApiCall } from '..'
     },
  */
 
-
-
 interface AuthMethod {
   name: string
   type: string
@@ -26,7 +24,7 @@ interface CommandResponse {
 
 export default (apiCall: ApiCall) => {
   return async (): Promise<CommandResponse> => {
-    const pathURL = `/security/auth/methods`
+    const pathURL = '/security/auth/methods'
 
     return await apiCall<APIResponse>('get', pathURL)
   }

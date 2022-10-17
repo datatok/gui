@@ -1,8 +1,8 @@
-import { EuiButton, EuiFlexGroup, EuiFlexItem } from "@elastic/eui"
-import { FC } from "react"
-import { useNavigate } from "react-router-dom"
-import { getRouteURL, onClick, Route } from "services/routing"
-import { GuiBrowserObject, GuiBucket, ObjectItemAction } from "types"
+import { EuiButton, EuiFlexGroup, EuiFlexItem } from '@elastic/eui'
+import { FC } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { getRouteURL, onClick, Route } from 'services/routing'
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
 
 interface TopBarProps {
   bucket: GuiBucket
@@ -12,21 +12,21 @@ interface TopBarProps {
   onRefresh: () => void
 }
 
-const TopBar: FC<TopBarProps> = ({bucket, currentKey, onItemAction, onRefresh, selectedItems}) => {
-  const navigate = useNavigate();
+const TopBar: FC<TopBarProps> = ({ bucket, currentKey, onItemAction, onRefresh, selectedItems }) => {
+  const navigate = useNavigate()
 
   const getSideUploadButton = () => {
     const href = getRouteURL(Route.BucketUpload, {
       bucket: bucket.id,
       path: currentKey
     })
-  
+
     return <EuiButton fill iconType={'exportAction'} href={href} onClick={onClick(() => {
       navigate(href)
     })} key={'upload'} >Upload</EuiButton>
   }
 
-  const getSideNewFolderButton = () => {  
+  const getSideNewFolderButton = () => {
     return <EuiButton iconType={'plus'} onClick={() => onItemAction(ObjectItemAction.NewFolder)} key={'new-dir'} >New folder</EuiButton>
   }
 
@@ -41,7 +41,7 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onItemAction, onRefresh, s
       </EuiFlexItem>
       <EuiFlexItem>
         <EuiFlexGroup wrap gutterSize="s" alignItems="center">
-          <EuiFlexItem  grow={false}>
+          <EuiFlexItem grow={false}>
             {refreshButton()}
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
@@ -51,7 +51,7 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onItemAction, onRefresh, s
             {getSideNewFolderButton()}
           </EuiFlexItem>
           <EuiFlexItem grow={false}>
-            <EuiButton 
+            <EuiButton
               color="danger"
               iconType="trash"
               disabled={selectedItems.length === 0}
@@ -66,4 +66,4 @@ const TopBar: FC<TopBarProps> = ({bucket, currentKey, onItemAction, onRefresh, s
   )
 }
 
-export default TopBar 
+export default TopBar

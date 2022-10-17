@@ -9,9 +9,9 @@ interface CommandResponse {
 }
 
 export default (apiCall: ApiCall) => {
-  return async ():Promise<CommandResponse> => {
-    const pathURL = `/security/auth/anonymous`
-    
+  return async (): Promise<CommandResponse> => {
+    const pathURL = '/security/auth/anonymous'
+
     const { access_token } = await apiCall<APIResponse>('post', pathURL, {})
 
     return {

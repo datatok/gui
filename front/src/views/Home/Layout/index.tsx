@@ -1,42 +1,39 @@
-import React, { FC, useEffect } from 'react';
+import React, { FC, useEffect, useState } from 'react'
 import {
   EuiCallOut,
   EuiLink,
   EuiLoadingSpinner,
-  EuiPageTemplate, EuiText,
-} from '@elastic/eui';
-import { useRoutingNavigate, Route } from 'services/routing';
-import { AxiosError } from 'axios';
-import { useState } from 'react';
-import APIWorkflowCallout from 'components/APIWorkflowCallout';
-import { GetBucketsCommand } from 'services/api';
+  EuiPageTemplate, EuiText
+} from '@elastic/eui'
+import { useRoutingNavigate, Route } from 'services/routing'
+import { AxiosError } from 'axios'
+import APIWorkflowCallout from 'components/APIWorkflowCallout'
+import { GetBucketsCommand } from 'services/api'
 
 interface Props {
   apiAccessToken: string
 }
 
-const HomeLayout: FC<Props> = ({apiAccessToken}) => {
-
+const HomeLayout: FC<Props> = ({ apiAccessToken }) => {
   const navigate = useRoutingNavigate()
   const [workflowStep, setWorkflowStep] = useState({
-    status: "start",
-    message: ""
+    status: 'start',
+    message: ''
   })
 
   useEffect(() => {
     if (apiAccessToken === '') {
-      navigate(Route.AuthHome);
-    } else if (workflowStep.status === "start") {
-
+      navigate(Route.AuthHome)
+    } else if (workflowStep.status === 'start') {
       setWorkflowStep({
-        status: "loading",
-        message: ""
+        status: 'loading',
+        message: ''
       })
-/*
+      /*
       GetBucketsCommand()
         .then(({ buckets }) => {
           bucketActions.setBuckets(buckets)
-          
+
           navigate(Route.BucketHome, { bucket : buckets[0].id});
         })
         .catch((error:AxiosError) => {
@@ -44,14 +41,14 @@ const HomeLayout: FC<Props> = ({apiAccessToken}) => {
             status: "error",
             message: error.message
           })
-        })*/
+        }) */
     }
   })
 
   const retry = () => {
     setWorkflowStep({
-      status: "start",
-      message: ""
+      status: 'start',
+      message: ''
     })
   }
 
@@ -64,16 +61,15 @@ const HomeLayout: FC<Props> = ({apiAccessToken}) => {
         color="plain"
         layout="horizontal"
         body={
-          <APIWorkflowCallout 
-            status={workflowStep.status} 
-            message={workflowStep.message} 
+          <APIWorkflowCallout
+            status={workflowStep.status}
+            message={workflowStep.message}
             onRetry={retry}
           />
         }
       />
     </EuiPageTemplate>
   )
-
 }
 
 export default HomeLayout

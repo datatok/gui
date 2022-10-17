@@ -1,41 +1,39 @@
-import { EuiBasicTable, EuiIcon } from '@elastic/eui';
-import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table';
-import EuiCustomLink from 'components/EuiCustomLink';
-import moment from 'moment';
-import React, { FC, useRef, useState } from 'react';
-import { Route } from 'services/routing';
-import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types';
-import { StringUtils } from 'utils/StringUtils';
+import { EuiBasicTable, EuiIcon } from '@elastic/eui'
+import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table'
+import EuiCustomLink from 'components/EuiCustomLink'
+import moment from 'moment'
+import React, { FC, useRef, useState } from 'react'
+import { Route } from 'services/routing'
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
+import { StringUtils } from 'utils/StringUtils'
 
 interface GridProps {
   bucket: GuiBucket
   listObjects: GuiBrowserObject[]
-  onItemAction: (action: ObjectItemAction, item:GuiBrowserObject) => void
-  onSelectionChange: (items:GuiBrowserObject[]) => void
+  onItemAction: (action: ObjectItemAction, item: GuiBrowserObject) => void
+  onSelectionChange: (items: GuiBrowserObject[]) => void
 }
 
-const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChange}) => {
-
-  const [sortField, setSortField] = useState('name');
-  const [sortDirection, setSortDirection] = useState('asc');
-  const [selectedItems, setSelectedItems] = useState([]);
+const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionChange }) => {
+  const [sortField, setSortField] = useState('name')
+  const [sortDirection, setSortDirection] = useState('asc')
+  const [selectedItems, setSelectedItems] = useState([])
 
   const tableRef = useRef<EuiBasicTable>()
 
   const sorting: any = {
     sort: {
       field: sortField,
-      direction: sortDirection,
-    },
+      direction: sortDirection
+    }
   }
 
   const [refreshBrowseFilesWorkflow, setRefreshBrowseFilesWorkflow] = useState({
-    step: "start",
-    message: ""
+    step: 'start',
+    message: ''
   })
 
-  const resolveIcon = ({name, type}) => {
-
+  const resolveIcon = ({ name, type }) => {
     if (type === 'file') {
       return 'document'
     }
@@ -50,11 +48,11 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
       sortable: true,
       truncateText: false,
       width: '40%',
-      render: (name, {path, type}) => {
+      render: (name, { path, type }) => {
         return (
           <>
-          <EuiIcon type={resolveIcon({name, type})} />&nbsp;
-          <EuiCustomLink to={Route.BucketBrowse} toArgs={{bucket: bucket.id, path}}>
+          <EuiIcon type={resolveIcon({ name, type })} />&nbsp;
+          <EuiCustomLink to={Route.BucketBrowse} toArgs={{ bucket: bucket.id, path }}>
            {name}
           </EuiCustomLink>
           </>
@@ -75,7 +73,7 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
     },
     {
       name: 'Actions',
-      actions : [
+      actions: [
         {
           name: 'Download',
           description: 'Download file',
@@ -83,10 +81,10 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
           color: 'primary',
           type: 'icon',
           isPrimary: true,
-          onClick: (item:GuiBrowserObject) => {
+          onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Download, item)
           },
-          'data-test-subj': 'action-delete',
+          'data-test-subj': 'action-delete'
         },
         {
           name: 'Remove',
@@ -95,10 +93,10 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
           color: 'danger',
           type: 'icon',
           isPrimary: true,
-          onClick: (item:GuiBrowserObject) => {
+          onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Delete, item)
           },
-          'data-test-subj': 'action-delete',
+          'data-test-subj': 'action-delete'
         },
         {
           name: 'Move',
@@ -106,10 +104,10 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
           description: 'Edit (rename, meta)',
           icon: 'pencil',
           type: 'icon',
-          onClick: (item:GuiBrowserObject) => {
+          onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Move, item)
           },
-          'data-test-subj': 'action-edit',
+          'data-test-subj': 'action-edit'
         },
         {
           name: 'Copy',
@@ -117,31 +115,31 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
           description: 'Full copy',
           icon: 'copy',
           type: 'icon',
-          onClick: (item:GuiBrowserObject) => {
+          onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Copy, item)
           },
-          'data-test-subj': 'action-copy',
-        },
+          'data-test-subj': 'action-copy'
+        }
       ]
-    },
-  ];
+    }
+  ]
 
   const onTableChange = ({ sort }: any) => {
-    const { field: sortField, direction: sortDirection } = sort;
+    const { field: sortField, direction: sortDirection } = sort
 
-    setSortField(sortField);
-    setSortDirection(sortDirection);
-  };
+    setSortField(sortField)
+    setSortDirection(sortDirection)
+  }
 
   const selection: EuiTableSelectionType<GuiBrowserObject> = {
-    selectable: (n:any) => true,
-    selectableMessage: (selectable:boolean, item:GuiBrowserObject) => "",
+    selectable: (n: any) => true,
+    selectableMessage: (selectable: boolean, item: GuiBrowserObject) => '',
     onSelectionChange: (selectedItems: GuiBrowserObject[]) => {
-      //setSelectedItems(selectedItems);
+      // setSelectedItems(selectedItems);
 
       onSelectionChange(selectedItems)
-    },
-  };
+    }
+  }
 
   return (
     <EuiBasicTable
@@ -155,7 +153,7 @@ const Grid: FC<GridProps> = ({bucket, listObjects, onItemAction, onSelectionChan
       isSelectable={true}
       selection={selection}
     />
-  );
-};
+  )
+}
 
-export default Grid;
+export default Grid

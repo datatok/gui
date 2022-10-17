@@ -1,6 +1,6 @@
-import { EuiCallOut, EuiLink, EuiLoadingSpinner, EuiText, EuiTreeView } from '@elastic/eui';
-import React, { FC } from 'react';
-import BucketSelect from 'components/BucketSelect';
+import { EuiCallOut, EuiLink, EuiLoadingSpinner, EuiText, EuiTreeView } from '@elastic/eui'
+import React, { FC } from 'react'
+import BucketSelect from 'components/BucketSelect'
 
 interface SidebarProps {
   status: string
@@ -11,11 +11,14 @@ interface SidebarProps {
 const APIWorkflowCallout: FC<SidebarProps> = ({ message, onRetry, status }) => {
   return (
     <EuiText textAlign='center'>
-      {status === "loading" ? (
+      {status === 'loading'
+        ? (
           <EuiLoadingSpinner size='xxl' />
-      ) : ''}
+          )
+        : ''}
 
-      {status === "error" ? (
+      {status === 'error'
+        ? (
           <EuiCallOut title="Sorry, there was an error" color="danger" iconType="alert">
           <p>
           API client is getting:
@@ -27,9 +30,10 @@ const APIWorkflowCallout: FC<SidebarProps> = ({ message, onRetry, status }) => {
           <EuiLink onClick={onRetry}>retry</EuiLink>
           </p>
       </EuiCallOut>
-      ) : ''}
+          )
+        : ''}
       </EuiText>
-  );
-};
+  )
+}
 
-export default APIWorkflowCallout;
+export default APIWorkflowCallout

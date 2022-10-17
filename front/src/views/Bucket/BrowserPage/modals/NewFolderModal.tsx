@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useCallback, useState } from 'react'
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -10,12 +10,12 @@ import {
   EuiModalFooter,
   EuiModalHeader,
   EuiModalHeaderTitle,
-  useGeneratedHtmlId,
-} from '@elastic/eui';
+  useGeneratedHtmlId
+} from '@elastic/eui'
 
-import { GuiBrowserObject, GuiBucket } from 'types';
-import { CreateFolderCommand, useAPI } from 'services/api';
-import { StringUtils } from 'utils/StringUtils';
+import { GuiBrowserObject, GuiBucket } from 'types'
+import { CreateFolderCommand, useAPI } from 'services/api'
+import { StringUtils } from 'utils/StringUtils'
 
 interface NewFolderModalProps {
   bucket: GuiBucket
@@ -28,7 +28,6 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
   targetKey,
   onClose
 }) => {
-
   const apiCreateFolder = useAPI(CreateFolderCommand)
 
   const [processStatus, setProcessStatus] = useState({
@@ -39,30 +38,30 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
   const [formData, setFormData] = useState({
     bucket: bucket.name,
     path: targetKey,
-    name: ""
+    name: ''
   })
 
-  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' });
-  const modalFormSwitchId = useGeneratedHtmlId({ prefix: 'modalFormSwitch' });
+  const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
+  const modalFormSwitchId = useGeneratedHtmlId({ prefix: 'modalFormSwitch' })
 
   const handleInputChange = (event) => {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    const name = target.name;
+    const target = event.target
+    const value = target.type === 'checkbox' ? target.checked : target.value
+    const name = target.name
 
     setFormData({
       ...formData,
       [name]: value
-    });
+    })
   }
 
   const doCreateFolder = useCallback(async () => {
-    setProcessStatus({ step: 'doing', message: ''})
+    setProcessStatus({ step: 'doing', message: '' })
 
     const response = await apiCreateFolder(bucket, StringUtils.pathJoin(formData.path, formData.name))
 
-    setProcessStatus({ step: 'success', message: ''})
-    
+    setProcessStatus({ step: 'success', message: '' })
+
     onClose()
   }, [formData])
 
@@ -82,7 +81,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
       </EuiFormRow>
 
     </EuiForm>
-  );
+  )
 
   return (
     <EuiModal
@@ -100,7 +99,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
       <EuiModalFooter>
         <EuiButtonEmpty onClick={onClose}>Cancel</EuiButtonEmpty>
 
-        <EuiButton type="submit" fill 
+        <EuiButton type="submit" fill
           onClick={doCreateFolder}
           isLoading={processStatus.step === 'doing'}>
           Save

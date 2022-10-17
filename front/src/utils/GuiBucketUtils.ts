@@ -1,7 +1,7 @@
-import { GuiBucket } from "types";
+import { GuiBucket } from 'types'
 
 export const GuiBucketUtils = {
-  equals: (a: GuiBucket, b: GuiBucket):boolean => {
+  equals: (a: GuiBucket, b: GuiBucket): boolean => {
     if (a && b) {
       return a.id === b.id
     }

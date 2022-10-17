@@ -1,28 +1,27 @@
-import { EuiSpacer } from '@elastic/eui';
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types';
-import DeleteConfirmModal from './modals/DeleteConfirmModal';
-import Grid from './Grid';
-import RenameModal from './modals/MoveModal';
-import TopBar from './TopBar';
-import NewFolderModal from './modals/NewFolderModal';
-import { BrowserUtils } from 'utils/BrowserUtils';
-import { useSetSiteMetaTitle } from 'providers/SiteMetaContext';
-import { useBrowserContext } from 'providers/BucketBrowserContext';
-import { useBucketContext } from 'providers/BucketContext';
-import { If, Then } from 'react-if';
-import CopyModal from './modals/CopyModal';
+import { EuiSpacer } from '@elastic/eui'
+import React, { FC, useCallback, useEffect, useState } from 'react'
+import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
+import DeleteConfirmModal from './modals/DeleteConfirmModal'
+import Grid from './Grid'
+import RenameModal from './modals/MoveModal'
+import TopBar from './TopBar'
+import NewFolderModal from './modals/NewFolderModal'
+import { BrowserUtils } from 'utils/BrowserUtils'
+import { useSetSiteMetaTitle } from 'providers/SiteMetaContext'
+import { useBrowserContext } from 'providers/BucketBrowserContext'
+import { useBucketContext } from 'providers/BucketContext'
+import { If, Then } from 'react-if'
+import CopyModal from './modals/CopyModal'
 
 let selectionFromSingle = false
 
 const BrowserPage: FC = () => {
-
   /**
    * Contexts
    */
   const setSiteTitle = useSetSiteMetaTitle()
-  
-  const { 
+
+  const {
     refresh: browserRefreshObjects,
     currentKey: browserCurrentKey,
     objects: browserObjects
@@ -45,19 +44,19 @@ const BrowserPage: FC = () => {
   /**
    * State
    */
-  const [currentModal, setCurrentModal] = useState(ModalType.None);
-  const [selectedItems, setSelectedItems] = useState([]);
-  
+  const [currentModal, setCurrentModal] = useState(ModalType.None)
+  const [selectedItems, setSelectedItems] = useState([])
+
   useEffect(() => {
-    setSiteTitle("Browse")
+    setSiteTitle('Browse')
   }, [])
 
-  const getModal = useCallback( (modal: ModalType) => {
+  const getModal = useCallback((modal: ModalType) => {
     switch (modal) {
       case ModalType.Delete:
         return (
           <DeleteConfirmModal
-            key={"delete-modal"}
+            key={'delete-modal'}
             bucket={selectedBucket}
             selectedItems={selectedItems}
             onClose={closeModal}
@@ -66,28 +65,28 @@ const BrowserPage: FC = () => {
       case ModalType.Move:
         return (
           <RenameModal
-            key={"rename-modal"}
+            key={'rename-modal'}
             bucket={selectedBucket}
             selectedItem={selectedItems[0]}
-            onClose={closeModal} 
+            onClose={closeModal}
           />
         )
       case ModalType.Copy:
         return (
           <CopyModal
-            key={"copy-modal"}
+            key={'copy-modal'}
             bucket={selectedBucket}
             selectedItem={selectedItems[0]}
-            onClose={closeModal} 
+            onClose={closeModal}
           />
         )
       case ModalType.NewFolder:
         return (
           <NewFolderModal
-            key={"new-folder-modal"}
+            key={'new-folder-modal'}
             bucket={selectedBucket}
             targetKey={browserCurrentKey}
-            onClose={closeModal} 
+            onClose={closeModal}
           />
         )
     }
@@ -104,9 +103,9 @@ const BrowserPage: FC = () => {
       [ObjectItemAction.Download]: ModalType.Delete,
       [ObjectItemAction.NewFolder]: ModalType.NewFolder,
       [ObjectItemAction.Move]: ModalType.Move,
-      [ObjectItemAction.Share]: ModalType.Delete,
+      [ObjectItemAction.Share]: ModalType.Delete
     }
-    
+
     setCurrentModal(actionToModal[action])
 
     if (item) {
@@ -132,7 +131,7 @@ const BrowserPage: FC = () => {
 
   return (
     <>
-      <TopBar 
+      <TopBar
         bucket={selectedBucket}
         currentKey={browserCurrentKey}
         onItemAction={onItemAction}
@@ -155,7 +154,7 @@ const BrowserPage: FC = () => {
         </Then>
       </If>
     </>
-  );
-};
+  )
+}
 
-export default BrowserPage;
+export default BrowserPage

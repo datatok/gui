@@ -1,18 +1,18 @@
-import { AuthContext } from 'providers/AuthContext';
+import { AuthContext } from 'providers/AuthContext'
 import {
-    Navigate,
-  } from 'react-router-dom';
-  
-  const ProtectedRoute = ({ children }) => {  
-    return (
-      <AuthContext.Consumer>
-        {( {apiAccessToken} ) => (
-          apiAccessToken
+  Navigate
+} from 'react-router-dom'
+
+function ProtectedRoute ({ children }) {
+  return (
+    <AuthContext.Consumer>
+      {({ apiAccessToken }) => (
+        apiAccessToken
           ? <>{children}</>
           : <Navigate to="/" replace />
-        )}
-      </AuthContext.Consumer>
-    );
-  };
+      )}
+    </AuthContext.Consumer>
+  )
+}
 
 export default ProtectedRoute

@@ -1,13 +1,12 @@
-import { AxiosError, AxiosResponse } from 'axios'
-import axios from 'axios'
+import axios, { AxiosError, AxiosResponse } from 'axios'
 import React, { useCallback } from 'react'
 import { IAPISecurityState, useAuthContext } from 'providers/AuthContext'
 import { useNotificationContext } from 'providers/NotificationContext'
 import { useConfigContext } from 'providers/ConfigContext'
 
-export { default as BucketBrowseCommand} from './commands/BucketBrowseCommand'
-export { default as AuthLoginCommand} from './commands/AuthLoginCommand'
-export { default as GetBucketsCommand} from './commands/GetBucketsCommand'
+export { default as BucketBrowseCommand } from './commands/BucketBrowseCommand'
+export { default as AuthLoginCommand } from './commands/AuthLoginCommand'
+export { default as GetBucketsCommand } from './commands/GetBucketsCommand'
 export { default as CreateFolderCommand } from './commands/CreateFolderCommand'
 export { default as DeleteObjectCommand } from './commands/DeleteObjectCommand'
 export { default as useAuthAnonymousLogin } from './commands/AuthLoginAnonymousCommand'
@@ -16,16 +15,15 @@ export { default as AuthGetUser } from './commands/AuthGetUser'
 
 export type ApiCall = <T>(method: string, url: string, data?: any) => Promise<T>
 
-export type ApiCommand =  (...args: any[]) => Promise<any>
+export type ApiCommand = (...args: any[]) => Promise<any>
 
 export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCommand => {
-
   const authContext = useAuthContext()
 
-  const { 
-    addSiteToast 
+  const {
+    addSiteToast
   } = useNotificationContext()
-  
+
   const configContext = useConfigContext()
 
   if (!securityContext) {
@@ -33,7 +31,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
   }
 
   const queryCallback = useCallback(
-    <T>(method: string, pathURL: string, data?: any) => {
+    async <T>(method: string, pathURL: string, data?: any) => {
       let url = `${configContext.apiBaseURL}${pathURL}`
 
       method = method.toUpperCase()
@@ -43,7 +41,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
       }
 
       if (method === 'UPLOAD') {
-        headers["Content-Type"] = "multipart/form-data"
+        headers['Content-Type'] = 'multipart/form-data'
       }
 
       if (method === 'GET') {
@@ -56,37 +54,37 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
           url,
           headers,
           data,
-          maxRedirects: 5,
+          maxRedirects: 5
         })
-        .then((response:AxiosResponse) => {
-          resolve(response.data)
-        })
-        .catch((err:AxiosError) => {
-          let errorStr
+          .then((response: AxiosResponse) => {
+            resolve(response.data)
+          })
+          .catch((err: AxiosError) => {
+            let errorStr
 
-          if (err.code === "ERR_NETWORK") {
-            errorStr = err.message
-          } else {
-            if (err?.response?.status === 401) {
-              errorStr = `Unauthorized (status ${err?.response?.status})`
-            } 
-          }
+            if (err.code === 'ERR_NETWORK') {
+              errorStr = err.message
+            } else {
+              if (err?.response?.status === 401) {
+                errorStr = `Unauthorized (status ${err?.response?.status})`
+              }
+            }
 
-          if (errorStr) {
-            addSiteToast({
-              title: 'API error',
-              color: 'warning',
-              text: `API said "${errorStr}"`,
-            })
-          }
-          console.log(err)
+            if (errorStr) {
+              addSiteToast({
+                title: 'API error',
+                color: 'warning',
+                text: `API said "${errorStr}"`
+              })
+            }
+            console.log(err)
 
-          reject(err)
-        })
+            reject(err)
+          })
       })
 
-      return ret
-  }, [securityContext.apiAccessToken, configContext.apiBaseURL])
+      return await ret
+    }, [securityContext.apiAccessToken, configContext.apiBaseURL])
 
   return command(queryCallback)
 }
