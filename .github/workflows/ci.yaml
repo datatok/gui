@@ -27,5 +27,10 @@ jobs:
         cache-dependency-path: front/package-lock.json
 
     - run: npm ci
+      working-directory: front
+
     - run: npm test
+      working-directory: front
+
     - run: npm run build
+      working-directory: front
