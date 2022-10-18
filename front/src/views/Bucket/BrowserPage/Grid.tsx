@@ -1,9 +1,8 @@
-import { EuiBasicTable, EuiIcon } from '@elastic/eui'
+import { EuiBasicTable, EuiIcon, EuiLink } from '@elastic/eui'
 import { EuiTableSelectionType } from '@elastic/eui/src/components/basic_table'
-import EuiCustomLink from 'components/EuiCustomLink'
 import moment from 'moment'
-import React, { FC, useRef, useState } from 'react'
-import { Route } from 'services/routing'
+import React, { FC, useState } from 'react'
+import { Route, useNavigateProps } from 'services/routing'
 import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
 import { StringUtils } from 'utils/StringUtils'
 
@@ -17,9 +16,8 @@ interface GridProps {
 const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionChange }) => {
   const [sortField, setSortField] = useState('name')
   const [sortDirection, setSortDirection] = useState('asc')
-  const [selectedItems, setSelectedItems] = useState([])
 
-  const tableRef = useRef<EuiBasicTable>()
+  const navProps = useNavigateProps()
 
   const sorting: any = {
     sort: {
@@ -28,12 +26,7 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
     }
   }
 
-  const [refreshBrowseFilesWorkflow, setRefreshBrowseFilesWorkflow] = useState({
-    step: 'start',
-    message: ''
-  })
-
-  const resolveIcon = ({ name, type }) => {
+  const resolveIcon = ({ type }): string => {
     if (type === 'file') {
       return 'document'
     }
@@ -49,12 +42,13 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
       truncateText: false,
       width: '40%',
       render: (name, { path, type }) => {
+        const np = navProps(Route.BucketBrowse, { bucket: bucket.id, path })
         return (
           <>
-          <EuiIcon type={resolveIcon({ name, type })} />&nbsp;
-          <EuiCustomLink to={Route.BucketBrowse} toArgs={{ bucket: bucket.id, path }}>
+          <EuiIcon type={resolveIcon({ type })} />&nbsp;
+          <EuiLink {...np}>
            {name}
-          </EuiCustomLink>
+          </EuiLink>
           </>
         )
       }
@@ -63,13 +57,13 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
       field: 'size',
       name: 'size',
       sortable: true,
-      render: (size: number) => size && StringUtils.formatBytes(size, 2)
+      render: (size: number) => StringUtils.formatBytes(size, 2)
     },
     {
       field: 'editDate',
       name: 'editDate',
       sortable: true,
-      render: (date: string) => date && moment(date).fromNow()
+      render: (date: string) => date.length > 0 ? moment(date).fromNow() : ''
     },
     {
       name: 'Actions',
@@ -124,7 +118,7 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
     }
   ]
 
-  const onTableChange = ({ sort }: any) => {
+  const onTableChange = ({ sort }: any): void => {
     const { field: sortField, direction: sortDirection } = sort
 
     setSortField(sortField)
@@ -143,7 +137,6 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
 
   return (
     <EuiBasicTable
-      ref={tableRef}
       tableCaption="Folder children"
       items={listObjects}
       itemId="path"

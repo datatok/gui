@@ -1,8 +1,7 @@
-import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPage, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
+import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
 import { useBucketContext } from 'providers/BucketContext'
-import { FC, useMemo } from 'react'
-import { Route, useNavigateProps, useRoutingNavigate } from 'services/routing'
-import { GuiBucket } from 'types'
+import React, { FC, useMemo } from 'react'
+import { Route, useNavigateProps } from 'services/routing'
 
 const HomePage: FC = () => {
   /**
@@ -21,7 +20,7 @@ const HomePage: FC = () => {
         nav: navProps
       }
     })
-  }, [bucketContext.buckets])
+  }, [bucketContext.buckets, navigateProps])
 
   return (
     <EuiPageTemplate.Section>

@@ -1,27 +1,31 @@
-import { EuiAvatar, EuiButton, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiIcon, EuiLink, EuiPageTemplate, EuiPopover, EuiSpacer, EuiText, useGeneratedHtmlId } from '@elastic/eui'
+import { EuiAvatar, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiLink, EuiPopover, EuiSpacer, EuiText, useGeneratedHtmlId } from '@elastic/eui'
 import { useNavigate } from 'react-router-dom'
 import { useSiteMetaContext } from 'providers/SiteMetaContext'
 import { useAuthContext } from 'providers/AuthContext'
-import { FC, useMemo, useState } from 'react'
+import React, { FC, useMemo, useState } from 'react'
 import { If, Then } from 'react-if'
 
 import logoSVG from '../logo.svg'
 
-const HeaderUserMenu = ({ username }: { username: string }) => {
+interface UMProps {
+  username: string
+}
+
+const HeaderUserMenu: FC<UMProps> = ({ username }: { username: string }) => {
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: 'headerUserPopover'
   })
   const [isOpen, setIsOpen] = useState(false)
 
-  const onMenuButtonClick = () => {
+  const onMenuButtonClick = (): void => {
     setIsOpen(!isOpen)
   }
 
-  const closeMenu = () => {
+  const closeMenu = (): void => {
     setIsOpen(false)
   }
 
-  if (!username) {
+  if (username !== '') {
     return (
       <EuiHeaderSectionItemButton>
         <EuiAvatar name="?" size="s" />
@@ -71,17 +75,17 @@ const HeaderUserMenu = ({ username }: { username: string }) => {
   )
 }
 
-const HeaderAboutMenu = () => {
+const HeaderAboutMenu: FC = () => {
   const headerUserPopoverId = useGeneratedHtmlId({
     prefix: 'headerAboutPopover'
   })
   const [isOpen, setIsOpen] = useState(false)
 
-  const onMenuButtonClick = () => {
+  const onMenuButtonClick = (): void => {
     setIsOpen(!isOpen)
   }
 
-  const closeMenu = () => {
+  const closeMenu = (): void => {
     setIsOpen(false)
   }
 
@@ -128,7 +132,7 @@ const HeaderAboutMenu = () => {
   )
 }
 
-const LayoutHeader = () => {
+const LayoutHeader: FC = () => {
   /**
    * Hooks
    */

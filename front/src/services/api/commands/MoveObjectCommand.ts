@@ -6,9 +6,7 @@ interface APIResponse {
   deleteOperation: any
 }
 
-interface CommandResponse {
-
-}
+interface CommandResponse extends APIResponse {}
 
 export default (apiCall: ApiCall) => {
   return async (bucket: GuiBucket, item: GuiBrowserObject, targetKey: string): Promise<CommandResponse> => {

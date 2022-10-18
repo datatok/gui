@@ -1,4 +1,4 @@
-import { GuiBrowserObject, GuiBucket } from 'types'
+import { GuiBucket } from 'types'
 import { ApiCall } from '..'
 
 interface APIResponse {
@@ -6,7 +6,7 @@ interface APIResponse {
 }
 
 interface CommandResponse {
-
+  status: string
 }
 
 export default (apiCall: ApiCall) => {

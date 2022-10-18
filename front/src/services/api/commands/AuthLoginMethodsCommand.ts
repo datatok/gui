@@ -9,9 +9,10 @@ import { ApiCall } from '..'
     },
  */
 
-interface AuthMethod {
+export interface AuthMethod {
   name: string
   type: string
+  provider: string
 }
 
 interface APIResponse {

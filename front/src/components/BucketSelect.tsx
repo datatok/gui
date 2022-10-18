@@ -5,12 +5,12 @@ import { GuiBucket } from 'types'
 
 interface BucketSelectProps {
   buckets: GuiBucket[]
-  bucket: GuiBucket
+  bucket: GuiBucket | null
 }
 
 const bucketToOption = (bucket: GuiBucket): EuiSuperSelectOption<string> => {
   return {
-    inputDisplay: `${bucket.name} ${bucket.host ? `(${bucket.host})` : ''}`,
+    inputDisplay: `${bucket.name} ${bucket.host !== '' ? `(${bucket.host})` : ''}`,
     value: bucket.id
   }
 }
@@ -20,14 +20,14 @@ const BucketSelect: FC<BucketSelectProps> = ({ buckets, bucket }) => {
 
   const navigate = useRoutingNavigate()
 
-  const [selectedValue, setSelectedValue] = useState<string>(bucket?.id || '')
+  const [selectedValue, setSelectedValue] = useState<string>(bucket === null ? '' : bucket.id)
 
-  const onChange = (bucket: string) => {
+  const onChange = (bucket: string): void => {
     navigate(Route.BucketHome, { bucket })
   }
 
   React.useEffect(() => {
-    setSelectedValue(bucket?.id)
+    setSelectedValue(bucket === null ? '' : bucket.id)
   }, [bucket])
 
   return (
@@ -35,7 +35,7 @@ const BucketSelect: FC<BucketSelectProps> = ({ buckets, bucket }) => {
       options={labels}
       placeholder="Select a bucket"
       onChange={onChange}
-      valueOfSelected={selectedValue || ''}
+      valueOfSelected={selectedValue}
     />
   )
 }

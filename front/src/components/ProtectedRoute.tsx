@@ -1,13 +1,14 @@
 import { AuthContext } from 'providers/AuthContext'
+import React, { FC } from 'react'
 import {
   Navigate
 } from 'react-router-dom'
 
-function ProtectedRoute ({ children }) {
+const ProtectedRoute: FC = ({ children }) => {
   return (
     <AuthContext.Consumer>
       {({ apiAccessToken }) => (
-        apiAccessToken
+        apiAccessToken === ''
           ? <>{children}</>
           : <Navigate to="/" replace />
       )}

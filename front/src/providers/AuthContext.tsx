@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { FC, useEffect } from 'react'
 import { AuthGetUser, useAPI } from 'services/api'
 import store from 'store'
 
@@ -32,7 +32,7 @@ export const AuthContext = React.createContext<IAuthContext>({
 /**
  * Export helpers
  */
-export const useAuthContext = () => {
+export const useAuthContext = (): IAuthContext => {
   // get the context
   const context = React.useContext(AuthContext)
 
@@ -47,7 +47,7 @@ export const useAuthContext = () => {
 /**
  * Export context provider
  */
-export const AuthContextProvider = ({ children }) => {
+export const AuthContextProvider: FC = ({ children }) => {
   const [state, setState] = React.useState<IAuthState>({
     apiAccessToken: store.get('access_token'),
     username: ''
@@ -57,7 +57,7 @@ export const AuthContextProvider = ({ children }) => {
 
   const actions = {
     setApiAccessToken: (apiAccessToken: string) => {
-      if (apiAccessToken) {
+      if (apiAccessToken !== '') {
         store.set('access_token', apiAccessToken)
       } else {
         store.clearAll()
@@ -84,7 +84,7 @@ export const AuthContextProvider = ({ children }) => {
    * Render
    */
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       const { username } = await authGetUser()
 
       setState({
@@ -93,8 +93,11 @@ export const AuthContextProvider = ({ children }) => {
       })
     }
 
-    if (state.apiAccessToken) {
+    if (state.apiAccessToken !== '') {
       fetchData()
+        .catch(err => {
+          alert(err.message)
+        })
     }
   }, [state.apiAccessToken])
 

@@ -1,6 +1,5 @@
-import { EuiCallOut, EuiLink, EuiLoadingSpinner, EuiText, EuiTreeView } from '@elastic/eui'
+import { EuiCallOut, EuiLink, EuiLoadingSpinner, EuiText } from '@elastic/eui'
 import React, { FC } from 'react'
-import BucketSelect from 'components/BucketSelect'
 
 interface SidebarProps {
   status: string
@@ -24,7 +23,7 @@ const APIWorkflowCallout: FC<SidebarProps> = ({ message, onRetry, status }) => {
           API client is getting:
           </p>
           <p>
-          "{message}"
+          {message}
           </p>
           <p>
           <EuiLink onClick={onRetry}>retry</EuiLink>

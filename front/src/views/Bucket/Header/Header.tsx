@@ -1,7 +1,8 @@
 import { EuiPageTemplate } from '@elastic/eui'
 import { useSiteMetaContext } from 'providers/SiteMetaContext'
+import React, { FC } from 'react'
 
-function Header () {
+const Header: FC = () => {
   /**
    * Contexts
    */

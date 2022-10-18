@@ -12,7 +12,7 @@ import { useAuthContext } from 'providers/AuthContext'
 const AnonymousLoginPage: FC = () => {
   const navigate = useRoutingNavigate()
   const apiAuthLoginAnonymous = useAPI(AuthLoginAnonymousCommand)
-  const { apiAccessToken, setApiAccessToken } = useAuthContext()
+  const { setApiAccessToken } = useAuthContext()
 
   const [workflowStep, setWorkflowStep] = useState({
     status: 'start',
@@ -20,7 +20,7 @@ const AnonymousLoginPage: FC = () => {
   })
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       setWorkflowStep({
         status: 'loading',
         message: ''
@@ -42,7 +42,7 @@ const AnonymousLoginPage: FC = () => {
       })
   }, [])
 
-  const retry = () => {
+  const retry = (): void => {
     setWorkflowStep({
       status: 'start',
       message: ''

@@ -10,10 +10,6 @@ import {
   EuiModalFooter,
   EuiModalHeader,
   EuiModalHeaderTitle,
-  EuiRange,
-  EuiSwitch,
-  EuiSuperSelect,
-  EuiText,
   useGeneratedHtmlId
 } from '@elastic/eui'
 
@@ -41,7 +37,7 @@ const RenameModal: FC<RenameModalProps> = ({
 
   const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
 
-  const onFormNameChange = (event: any) => {
+  const onFormNameChange = (event: any): void => {
     const target = event.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
@@ -52,10 +48,14 @@ const RenameModal: FC<RenameModalProps> = ({
     })
   }
 
-  const onSubmit = async () => {
-    const response = await apiRenameKey(bucket, selectedItem, `${formData.path}/${formData.name}`)
-
-    onClose()
+  const onSubmit = (): void => {
+    apiRenameKey(bucket, selectedItem, `${formData.path}/${formData.name}`)
+      .then(response => {
+        onClose()
+      })
+      .catch(err => {
+        alert(err.message)
+      })
   }
 
   const formSample = (
@@ -79,7 +79,7 @@ const RenameModal: FC<RenameModalProps> = ({
     >
      <EuiModalHeader>
         <EuiModalHeaderTitle>
-          <h1>Edit file "{selectedItem.name}"</h1>
+          <h1>Edit file {selectedItem.name}</h1>
         </EuiModalHeaderTitle>
       </EuiModalHeader>
 

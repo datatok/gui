@@ -1,14 +1,9 @@
 import React, { FC, useEffect, useState } from 'react'
 import {
-  EuiCallOut,
-  EuiLink,
-  EuiLoadingSpinner,
-  EuiPageTemplate, EuiText
+  EuiPageTemplate
 } from '@elastic/eui'
 import { useRoutingNavigate, Route } from 'services/routing'
-import { AxiosError } from 'axios'
 import APIWorkflowCallout from 'components/APIWorkflowCallout'
-import { GetBucketsCommand } from 'services/api'
 
 interface Props {
   apiAccessToken: string
@@ -29,23 +24,10 @@ const HomeLayout: FC<Props> = ({ apiAccessToken }) => {
         status: 'loading',
         message: ''
       })
-      /*
-      GetBucketsCommand()
-        .then(({ buckets }) => {
-          bucketActions.setBuckets(buckets)
-
-          navigate(Route.BucketHome, { bucket : buckets[0].id});
-        })
-        .catch((error:AxiosError) => {
-          setWorkflowStep({
-            status: "error",
-            message: error.message
-          })
-        }) */
     }
   })
 
-  const retry = () => {
+  const retry = (): void => {
     setWorkflowStep({
       status: 'start',
       message: ''

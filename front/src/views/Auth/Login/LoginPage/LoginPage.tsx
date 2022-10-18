@@ -9,6 +9,7 @@ import {
 import logoSVG from '../../../../logo.svg'
 import { AuthLoginMethodsCommand, useAPI } from 'services/api'
 import { useNavigate } from 'react-router-dom'
+import { AuthMethod } from 'services/api/commands/AuthLoginMethodsCommand'
 
 const AUTH_PROVIDERS = {
   gitlab: {
@@ -23,21 +24,24 @@ const AUTH_PROVIDERS = {
 }
 
 const LoginPage: FC = () => {
-  const [authMethods, setAuthMethods] = useState([])
+  const [authMethods, setAuthMethods] = useState<AuthMethod[]>([])
 
   const getAuthMethods = useAPI(AuthLoginMethodsCommand)
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       const methods = await getAuthMethods()
 
       setAuthMethods(methods)
     }
 
     fetchData()
-  }, [])
+      .catch(err => {
+        alert(err.message)
+      })
+  }, [getAuthMethods, setAuthMethods])
 
   const authLinks: EuiListGroupItemProps[] = authMethods.map(
     (method): EuiListGroupItemProps => {

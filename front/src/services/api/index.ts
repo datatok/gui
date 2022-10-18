@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { IAPISecurityState, useAuthContext } from 'providers/AuthContext'
 import { useNotificationContext } from 'providers/NotificationContext'
 import { useConfigContext } from 'providers/ConfigContext'
@@ -26,7 +26,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
 
   const configContext = useConfigContext()
 
-  if (!securityContext) {
+  if (typeof securityContext === 'undefined') {
     securityContext = authContext
   }
 
@@ -36,8 +36,11 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
 
       method = method.toUpperCase()
 
-      const headers = {
-        Authorization: `Bearer ${securityContext.apiAccessToken}`
+      const headers = {}
+
+      if (typeof securityContext?.apiAccessToken !== 'undefined') {
+        // eslint-disable-next-line @typescript-eslint/dot-notation
+        headers['Authorization'] = `Bearer ${securityContext.apiAccessToken}`
       }
 
       if (method === 'UPLOAD') {
@@ -60,7 +63,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
             resolve(response.data)
           })
           .catch((err: AxiosError) => {
-            let errorStr
+            let errorStr: string = ''
 
             if (err.code === 'ERR_NETWORK') {
               errorStr = err.message
@@ -70,7 +73,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
               }
             }
 
-            if (errorStr) {
+            if (errorStr !== '') {
               addSiteToast({
                 title: 'API error',
                 color: 'warning',

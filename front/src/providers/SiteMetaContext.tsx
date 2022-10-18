@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 
 interface BreadcrumbItem {
   text: string
@@ -28,7 +28,7 @@ export const SiteContext = React.createContext<ISiteMetaContext>({
 /**
  * Export helpers
  */
-export const useSiteMetaContext = () => {
+export const useSiteMetaContext = (): ISiteMetaContext => {
   // get the context
   const context = React.useContext(SiteContext)
 
@@ -40,7 +40,7 @@ export const useSiteMetaContext = () => {
   return context
 }
 
-export const useSetSiteMetaTitle = () => {
+export const useSetSiteMetaTitle = (): (title: string) => void => {
   const ctx = React.useContext(SiteContext)
 
   return (title: string) => {
@@ -51,7 +51,7 @@ export const useSetSiteMetaTitle = () => {
 /**
  * Export context provider
  */
-export const SiteMetaContextProvider = ({ children }) => {
+export const SiteMetaContextProvider: FC = ({ children }) => {
   const [state, setState] = React.useState<ISiteMetaState>({
     title: 'GUI',
     breadcrumbs: []

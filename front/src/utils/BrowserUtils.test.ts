@@ -1,10 +1,5 @@
-import path from 'path'
 import { GuiBrowserObject, GuiObjects } from 'types'
 import { BrowserUtils } from './BrowserUtils'
-
-const createItem = (name: string, prefix: string): GuiBrowserObject => {
-  return { name, path: path.join(prefix, name), prefix, type: 'folder' }
-}
 
 test('extractNamePrefix', () => {
   const pairs = [{

@@ -1,6 +1,6 @@
 import { EuiConfirmModal } from '@elastic/eui'
 import { useNotificationContext } from 'providers/NotificationContext'
-import React, { FC, useState, useCallback } from 'react'
+import React, { FC, useState } from 'react'
 import { DeleteObjectCommand, useAPI } from 'services/api'
 import { GuiBrowserObject, GuiBucket } from 'types'
 
@@ -24,26 +24,26 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
     message: ''
   })
 
-  const doDeleteSelection = useCallback(async () => {
+  const doDeleteSelection = (): void => {
     setProcessStatus({ step: 'doing', message: '' })
 
-    try {
-      const response = await apiDeleteObject(bucket, selectedItems)
+    apiDeleteObject(bucket, selectedItems)
+      .then(() => {
+        setProcessStatus({ step: 'done', message: '' })
 
-      setProcessStatus({ step: 'done', message: '' })
+        addSiteToast({
+          title: 'Success',
+          color: 'success',
+          iconType: 'help',
+          text: 'File deleted!'
+        })
 
-      addSiteToast({
-        title: 'Success',
-        color: 'success',
-        iconType: 'help',
-        text: 'File deleted!'
+        onClose()
       })
-
-      onClose()
-    } catch (err) {
-      setProcessStatus({ step: 'error', message: err.message })
-    }
-  }, [bucket, selectedItems])
+      .catch(err => {
+        setProcessStatus({ step: 'error', message: err.message })
+      })
+  }
 
   return (<EuiConfirmModal
       title="Do this destructive thing"
@@ -53,6 +53,7 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
       confirmButtonText="Yes, do it"
       buttonColor="danger"
       defaultFocusedButton="confirm"
+      isLoading={processStatus.step === 'doing'}
     >
       <p>You&rsquo;re about to remove {selectedItems.length} file(s):</p>
       <ul>

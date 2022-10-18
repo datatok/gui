@@ -1,8 +1,7 @@
 import React, { FC, useState } from 'react'
-import { useParams, useNavigate, useLocation, matchPath } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { GetBucketsCommand, useAPI } from 'services/api'
 import { GuiBucket } from 'types'
-import { StringUtils } from 'utils/StringUtils'
 
 export interface IBucketState {
   buckets: GuiBucket[]
@@ -57,18 +56,20 @@ const BucketContextProvider: FC = ({
   const apiGetBuckets = useAPI(GetBucketsCommand)
 
   const getByID = (path: string, buckets: GuiBucket[]): GuiBucket | null => {
-    return buckets.find(b => b.id === path) || null
+    const ret = buckets.find(b => b.id === path)
+
+    return ret ?? null
   }
 
-  const setBuckets = (buckets: GuiBucket[], currentID?: string) => {
+  const setBuckets = (buckets: GuiBucket[], currentID?: string): void => {
     setState({
       ...state,
       buckets,
-      current: currentID ? getByID(currentID, buckets) : null
+      current: typeof currentID === 'undefined' ? null : getByID(currentID, buckets)
     })
   }
 
-  const setCurrentByID = (path?: string | null) => {
+  const setCurrentByID = (path?: string | null): void => {
     if (path === null || typeof path === 'undefined') {
       setState({
         ...state,
@@ -103,7 +104,7 @@ const BucketContextProvider: FC = ({
   // When apiAccessToken changes -> get buckets list
   //
   React.useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       const buckets = await apiGetBuckets()
 
       setBuckets(buckets)

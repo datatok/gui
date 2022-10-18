@@ -1,6 +1,7 @@
 import { EuiGlobalToastList, EuiText } from '@elastic/eui'
 import { Toast } from '@elastic/eui/src/components/toast/global_toast_list'
-import React, { ReactChild, ReactNode } from 'react'
+import React, { ReactChild, ReactNode, FC } from 'react'
+import Utils from 'utils/Utils'
 
 interface INotificationState {
   toasts: MyToast[]
@@ -31,7 +32,7 @@ export const NotificationContext = React.createContext<INotificationContext>({
 /**
  * Export helpers
  */
-export const useNotificationContext = () => {
+export const useNotificationContext = (): INotificationContext => {
   // get the context
   const context = React.useContext(NotificationContext)
 
@@ -46,7 +47,7 @@ export const useNotificationContext = () => {
 /**
  * Export context provider
  */
-export const NotificationProvider = ({ children }) => {
+export const NotificationProvider: FC = ({ children }) => {
   const [state, setState] = React.useState<INotificationState>({
     toasts: []
   })
@@ -56,7 +57,7 @@ export const NotificationProvider = ({ children }) => {
       setState({
         ...state,
         toasts: [...state.toasts, {
-          id: 't-' + state.toasts.length + 1,
+          id: `t-${state.toasts.length + 1}`,
           ...toast
         }]
       })
@@ -68,15 +69,15 @@ export const NotificationProvider = ({ children }) => {
   const copyToats: Toast[] = state.toasts.map(t => {
     return {
       ...t,
-      id: t.id || '',
+      id: Utils.defaultTo(t.id, ''),
       text: <EuiText><p>{t.text}</p></EuiText>
     }
   })
 
-  const removeToast = (removedToast) => {
+  const removeToast = ({ id }: { id: string }): void => {
     setState({
       ...state,
-      toasts: state.toasts.filter((toast) => toast.id !== removedToast.id)
+      toasts: state.toasts.filter((toast) => toast.id !== id)
     })
   }
 

@@ -12,26 +12,22 @@ import BucketLayout from 'views/Bucket/BucketLayout/BucketLayout'
 import LoginPage from 'views/Auth/Login/LoginPage/LoginPage'
 import NotFoundErrorPage from 'views/Error/ErrorPage/NotFoundErrorPage'
 import {
-  EuiGlobalToastList, EuiHeader, EuiPageTemplate, EuiProvider
+  EuiPageTemplate, EuiProvider
 } from '@elastic/eui'
 
 // import '@elastic/eui/dist/eui_theme_light.css';
 import '@elastic/eui/dist/eui_theme_dark.css'
 
 import AnonymousLoginPage from 'views/Auth/AnonymousPage'
-import HomeLayout from 'views/Home/Layout'
 import ProtectedRoute from 'components/ProtectedRoute'
-import BucketContextProvider, { BucketContext } from 'providers/BucketContext'
+import BucketContextProvider from 'providers/BucketContext'
 import HomePage from 'views/Bucket/HomePage/HomePage'
 import DetailsPage from 'views/Bucket/DetailsPage/DetailsPage'
-import { If, Then } from 'react-if'
 import { SiteMetaContextProvider } from 'providers/SiteMetaContext'
 import { AuthContext, AuthContextProvider } from 'providers/AuthContext'
 import BrowserPage from 'views/Bucket/BrowserPage/BrowserPage'
 import { NotificationProvider } from 'providers/NotificationContext'
 import UploadPage from 'views/Bucket/UploadPage/UploadPage'
-import Header from 'views/Bucket/Header/Header'
-import Sidebar from 'views/Bucket/Sidebar/Sidebar'
 import LayoutHeader from 'components/LayoutHeader'
 import { ConfigContextProvider } from 'providers/ConfigContext'
 
@@ -53,7 +49,7 @@ ReactDOM.render(
                     element={(
                       <AuthContext.Consumer>
                         {({ apiAccessToken }) => (
-                          apiAccessToken
+                          apiAccessToken !== ''
                             ? <Navigate to="/bucket" replace />
                             : <Navigate to="/auth" replace />
                         )}
@@ -104,17 +100,7 @@ ReactDOM.render(
                     <Route path=":bucket" element={<BucketLayout />}>
                       <Route
                         path=""
-                        element={(
-                        <BucketContext.Consumer>
-                          {({ current }) => (
-                            <If condition={current !== null}>
-                              <Then>
-                                <DetailsPage bucket={current} />
-                              </Then>
-                            </If>
-                          )}
-                        </BucketContext.Consumer>
-                        )}
+                        element={<DetailsPage />}
                       />
                       <Route path="upload" element={<UploadPage />} />
                       <Route path="upload/*" element={<UploadPage />} />

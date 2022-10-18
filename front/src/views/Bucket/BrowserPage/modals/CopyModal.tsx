@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
 import {
   EuiButton,
   EuiButtonEmpty,
@@ -15,7 +15,6 @@ import {
 } from '@elastic/eui'
 
 import { GuiBrowserObject, GuiBucket } from 'types'
-import MoveObjectCommand from 'services/api/commands/MoveObjectCommand'
 import { useAPI } from 'services/api'
 import CopyObjectCommand from 'services/api/commands/CopyObjectCommand'
 import { If, Then } from 'react-if'
@@ -45,7 +44,7 @@ const CopyModal: FC<CopyModalProps> = ({
 
   const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
 
-  const onFormNameChange = (event: any) => {
+  const onFormNameChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const target = event.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
@@ -56,28 +55,28 @@ const CopyModal: FC<CopyModalProps> = ({
     })
   }
 
-  const onSubmit = useCallback(async () => {
+  const onSubmit = (): void => {
     setAPIStatus({
       step: 'loading',
       message: ''
     })
 
-    try {
-      const response = await apiRenameKey(bucket, selectedItem, `${formData.path}/${formData.name}`)
+    apiRenameKey(bucket, selectedItem, `${formData.path}/${formData.name}`)
+      .then(() => {
+        setAPIStatus({
+          step: 'success',
+          message: ''
+        })
 
-      setAPIStatus({
-        step: 'success',
-        message: ''
+        onClose()
       })
-
-      onClose()
-    } catch (err) {
-      setAPIStatus({
-        step: 'error',
-        message: err.message
+      .catch(err => {
+        setAPIStatus({
+          step: 'error',
+          message: err.message
+        })
       })
-    }
-  }, [bucket, selectedItem, formData.path, formData.name])
+  }
 
   const formSample = (
     <EuiForm id={modalFormId} component="form">
@@ -100,7 +99,7 @@ const CopyModal: FC<CopyModalProps> = ({
     >
      <EuiModalHeader>
         <EuiModalHeaderTitle>
-          <h1>Copy "{selectedItem.name}"</h1>
+          <h1>Copy `{selectedItem.name}`</h1>
         </EuiModalHeaderTitle>
       </EuiModalHeader>
 

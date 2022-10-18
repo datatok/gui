@@ -1,5 +1,5 @@
 import { EuiButton, EuiFlexGroup, EuiFlexItem } from '@elastic/eui'
-import { FC } from 'react'
+import React, { FC, ReactElement } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getRouteURL, onClick, Route } from 'services/routing'
 import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
@@ -15,7 +15,7 @@ interface TopBarProps {
 const TopBar: FC<TopBarProps> = ({ bucket, currentKey, onItemAction, onRefresh, selectedItems }) => {
   const navigate = useNavigate()
 
-  const getSideUploadButton = () => {
+  const getSideUploadButton = (): ReactElement => {
     const href = getRouteURL(Route.BucketUpload, {
       bucket: bucket.id,
       path: currentKey
@@ -26,11 +26,11 @@ const TopBar: FC<TopBarProps> = ({ bucket, currentKey, onItemAction, onRefresh, 
     })} key={'upload'} >Upload</EuiButton>
   }
 
-  const getSideNewFolderButton = () => {
+  const getSideNewFolderButton = (): ReactElement => {
     return <EuiButton iconType={'plus'} onClick={() => onItemAction(ObjectItemAction.NewFolder)} key={'new-dir'} >New folder</EuiButton>
   }
 
-  const refreshButton = () => {
+  const refreshButton = (): ReactElement => {
     return <EuiButton onClick={() => onRefresh()} key={'refresh'} iconType={'refresh'}>Refresh</EuiButton>
   }
 

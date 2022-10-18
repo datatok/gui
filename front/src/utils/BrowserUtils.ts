@@ -1,4 +1,3 @@
-import { string } from 'prop-types'
 import { GuiBrowserObject, GuiBrowserObjectNode, GuiObjects } from 'types'
 import * as R from 'ramda'
 import { StringUtils } from './StringUtils'
@@ -21,7 +20,7 @@ const extractNamePrefix = (path: string): { name: string, prefix: string, path: 
 const deepPick = (properties: string[], currentNode: any): any => {
   const ret = R.pick(properties, currentNode)
 
-  if (currentNode.children) {
+  if (currentNode.children.length > 0) {
     ret.children = ret.children.map(c => deepPick(properties, c))
   }
 
@@ -29,7 +28,7 @@ const deepPick = (properties: string[], currentNode: any): any => {
 }
 
 const splitKeyPrefixes = (key: string): string[] => {
-  const ret = []
+  const ret: string[] = []
 
   key = StringUtils.trim(key, '/')
 
@@ -64,17 +63,23 @@ const hierarchy = (pathsParts: string[][], depth: number, path: string, name: st
 
   pathsParts.forEach(p => {
     if (p.length > depth) {
-      lookup[p[depth]] = [...(lookup[p[depth]] || []), p]
+      const k = p[depth]
+
+      if (lookup[k] === undefined) {
+        lookup[k] = [p]
+      } else {
+        lookup[k].push(p)
+      }
     }
   })
 
-  const m = (v: string[][], k: string) => hierarchy(v, depth + 1, path + (path ? '/' : '') + k, k)
+  const m = (v: string[][], k: string): GuiBrowserObjectNode => hierarchy(v, depth + 1, path + (path !== '' ? '/' : '') + k, k)
 
   return { name, path, children: R.mapObjIndexed(m, lookup) }
 }
 
 const getHierarchy2 = (objects: GuiObjects): GuiBrowserObjectNode => {
-  const isFolder = (v: GuiBrowserObject, k: string) => v.type === 'folder'
+  const isFolder = (v: GuiBrowserObject, k: string): boolean => v.type === 'folder'
   const onlyFolders = R.pickBy(isFolder, objects)
 
   const pathPars = Object.keys(onlyFolders).map(p => p.split('/'), '')
@@ -87,7 +92,7 @@ const mergeObjects = (prefix: string, currentObjects: GuiObjects, newObjects: Gu
     prefix += '/'
   }
 
-  const isNotChild = (_: GuiBrowserObject, key: string) => {
+  const isNotChild = (_: GuiBrowserObject, key: string): boolean => {
     return !key.startsWith(prefix)
   }
 

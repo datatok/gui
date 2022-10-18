@@ -1,8 +1,8 @@
 import { EuiIcon } from '@elastic/eui'
 import { Node } from '@elastic/eui/src/components/tree_view/tree_view'
-import React, { FC, useEffect, useMemo, useRef } from 'react'
+import React, { FC, useMemo } from 'react'
 import { Route, useRoutingNavigate } from 'services/routing'
-import { GuiBrowserObject, GuiBucket, GuiBrowserObjectNode, GuiObjects } from 'types'
+import { GuiBucket, GuiBrowserObjectNode, GuiObjects } from 'types'
 import { BrowserUtils } from 'utils/BrowserUtils'
 import * as R from 'ramda'
 import { EuiTreeView } from './MyEuiTreeView'
@@ -16,8 +16,6 @@ interface FilesTreeViewProps {
 const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSelectedKey }) => {
   const navigate = useRoutingNavigate()
 
-  const $treeView = useRef<EuiTreeView>()
-
   const rootNode = useMemo(() => BrowserUtils.getHierarchy(objectItems), [objectItems])
 
   const pathParts = useMemo(() => ['', ...BrowserUtils.splitKeyPrefixes(objectSelectedKey)], [objectSelectedKey])
@@ -28,7 +26,7 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
   const fileToTreeNode = (node: GuiBrowserObjectNode): Node => {
     const r: Node = {
       id: node.path,
-      label: node.name || 'root',
+      label: node.name === '' ? 'root' : node.name,
       isExpanded: R.indexOf(node.path, pathParts) !== -1,
       icon: <EuiIcon type="folderClosed" />,
       iconWhenExpanded: <EuiIcon type="folderOpen" />,
@@ -43,14 +41,18 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
 
     }
 
-    if (node.children) {
-      return {
-        ...r,
-        children:
-          Object.values(node.children)
-            .filter(c => c.name)
-            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
-            .map((v: GuiBrowserObjectNode) => fileToTreeNode(v))
+    if (typeof node.children !== 'undefined') {
+      const children = Object.values(node.children)
+
+      if (children.length > 0) {
+        return {
+          ...r,
+          children:
+            children
+              .filter(c => c.name)
+              .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+              .map((v: GuiBrowserObjectNode) => fileToTreeNode(v))
+        }
       }
     }
 
@@ -65,7 +67,6 @@ const FilesTreeView: FC<FilesTreeViewProps> = ({ bucket, objectItems, objectSele
 
   return (
     <EuiTreeView items={treeItems} aria-label="files"
-      ref={$treeView}
       openItems={openItems}
       activeItem={objectSelectedKey}
       display="compressed"

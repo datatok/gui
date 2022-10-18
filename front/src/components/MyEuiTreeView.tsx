@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 /*
  * Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
  * or more contributor license agreements. Licensed under the Elastic License
@@ -9,7 +11,7 @@
 import React, { Component, HTMLAttributes, createContext } from 'react'
 import classNames from 'classnames'
 
-import { EuiIcon, EuiI18n, EuiText, EuiScreenReaderOnly, EuiInnerText, keys, htmlIdGenerator } from '@elastic/eui'
+import { EuiIcon, EuiI18n, EuiText, EuiInnerText, htmlIdGenerator } from '@elastic/eui'
 
 import { CommonProps } from '@elastic/eui/src/components/common'
 

@@ -6,6 +6,7 @@ import React, { FC, useState, useEffect } from 'react'
 import { If, Then } from 'react-if'
 import { useAPI } from 'services/api'
 import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand'
+import { Route, useRoutingNavigate } from 'services/routing'
 import { StringUtils } from 'utils/StringUtils'
 
 interface MyState {
@@ -30,12 +31,14 @@ const UploadPage: FC = () => {
 
   useEffect(() => {
     setSiteTitle('Upload')
-  }, [])
+  }, [setSiteTitle])
+
+  const navigate = useRoutingNavigate()
 
   const [formData, setFormData] = useState<MyState>({
-    bucket: selectedBucket?.name || '',
-    host: selectedBucket?.host || '',
-    path: targetKey || '',
+    bucket: selectedBucket === null ? '' : selectedBucket.name,
+    host: selectedBucket === null ? '' : selectedBucket.host,
+    path: targetKey === null ? '' : targetKey,
     files: []
   })
 
@@ -43,7 +46,7 @@ const UploadPage: FC = () => {
     return <></>
   }
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: any): void => {
     const target = event.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
@@ -54,14 +57,14 @@ const UploadPage: FC = () => {
     })
   }
 
-  const handleFilesChange = (files: FileList) => {
+  const handleFilesChange = (files: FileList): void => {
     setFormData({
       ...formData,
       files: Array.from(files)
     })
   }
 
-  const submitForm = async () => {
+  const submitForm = (): void => {
     if (formData.files?.length === 0) {
       addSiteToast({
         color: 'warning',
@@ -69,20 +72,21 @@ const UploadPage: FC = () => {
         text: 'Files are missing!'
       })
     } else {
-      const res = await uploadObjects(selectedBucket, formData.path, formData.files)
-
-      /* navigate(Route.BucketBrowse, {
-        bucket: selectedBucket.id,
-        path: targetKey
-      }) */
-
-      addSiteToast({
-        color: 'success',
-        title: 'Upload',
-        text: 'Your files are ready!'
-      })
-
-      console.log(res)
+      uploadObjects(selectedBucket, formData.path, formData.files)
+        .then(response => {
+          addSiteToast({
+            color: 'success',
+            title: 'Upload',
+            text: 'Your files are ready!'
+          })
+          navigate(Route.BucketBrowse, {
+            bucket: selectedBucket.id,
+            path: targetKey === null ? '' : targetKey
+          })
+        })
+        .catch(err => {
+          alert(err)
+        })
     }
   }
 
@@ -135,7 +139,7 @@ const UploadPage: FC = () => {
 
         <If condition={formData?.files?.length > 0}>
           <Then>
-              <EuiBasicTable
+              <EuiBasicTable<File>
                 items={formData.files}
                 columns={[
                   { field: 'name', name: 'Name' },

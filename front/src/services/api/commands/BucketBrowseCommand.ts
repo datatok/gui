@@ -19,21 +19,21 @@ interface CommandResponse {
 
 export default (apiCall: ApiCall) => {
   return async (bucket: GuiBucket, argPath?: string): Promise<CommandResponse> => {
-    argPath = argPath ? StringUtils.trim(argPath, '/') : ''
+    const argPathFix = argPath === undefined ? '' : StringUtils.trim(argPath, '/')
     const pathURL = `/bucket/${bucket.id}/browse`
 
     const { path, files } = await apiCall<APIResponse>('get', pathURL, {
-      path: argPath
+      path: argPathFix
     })
 
     return {
       path,
-      files: files.map(f => {
+      files: files.map((f): GuiBrowserObject => {
         return {
           ...f,
-          prefix: argPath,
+          prefix: argPathFix,
           path: StringUtils.pathJoin(argPath, f.name)
-        } as GuiBrowserObject
+        }
       })
     }
   }

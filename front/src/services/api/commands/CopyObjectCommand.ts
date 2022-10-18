@@ -5,7 +5,7 @@ interface APIResponse {
   copyOperation: any
 }
 
-interface CommandResponse {
+interface CommandResponse extends APIResponse {
 
 }
 

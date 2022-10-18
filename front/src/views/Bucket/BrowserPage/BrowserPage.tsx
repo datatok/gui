@@ -1,6 +1,6 @@
 import { EuiSpacer } from '@elastic/eui'
 import React, { FC, useCallback, useEffect, useState } from 'react'
-import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
+import { GuiBrowserObject, ObjectItemAction } from 'types'
 import DeleteConfirmModal from './modals/DeleteConfirmModal'
 import Grid from './Grid'
 import RenameModal from './modals/MoveModal'
@@ -45,13 +45,17 @@ const BrowserPage: FC = () => {
    * State
    */
   const [currentModal, setCurrentModal] = useState(ModalType.None)
-  const [selectedItems, setSelectedItems] = useState([])
+  const [selectedItems, setSelectedItems] = useState<GuiBrowserObject[]>([])
 
   useEffect(() => {
     setSiteTitle('Browse')
-  }, [])
+  }, [setSiteTitle])
 
   const getModal = useCallback((modal: ModalType) => {
+    if (selectedBucket === null) {
+      return <></>
+    }
+
     switch (modal) {
       case ModalType.Delete:
         return (
@@ -96,7 +100,7 @@ const BrowserPage: FC = () => {
     return <></>
   }
 
-  const onItemAction = (action: ObjectItemAction, item?: GuiBrowserObject) => {
+  const onItemAction = (action: ObjectItemAction, item?: GuiBrowserObject): void => {
     const actionToModal = {
       [ObjectItemAction.Delete]: ModalType.Delete,
       [ObjectItemAction.Copy]: ModalType.Copy,
@@ -108,18 +112,18 @@ const BrowserPage: FC = () => {
 
     setCurrentModal(actionToModal[action])
 
-    if (item) {
+    if (typeof item !== 'undefined') {
       setSelectedItems([item])
       selectionFromSingle = true
     }
   }
 
-  const onSelectionChange = (files: GuiBrowserObject[]) => {
+  const onSelectionChange = (files: GuiBrowserObject[]): void => {
     selectionFromSingle = false
     setSelectedItems(files)
   }
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setCurrentModal(ModalType.None)
 
     if (selectionFromSingle) {

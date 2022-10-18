@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { FC } from 'react'
 
 interface IConfigState {
   apiBaseURL: string
@@ -33,8 +33,8 @@ export const useConfigContext = (): IConfigContext => {
 /**
  * Export context provider
  */
-export const ConfigContextProvider = ({ children }) => {
-  const [state, setState] = React.useState<IConfigState>({
+export const ConfigContextProvider: FC = ({ children }) => {
+  const [state] = React.useState<IConfigState>({
     apiBaseURL: '/api'
   })
 

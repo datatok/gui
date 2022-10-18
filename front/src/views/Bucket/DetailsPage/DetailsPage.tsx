@@ -1,14 +1,13 @@
-import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiText } from '@elastic/eui'
-import { FC } from 'react'
-import { Route, useRoutingNavigate } from 'services/routing'
-import { GuiBucket } from 'types'
+import { EuiSpacer, EuiText } from '@elastic/eui'
+import { useBucketContext } from 'providers/BucketContext'
+import React, { FC } from 'react'
 
-interface Props {
-  bucket: GuiBucket
-}
+const DetailsPage: FC = () => {
+  const { current: bucket } = useBucketContext()
 
-const DetailsPage: FC<Props> = ({ bucket }) => {
-  const navigate = useRoutingNavigate()
+  if (bucket === null) {
+    return <></>
+  }
 
   return (
     <div>
