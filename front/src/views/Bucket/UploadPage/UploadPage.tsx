@@ -1,12 +1,19 @@
-import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGrid, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer, EuiTable } from '@elastic/eui'
+import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer } from '@elastic/eui'
 import { useBrowserContext } from 'providers/BucketBrowserContext'
 import { useNotificationContext } from 'providers/NotificationContext'
 import { useSetSiteMetaTitle } from 'providers/SiteMetaContext'
-import React, { FC, useCallback, useState, useEffect } from 'react'
+import React, { FC, useState, useEffect } from 'react'
 import { If, Then } from 'react-if'
 import { useAPI } from 'services/api'
 import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand'
 import { StringUtils } from 'utils/StringUtils'
+
+interface MyState {
+  bucket: string
+  host: string
+  path: string
+  files: File[]
+}
 
 const UploadPage: FC = () => {
   /**
@@ -25,14 +32,14 @@ const UploadPage: FC = () => {
     setSiteTitle('Upload')
   }, [])
 
-  const [formData, setFormData] = useState({
-    bucket: selectedBucket.name,
-    host: selectedBucket.host,
-    path: targetKey,
+  const [formData, setFormData] = useState<MyState>({
+    bucket: selectedBucket?.name || '',
+    host: selectedBucket?.host || '',
+    path: targetKey || '',
     files: []
   })
 
-  if (!selectedBucket) {
+  if (selectedBucket == null) {
     return <></>
   }
 
