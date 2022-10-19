@@ -1,4 +1,4 @@
-import { EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
+import { EuiCallOut, EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
 import { useBucketContext } from 'providers/BucketContext'
 import React, { FC, useMemo } from 'react'
 import { Route, useNavigateProps } from 'services/routing'
@@ -21,6 +21,21 @@ const HomePage: FC = () => {
       }
     })
   }, [bucketContext.buckets, navigateProps])
+
+  if (items.length === 0) {
+    return (<EuiPageTemplate.Section>
+      <EuiCallOut color='warning'>
+        <EuiText>
+          No buckets found!
+          <br />
+          <ul>
+            <li>Check internet connection</li>
+            <li>Check configuration is OK</li>
+          </ul>
+        </EuiText>
+      </EuiCallOut>
+    </EuiPageTemplate.Section>)
+  }
 
   return (
     <EuiPageTemplate.Section>

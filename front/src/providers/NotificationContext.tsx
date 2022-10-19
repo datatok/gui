@@ -1,6 +1,6 @@
 import { EuiGlobalToastList, EuiText } from '@elastic/eui'
 import { Toast } from '@elastic/eui/src/components/toast/global_toast_list'
-import React, { ReactChild, ReactNode, FC } from 'react'
+import React, { ReactChild, ReactNode, FC, useCallback, useMemo } from 'react'
 import Utils from 'utils/Utils'
 
 interface INotificationState {
@@ -9,6 +9,7 @@ interface INotificationState {
 
 interface INotificationContext extends INotificationState {
   addSiteToast: (toast: MyToast) => void
+  warning: (title: string, text: string) => void
 }
 
 interface MyToast {
@@ -26,7 +27,8 @@ interface MyToast {
  */
 export const NotificationContext = React.createContext<INotificationContext>({
   toasts: [],
-  addSiteToast: (toast: MyToast) => {}
+  addSiteToast: (toast: MyToast) => {},
+  warning: (title: string, text: string) => {}
 })
 
 /**
@@ -52,17 +54,25 @@ export const NotificationProvider: FC = ({ children }) => {
     toasts: []
   })
 
-  const actions = {
-    addSiteToast: (toast: MyToast) => {
-      setState({
-        ...state,
-        toasts: [...state.toasts, {
-          id: `t-${state.toasts.length + 1}`,
-          ...toast
-        }]
-      })
+  const addSiteToast = useCallback((toast: MyToast): void => {
+    setState({
+      ...state,
+      toasts: [...state.toasts, {
+        id: `t-${state.toasts.length + 1}`,
+        ...toast
+      }]
+    })
+  }, [])
 
-      console.log(toast, state)
+  const actions = {
+    addSiteToast,
+
+    warning: (title: string, text: string) => {
+      addSiteToast({
+        title,
+        text,
+        color: 'warning'
+      })
     }
   }
 
@@ -81,9 +91,12 @@ export const NotificationProvider: FC = ({ children }) => {
     })
   }
 
+  // We dont want to refresh children
+  const fixChildren = useMemo(() => { return children }, [])
+
   return (
     <NotificationContext.Provider value={{ ...state, ...actions }}>
-      {children}
+      {fixChildren}
       <EuiGlobalToastList
           toasts={copyToats}
           dismissToast={removeToast}

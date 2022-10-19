@@ -17,18 +17,12 @@ export type ApiCall = <T>(method: string, url: string, data?: any) => Promise<T>
 
 export type ApiCommand = (...args: any[]) => Promise<any>
 
-export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCommand => {
-  const authContext = useAuthContext()
-
+export const useAPIAdvanced = (command: any, securityContext: IAPISecurityState | null): ApiCommand => {
   const {
     addSiteToast
   } = useNotificationContext()
 
   const configContext = useConfigContext()
-
-  if (typeof securityContext === 'undefined') {
-    securityContext = authContext
-  }
 
   const queryCallback = useCallback(
     async <T>(method: string, pathURL: string, data?: any) => {
@@ -38,7 +32,7 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
 
       const headers = {}
 
-      if (typeof securityContext?.apiAccessToken !== 'undefined') {
+      if (securityContext?.apiAccessToken !== undefined) {
         // eslint-disable-next-line @typescript-eslint/dot-notation
         headers['Authorization'] = `Bearer ${securityContext.apiAccessToken}`
       }
@@ -87,7 +81,23 @@ export const useAPI = (command: any, securityContext?: IAPISecurityState): ApiCo
       })
 
       return await ret
-    }, [securityContext.apiAccessToken, configContext.apiBaseURL])
+    }, [securityContext?.apiAccessToken, configContext.apiBaseURL])
 
   return command(queryCallback)
+}
+
+/**
+ * Get API without security context.
+ */
+export const usePublicAPI = (command: any): ApiCommand => {
+  return useAPIAdvanced(command, null)
+}
+
+/**
+ * API with security context (send token).
+ */
+export const useAPI = (command: any): ApiCommand => {
+  const authContext = useAuthContext()
+
+  return useAPIAdvanced(command, authContext)
 }

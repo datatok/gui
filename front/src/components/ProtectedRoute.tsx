@@ -9,8 +9,8 @@ const ProtectedRoute: FC = ({ children }) => {
     <AuthContext.Consumer>
       {({ apiAccessToken }) => (
         apiAccessToken === ''
-          ? <>{children}</>
-          : <Navigate to="/" replace />
+          ? <Navigate to="/" replace />
+          : <>{ children }</>
       )}
     </AuthContext.Consumer>
   )

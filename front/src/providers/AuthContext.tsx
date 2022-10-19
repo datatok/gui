@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react'
-import { AuthGetUser, useAPI } from 'services/api'
+import { AuthGetUser, useAPIAdvanced } from 'services/api'
 import store from 'store'
+import { useNotificationContext } from './NotificationContext'
 
 /**
  * Represent the state to secure API
@@ -53,7 +54,9 @@ export const AuthContextProvider: FC = ({ children }) => {
     username: ''
   })
 
-  const authGetUser = useAPI(AuthGetUser, state)
+  const authGetUser = useAPIAdvanced(AuthGetUser, state)
+
+  const notificationContext = useNotificationContext()
 
   const actions = {
     setApiAccessToken: (apiAccessToken: string) => {
@@ -93,10 +96,12 @@ export const AuthContextProvider: FC = ({ children }) => {
       })
     }
 
+    console.log(state.apiAccessToken)
+
     if (state.apiAccessToken !== '') {
       fetchData()
         .catch(err => {
-          alert(err.message)
+          notificationContext.warning('Authenticate user', err.message)
         })
     }
   }, [state.apiAccessToken])

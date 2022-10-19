@@ -35,6 +35,8 @@ const UploadPage: FC = () => {
 
   const navigate = useRoutingNavigate()
 
+  const notificationContext = useNotificationContext()
+
   const [formData, setFormData] = useState<MyState>({
     bucket: selectedBucket === null ? '' : selectedBucket.name,
     host: selectedBucket === null ? '' : selectedBucket.host,
@@ -85,7 +87,7 @@ const UploadPage: FC = () => {
           })
         })
         .catch(err => {
-          alert(err)
+          notificationContext.warning('API', err.message)
         })
     }
   }

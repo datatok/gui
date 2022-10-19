@@ -7,9 +7,10 @@ import {
 } from '@elastic/eui'
 
 import logoSVG from '../../../../logo.svg'
-import { AuthLoginMethodsCommand, useAPI } from 'services/api'
+import { AuthLoginMethodsCommand, usePublicAPI } from 'services/api'
 import { useNavigate } from 'react-router-dom'
 import { AuthMethod } from 'services/api/commands/AuthLoginMethodsCommand'
+import { useNotificationContext } from 'providers/NotificationContext'
 
 const AUTH_PROVIDERS = {
   gitlab: {
@@ -26,7 +27,9 @@ const AUTH_PROVIDERS = {
 const LoginPage: FC = () => {
   const [authMethods, setAuthMethods] = useState<AuthMethod[]>([])
 
-  const getAuthMethods = useAPI(AuthLoginMethodsCommand)
+  const getAuthMethods = usePublicAPI(AuthLoginMethodsCommand)
+
+  const notificationContext = useNotificationContext()
 
   const navigate = useNavigate()
 
@@ -39,9 +42,9 @@ const LoginPage: FC = () => {
 
     fetchData()
       .catch(err => {
-        alert(err.message)
+        notificationContext.warning('Login', err.message)
       })
-  }, [getAuthMethods, setAuthMethods])
+  }, [setAuthMethods])
 
   const authLinks: EuiListGroupItemProps[] = authMethods.map(
     (method): EuiListGroupItemProps => {

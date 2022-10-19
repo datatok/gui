@@ -16,6 +16,7 @@ import {
 import { GuiBrowserObject, GuiBucket } from 'types'
 import MoveObjectCommand from 'services/api/commands/MoveObjectCommand'
 import { useAPI } from 'services/api'
+import { useNotificationContext } from 'providers/NotificationContext'
 
 interface RenameModalProps {
   selectedItem: GuiBrowserObject
@@ -29,6 +30,8 @@ const RenameModal: FC<RenameModalProps> = ({
   onClose
 }) => {
   const apiRenameKey = useAPI(MoveObjectCommand)
+
+  const notificationContext = useNotificationContext()
 
   const [formData, setFormData] = useState({
     name: selectedItem.name,
@@ -54,7 +57,7 @@ const RenameModal: FC<RenameModalProps> = ({
         onClose()
       })
       .catch(err => {
-        alert(err.message)
+        notificationContext.warning('API', err.message)
       })
   }
 

@@ -16,6 +16,7 @@ import {
 import { GuiBucket } from 'types'
 import { CreateFolderCommand, useAPI } from 'services/api'
 import { StringUtils } from 'utils/StringUtils'
+import { useNotificationContext } from 'providers/NotificationContext'
 
 interface NewFolderModalProps {
   bucket: GuiBucket
@@ -29,6 +30,8 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
   onClose
 }) => {
   const apiCreateFolder = useAPI(CreateFolderCommand)
+
+  const notificationContext = useNotificationContext()
 
   const [processStatus, setProcessStatus] = useState({
     step: '',
@@ -65,7 +68,7 @@ const NewFolderModal: FC<NewFolderModalProps> = ({
       })
       .catch(err => {
         setProcessStatus({ step: 'error', message: err.message })
-        alert(err.message)
+        notificationContext.warning('API', err.message)
       })
   }
 
