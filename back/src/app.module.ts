@@ -6,12 +6,10 @@ import { AppService } from './app.service';
 import { StorageModule } from './Storage/storage.module';
 import configuration from './config/configuration';
 import { AllExceptionsFilter } from './filters/catch-all.filter';
-import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './Security/auth/auth.module';
 import { UsersModule } from './Security/users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import path from 'path';
-
 
 @Module({
   imports: [
@@ -26,7 +24,7 @@ import path from 'path';
       limit: 500,
     }),*/
     ServeStaticModule.forRoot({
-      rootPath: process.env.GUI_PUBLIC_DIR || (path.join(__dirname, 'public')),
+      rootPath: process.env.GUI_PUBLIC_DIR,
       serveStaticOptions: {
         index: false,
       },

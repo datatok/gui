@@ -57,13 +57,18 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
       field: 'size',
       name: 'size',
       sortable: true,
-      render: (size: number) => StringUtils.formatBytes(size, 2)
+      render: (size: number) => size === undefined ? '' : StringUtils.formatBytes(size, 2)
     },
     {
       field: 'editDate',
       name: 'editDate',
       sortable: true,
-      render: (date: string) => date.length > 0 ? moment(date).fromNow() : ''
+      render: (date: string) => {
+        if (date !== undefined && date !== '') {
+          return moment(date).fromNow()
+        }
+        return ''
+      }
     },
     {
       name: 'Actions',
