@@ -75,6 +75,12 @@ jobs:
         name: back
         path: back/dist
 
+    - name: Restore back deps
+      uses: actions/cache@v3
+      with:
+        path: back/node_modules
+        key: back/package-lock.json
+
   docker:
     runs-on: ubuntu-latest
     
