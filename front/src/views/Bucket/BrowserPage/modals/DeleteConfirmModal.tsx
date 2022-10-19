@@ -1,7 +1,7 @@
 import { EuiConfirmModal } from '@elastic/eui'
-import { useNotificationContext } from 'providers/NotificationContext'
 import React, { FC, useState } from 'react'
 import { DeleteObjectCommand, useAPI } from 'services/api'
+import { notifyToastAdd } from 'stores/NotificationStore'
 import { GuiBrowserObject, GuiBucket } from 'types'
 
 interface DeleteConfirmModalProps {
@@ -17,8 +17,6 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
 }) => {
   const apiDeleteObject = useAPI(DeleteObjectCommand)
 
-  const { addSiteToast } = useNotificationContext()
-
   const [processStatus, setProcessStatus] = useState({
     step: '',
     message: ''
@@ -31,7 +29,7 @@ const DeleteConfirmModal: FC<DeleteConfirmModalProps> = ({
       .then(() => {
         setProcessStatus({ step: 'done', message: '' })
 
-        addSiteToast({
+        notifyToastAdd({
           title: 'Success',
           color: 'success',
           iconType: 'help',

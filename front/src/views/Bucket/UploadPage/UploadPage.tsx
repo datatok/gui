@@ -1,12 +1,12 @@
 import { EuiBasicTable, EuiButton, EuiFieldText, EuiFilePicker, EuiFlexGroup, EuiFlexItem, EuiForm, EuiFormRow, EuiSpacer } from '@elastic/eui'
 import { useBrowserContext } from 'providers/BucketBrowserContext'
-import { useNotificationContext } from 'providers/NotificationContext'
 import { useSetSiteMetaTitle } from 'providers/SiteMetaContext'
 import React, { FC, useState, useEffect } from 'react'
 import { If, Then } from 'react-if'
 import { useAPI } from 'services/api'
 import UploadObjectsCommand from 'services/api/commands/UploadObjectsCommand'
 import { Route, useRoutingNavigate } from 'services/routing'
+import { notifyToastAdd, notifyWarning } from 'stores/NotificationStore'
 import { StringUtils } from 'utils/StringUtils'
 
 interface MyState {
@@ -22,7 +22,6 @@ const UploadPage: FC = () => {
    */
   const setSiteTitle = useSetSiteMetaTitle()
   const uploadObjects = useAPI(UploadObjectsCommand)
-  const { addSiteToast } = useNotificationContext()
 
   const {
     currentKey: targetKey,
@@ -34,8 +33,6 @@ const UploadPage: FC = () => {
   }, [setSiteTitle])
 
   const navigate = useRoutingNavigate()
-
-  const notificationContext = useNotificationContext()
 
   const [formData, setFormData] = useState<MyState>({
     bucket: selectedBucket === null ? '' : selectedBucket.name,
@@ -68,7 +65,7 @@ const UploadPage: FC = () => {
 
   const submitForm = (): void => {
     if (formData.files?.length === 0) {
-      addSiteToast({
+      notifyToastAdd({
         color: 'warning',
         title: 'Upload',
         text: 'Files are missing!'
@@ -76,7 +73,7 @@ const UploadPage: FC = () => {
     } else {
       uploadObjects(selectedBucket, formData.path, formData.files)
         .then(response => {
-          addSiteToast({
+          notifyToastAdd({
             color: 'success',
             title: 'Upload',
             text: 'Your files are ready!'
@@ -87,7 +84,7 @@ const UploadPage: FC = () => {
           })
         })
         .catch(err => {
-          notificationContext.warning('API', err.message)
+          notifyWarning('API', err.message)
         })
     }
   }

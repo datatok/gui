@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 import { useCallback } from 'react'
 import { IAPISecurityState, useAuthContext } from 'providers/AuthContext'
-import { useNotificationContext } from 'providers/NotificationContext'
 import { useConfigContext } from 'providers/ConfigContext'
+import { notifyWarning } from 'stores/NotificationStore'
 
 export { default as BucketBrowseCommand } from './commands/BucketBrowseCommand'
 export { default as AuthLoginCommand } from './commands/AuthLoginCommand'
@@ -18,10 +18,6 @@ export type ApiCall = <T>(method: string, url: string, data?: any) => Promise<T>
 export type ApiCommand = (...args: any[]) => Promise<any>
 
 export const useAPIAdvanced = (command: any, securityContext: IAPISecurityState | null): ApiCommand => {
-  const {
-    addSiteToast
-  } = useNotificationContext()
-
   const configContext = useConfigContext()
 
   const queryCallback = useCallback(
@@ -68,11 +64,7 @@ export const useAPIAdvanced = (command: any, securityContext: IAPISecurityState 
             }
 
             if (errorStr !== '') {
-              addSiteToast({
-                title: 'API error',
-                color: 'warning',
-                text: `API said "${errorStr}"`
-              })
+              notifyWarning('API error', `API said "${errorStr}"`)
             }
             console.log(err)
 

@@ -26,16 +26,15 @@ import DetailsPage from 'views/Bucket/DetailsPage/DetailsPage'
 import { SiteMetaContextProvider } from 'providers/SiteMetaContext'
 import { AuthContext, AuthContextProvider } from 'providers/AuthContext'
 import BrowserPage from 'views/Bucket/BrowserPage/BrowserPage'
-import { NotificationProvider } from 'providers/NotificationContext'
 import UploadPage from 'views/Bucket/UploadPage/UploadPage'
 import LayoutHeader from 'components/LayoutHeader'
 import { ConfigContextProvider } from 'providers/ConfigContext'
+import { NotificationToasts } from 'components/NotificationToasts'
 
 ReactDOM.render(
   <React.StrictMode>
     <ConfigContextProvider>
       <EuiProvider colorMode="DARK">
-        <NotificationProvider>
           <SiteMetaContextProvider>
             <AuthContextProvider>
               <BrowserRouter>
@@ -115,7 +114,7 @@ ReactDOM.render(
               </BrowserRouter>
             </AuthContextProvider>
           </SiteMetaContextProvider>
-        </NotificationProvider>
+          <NotificationToasts />
       </EuiProvider>
     </ConfigContextProvider>
   </React.StrictMode>,

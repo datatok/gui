@@ -10,7 +10,7 @@ import logoSVG from '../../../../logo.svg'
 import { AuthLoginMethodsCommand, usePublicAPI } from 'services/api'
 import { useNavigate } from 'react-router-dom'
 import { AuthMethod } from 'services/api/commands/AuthLoginMethodsCommand'
-import { useNotificationContext } from 'providers/NotificationContext'
+import { notifyWarning } from 'stores/NotificationStore'
 
 const AUTH_PROVIDERS = {
   gitlab: {
@@ -29,8 +29,6 @@ const LoginPage: FC = () => {
 
   const getAuthMethods = usePublicAPI(AuthLoginMethodsCommand)
 
-  const notificationContext = useNotificationContext()
-
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -42,7 +40,7 @@ const LoginPage: FC = () => {
 
     fetchData()
       .catch(err => {
-        notificationContext.warning('Login', err.message)
+        notifyWarning('Login', err.message)
       })
   }, [setAuthMethods])
 
