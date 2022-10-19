@@ -72,14 +72,8 @@ jobs:
     - name: upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: back-dist
+        name: back
         path: back/dist
-
-    - name: upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: back-deps
-        path: back/node_modules
 
   docker:
     runs-on: ubuntu-latest
@@ -122,11 +116,11 @@ jobs:
           name: back
           path: back/dist
 
-      - name: Download back deps artifact
-        uses: actions/download-artifact@v2
+      - name: Restore back deps
+        uses: actions/cache@v3
         with:
-          name: back-deps
           path: back/node_modules
+          key: back/package-lock.json
 
       - name: Build and push
         id: docker_build
