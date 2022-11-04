@@ -9,7 +9,6 @@ import { AllExceptionsFilter } from './filters/catch-all.filter';
 import { AuthModule } from './Security/auth/auth.module';
 import { UsersModule } from './Security/users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import path from 'path';
 
 @Module({
   imports: [

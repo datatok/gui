@@ -124,7 +124,7 @@ export class AWSStorageDriver {
   > {
     const data = await this.client.send(
       new ListObjectsV2Command({
-        Delimiter: "/",
+        Delimiter: '/',
         Bucket: this.bucket.name,
         Prefix: argPrefix,
       })
