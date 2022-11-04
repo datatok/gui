@@ -21,7 +21,7 @@ storage:
   - name: root
     basic:
       accessKey: root
-      secretKey: rootroot
+      secretKey: ${SECRET_KEY}
 
   endpoints:
   - name: minio
@@ -32,7 +32,7 @@ storage:
   buckets:
   - endpoint: minio
     region: us-east-1
-    name: gui
+    name: ${BUCKET}
     auth: root
 
   - endpoint: minio

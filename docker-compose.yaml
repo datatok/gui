@@ -10,6 +10,8 @@ services:
     - GUI_PORT=8080
     - GUI_PUBLIC_DIR=/home/node/public
     - GUI_CONFIG_FILE=/home/node/config.yaml
+    - BUCKET=gui
+    - SECRET_KEY=rootroot
     ports:
     - 8080:8080
     volumes:
