@@ -44,7 +44,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yaml-env-defaults": "^2.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
