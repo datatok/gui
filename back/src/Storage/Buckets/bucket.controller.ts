@@ -1,9 +1,18 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UploadedFiles, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
-import * as R from 'ramda'
-
 import {
-    ApiBearerAuth, ApiTags,
-  } from '@nestjs/swagger';
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+  ValidationPipe,
+} from '@nestjs/common';
+import * as R from 'ramda';
+
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
@@ -21,79 +30,80 @@ import { EditKeyDTO } from './dto/edit-key.dto';
 @Controller('api/bucket')
 @UseGuards(JwtAuthGuard)
 export class BucketController {
-  constructor(
-    private bucketProvider: BucketsProviderService
-  ) {}
+  constructor(private bucketProvider: BucketsProviderService) {}
 
   @Get()
   getBuckets(): any {
     return {
-      buckets: this.bucketProvider.findAll().map(bucket => {
-        return R.omit(['auth'], bucket)
-      })
-    }
+      buckets: this.bucketProvider.findAll().map((bucket) => {
+        return R.omit(['auth'], bucket);
+      }),
+    };
   }
 
   @Get(':bucket')
   getBucket(@Param('bucket', GetBucketPipe) bucket?: StorageBucket): any {
-    return R.omit(['auth'], bucket)
+    return R.omit(['auth'], bucket);
   }
 
   @Get(':bucket/status')
   getStatus(
-    @Param('bucket', GetStorageDriverPipe) storage?: AWSStorageDriver
+    @Param('bucket', GetStorageDriverPipe) storage?: AWSStorageDriver,
   ): any {
-    return storage.status()
+    return storage.status();
   }
 
   @Get(':bucket/browse')
   async browse(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Query(new ValidationPipe({
-      transform: false,
-      forbidNonWhitelisted: true
-  })) query: BrowseDto
+    @Query(
+      new ValidationPipe({
+        transform: false,
+        forbidNonWhitelisted: true,
+      }),
+    )
+    query: BrowseDto,
   ) {
-    let path = query.path || ''
+    let path = query.path || '';
 
-    path += '/'
-    
+    path += '/';
+
     return {
       prefix: path,
-      files: await storage.listObjects(path)
-    }
+      files: await storage.listObjects(path),
+    };
   }
 
   @Post(':bucket/key/create')
   async createKey(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Body() createFolderDto: CreateFolderDto
+    @Body() createFolderDto: CreateFolderDto,
   ) {
-    return await storage.createFolder(createFolderDto.path)
+    return await storage.createFolder(createFolderDto.path);
   }
 
   @Post(':bucket/key/delete')
   async deleteKeys(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Body() deleteKeys: DeleteKeysDto
+    @Body() deleteKeys: DeleteKeysDto,
   ) {
-    return await storage.deleteKeys(deleteKeys.keys)
+    return await storage.deleteKeys(deleteKeys.keys);
   }
 
   @Post(':bucket/key/move')
   async renameKey(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Body() editKey: EditKeyDTO
+    @Body() editKey: EditKeyDTO,
   ) {
-    return await storage.moveKey(editKey.sourceKey, editKey.targetKey)
+    return await storage.moveKey(editKey.sourceKey, editKey.targetKey);
   }
 
   @Post(':bucket/key/copy')
   async copyKey(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Body() editKey: EditKeyDTO
+    @Body() editKey: EditKeyDTO,
   ) {
-    return await storage.copyKey(editKey.sourceKey, editKey.targetKey)
+    return await storage.copyKey(editKey.sourceKey, editKey.targetKey);
   }
 
   @Post(':bucket/upload')
@@ -101,23 +111,21 @@ export class BucketController {
   async uploadObjects(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @UploadedFiles() files: Array<Express.Multer.File>,
-    @Body() uploadObjects: UploadObjectsDto
+    @Body() uploadObjects: UploadObjectsDto,
   ) {
-    console.log(files)
     if (files) {
-      const files2:FileUpload[] = files.map(file => {
+      const files2: FileUpload[] = files.map((file) => {
         return {
-          key:  Buffer.from(file.originalname, 'latin1').toString('utf8'),
+          key: Buffer.from(file.originalname, 'latin1').toString('utf8'),
           contentType: file.mimetype,
           contentSize: file.size,
-          buffer: file.buffer
-        }
-      })
+          buffer: file.buffer,
+        };
+      });
 
-      return storage.uploadObjects(uploadObjects.path, files2)
+      return storage.uploadObjects(uploadObjects.path, files2);
     }
 
-    return []
+    return [];
   }
-
 }
