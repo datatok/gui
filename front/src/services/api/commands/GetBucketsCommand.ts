@@ -10,6 +10,7 @@ interface APIBucket {
 
   id: string
   name: string
+  title: string
   region: string
 }
 
@@ -24,11 +25,12 @@ export default (apiCall: ApiCall) => {
     const response = await apiCall<APIResponse>('get', pathURL)
 
     return response.buckets.map(({
-      id, name, endpoint
+      id, name, title, endpoint
     }): GuiBucket => {
       return {
         id,
         name,
+        title,
         host: endpoint?.hostname
       }
     })

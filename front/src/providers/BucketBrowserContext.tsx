@@ -241,7 +241,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
       const b = state.bucket
 
       breadcrumbs.push(objectToBreadcrumbItem(state.bucket, {
-        name: state.bucket.name,
+        name: state.bucket.title,
         prefix: '',
         path: '',
         type: 'folder'

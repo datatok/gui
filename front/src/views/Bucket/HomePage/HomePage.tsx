@@ -42,12 +42,12 @@ const HomePage: FC = () => {
       <EuiText><h3>Select a bucket</h3></EuiText>
       <EuiSpacer />
       <EuiFlexGroup gutterSize="l">
-        {items.map(({ name, host, nav }, index) => (
+        {items.map(({ title, name, host, nav }, index) => (
           <EuiFlexItem key={index}>
           <EuiCard
-            title={name}
+            title={title}
             icon={<EuiIcon type={'storage'} size={'xl'} />}
-            description={`host: ${host}`}
+            description={`bucket: ${name} / host: ${host}`}
             {...nav}
           />
         </EuiFlexItem>

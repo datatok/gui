@@ -1,34 +1,31 @@
-interface StorageAuth {
-  
-}
-
 interface StorageAuthBasic {
-  name?: string
-  accessKey: string
-  secretKey: string
+  name?: string;
+  accessKey: string;
+  secretKey: string;
 }
 
 interface StorageEndpoint {
-  name?: string
-  protocol: string
-  hostname: string
-  port?: number
-  path: string
+  name?: string;
+  protocol: string;
+  hostname: string;
+  port?: number;
+  path: string;
 }
 
-interface StorageBucket {
-  endpoint?: StorageEndpoint
+export interface StorageBucket {
+  endpoint?: StorageEndpoint;
 
-  region?: string
-  id?: string
-  name: string
+  region?: string;
+  id?: string;
+  name: string;
+  title: string;
 
-  auth?: StorageAuthBasic
+  auth?: StorageAuthBasic;
 }
 
-interface FileUpload {
-  key: string
-  contentType: string
-  contentSize: number
-  buffer: Buffer
+export interface FileUpload {
+  key: string;
+  contentType: string;
+  contentSize: number;
+  buffer: Buffer;
 }

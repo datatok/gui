@@ -1,6 +1,20 @@
 export interface GuiBucket {
+  /**
+   * Unique ID (host - name)
+   */
   id: string
+  /**
+   * Name of the bucket
+   */
   name: string
+  /**
+   * Title to display
+   */
+  title: string
+
+  /**
+   * Host endpoint name
+   */
   host: string
 }
 
@@ -32,6 +46,10 @@ export interface GuiBrowserObject {
    */
   editDate?: string
 
+  /**
+   * Secure link for download object
+   */
+  downloadLink?: string
 }
 
 /**
