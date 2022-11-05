@@ -1,4 +1,4 @@
-import { NoSuchBucket } from '@aws-sdk/client-s3';
+import { NoSuchBucket, NotFound } from '@aws-sdk/client-s3';
 import {
   ExceptionFilter,
   Catch,
@@ -36,6 +36,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       responseBody = this.formatMessage({
         statusCode: 500,
         reason: `bucket not found`,
+        trace: exception instanceof Error ? exception.stack : '',
+        path,
+      });
+    } else if (exception instanceof NotFound) {
+      responseBody = this.formatMessage({
+        statusCode: 500,
+        reason: `object not found`,
         trace: exception instanceof Error ? exception.stack : '',
         path,
       });
