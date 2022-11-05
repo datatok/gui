@@ -108,7 +108,7 @@ const UploadPage: FC = () => {
               </EuiFlexItem>
             </EuiFlexGroup>
             <EuiFormRow label="Path" helpText="full path" fullWidth>
-              <EuiFieldText required name="path" fullWidth value={formData.path} onChange={handleInputChange} />
+              <EuiFieldText name="path" fullWidth value={formData.path} onChange={handleInputChange} />
             </EuiFormRow>
           </EuiFlexItem>
           <EuiFlexItem>
