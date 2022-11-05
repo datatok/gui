@@ -307,16 +307,11 @@ export class AWSStorageDriver {
    * see https://dev.to/about14sheep/streaming-data-from-aws-s3-using-nodejs-stream-api-and-typescript-3dj0
    */
   public async downloadObject(key: string): Promise<S3DownloadStream> {
-    const streamer = new S3DownloadStream(
-      {
-        bucket: this.bucket.name,
-        s3: this.client,
-        key,
-      },
-      {
-        encoding: 'utf-8',
-      },
-    );
+    const streamer = new S3DownloadStream({
+      bucket: this.bucket.name,
+      s3: this.client,
+      key,
+    });
 
     await streamer.run();
 
