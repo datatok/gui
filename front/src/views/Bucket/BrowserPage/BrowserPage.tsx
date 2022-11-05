@@ -104,17 +104,18 @@ const BrowserPage: FC = () => {
     const actionToModal = {
       [ObjectItemAction.Delete]: ModalType.Delete,
       [ObjectItemAction.Copy]: ModalType.Copy,
-      [ObjectItemAction.Download]: ModalType.Delete,
       [ObjectItemAction.NewFolder]: ModalType.NewFolder,
       [ObjectItemAction.Move]: ModalType.Move,
       [ObjectItemAction.Share]: ModalType.Delete
     }
 
-    setCurrentModal(actionToModal[action])
+    if (action !== ObjectItemAction.Download) {
+      setCurrentModal(actionToModal[action])
 
-    if (typeof item !== 'undefined') {
-      setSelectedItems([item])
-      selectionFromSingle = true
+      if (typeof item !== 'undefined') {
+        setSelectedItems([item])
+        selectionFromSingle = true
+      }
     }
   }
 

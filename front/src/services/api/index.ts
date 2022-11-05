@@ -3,6 +3,7 @@ import { useCallback } from 'react'
 import { IAPISecurityState, useAuthContext } from 'providers/AuthContext'
 import { useConfigContext } from 'providers/ConfigContext'
 import { notifyWarning } from 'stores/NotificationStore'
+import moment from 'moment'
 
 export { default as BucketBrowseCommand } from './commands/BucketBrowseCommand'
 export { default as AuthLoginCommand } from './commands/AuthLoginCommand'
@@ -12,6 +13,12 @@ export { default as DeleteObjectCommand } from './commands/DeleteObjectCommand'
 export { default as useAuthAnonymousLogin } from './commands/AuthLoginAnonymousCommand'
 export { default as AuthLoginMethodsCommand } from './commands/AuthLoginMethodsCommand'
 export { default as AuthGetUser } from './commands/AuthGetUser'
+
+interface ErrorResponseData {
+  reason: string
+  statusCode: number
+  trace: string
+}
 
 export type ApiCall = <T>(method: string, url: string, data?: any) => Promise<T>
 
@@ -60,6 +67,9 @@ export const useAPIAdvanced = (command: any, securityContext: IAPISecurityState 
             } else {
               if (err?.response?.status === 401) {
                 errorStr = `Unauthorized (status ${err?.response?.status})`
+              } else if (err?.response?.status === 500) {
+                const data: ErrorResponseData = err.response.data as ErrorResponseData
+                errorStr = `Server error (${data?.reason})`
               }
             }
 
@@ -92,4 +102,15 @@ export const useAPI = (command: any): ApiCommand => {
   const authContext = useAuthContext()
 
   return useAPIAdvanced(command, authContext)
+}
+
+/**
+ * Add auth query parameters
+ */
+export const useURLAuthentificator = (): (url: string) => string => {
+  const authContext = useAuthContext()
+
+  return (url: string) => {
+    return `${url}&access-token=${authContext.apiAccessToken}&time=${moment().format('yy-mm-dd:hh-ii')}`
+  }
 }

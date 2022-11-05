@@ -1,57 +1,58 @@
-interface SecurityConfig {
+export interface SecurityConfig {
   auth: {
     anonymous: {
-      enabled: boolean
-    }
+      enabled: boolean;
+    };
 
     gitlab: {
-      enabled: boolean
-      clientID: string
-      clientSecret: string
-      baseURL: string
-    }
-  }
+      enabled: boolean;
+      clientID: string;
+      clientSecret: string;
+      baseURL: string;
+    };
+  };
 
   rbac: {
-    enabled: boolean
+    enabled: boolean;
     items: {
-      entity: string
-      rules: string[]
+      entity: string;
+      rules: string[];
       buckets: {
-        name: string
-        host: string
-      }[]
-    }[]
-  }
+        name: string;
+        host: string;
+      }[];
+    }[];
+  };
 }
 
-interface StorageEndpointConfig {
-  name: string
-  protocol?: string
-  hostname?: string
-  host?: string
-  port?: number
-  path?: string
-  region: string
+export interface StorageEndpointConfig {
+  name: string;
+  protocol?: string;
+  hostname?: string;
+  host?: string;
+  port?: number;
+  path?: string;
+  region: string;
 }
 
-interface StorageAuthConfig {
-  name: string
+export interface StorageAuthConfig {
+  name: string;
   basic: {
-    accessKey: string
-    secretKey: string
-  }
+    accessKey: string;
+    secretKey: string;
+  };
 }
 
 interface StorageBucketConfig {
-  name: string
-  region?: string
-  auth?: string
-  endpoint?: string
+  name: string;
+  title?: string;
+  region?: string;
+  auth?: string;
+  endpoint?: string;
 }
 
-interface StorageConfig {
-  endpoints: StorageEndpointConfig[]
-  auth: StorageAuthConfig[]
-  buckets: StorageBucketConfig[]
+export interface StorageConfig {
+  endpoints: StorageEndpointConfig[];
+  auth: StorageAuthConfig[];
+  buckets: StorageBucketConfig[];
 }

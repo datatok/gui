@@ -9,6 +9,7 @@ interface APIResponse {
     type: string
     size: number
     editDate: string
+    downloadLink: string
   }>
 }
 

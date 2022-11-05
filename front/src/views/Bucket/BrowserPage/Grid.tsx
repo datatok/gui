@@ -40,9 +40,14 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
       name: 'name',
       sortable: true,
       truncateText: false,
-      width: '40%',
-      render: (name, { path, type }) => {
-        const np = navProps(Route.BucketBrowse, { bucket: bucket.id, path })
+      width: '50%',
+      render: (name, { downloadLink, path, type }) => {
+        let np
+        if (type === 'file') {
+          np = { href: downloadLink }
+        } else {
+          np = navProps(Route.BucketBrowse, { bucket: bucket.id, path })
+        }
         return (
           <>
           <EuiIcon type={resolveIcon({ type })} />&nbsp;
@@ -51,13 +56,23 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
           </EuiLink>
           </>
         )
-      }
+      },
+      footer: ({ items }: { items: GuiBucket[] }) => (
+        `${items.length} files`
+      )
     },
     {
       field: 'size',
       name: 'size',
       sortable: true,
-      render: (size: number) => size === undefined ? '' : StringUtils.formatBytes(size, 2)
+      render: (size: number) => size === undefined ? '' : StringUtils.formatBytes(size, 2),
+      footer: ({ items }: { items: GuiBucket[] }) => {
+        const s = items.reduce((result: number, current: any) => {
+          return result + ((current.size ?? 0) as number)
+        }, 0)
+
+        return s > 0 ? StringUtils.formatBytes(s, 2) : ''
+      }
     },
     {
       field: 'editDate',
@@ -73,18 +88,6 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
     {
       name: 'Actions',
       actions: [
-        {
-          name: 'Download',
-          description: 'Download file',
-          icon: 'download',
-          color: 'primary',
-          type: 'icon',
-          isPrimary: true,
-          onClick: (item: GuiBrowserObject) => {
-            onItemAction(ObjectItemAction.Download, item)
-          },
-          'data-test-subj': 'action-delete'
-        },
         {
           name: 'Remove',
           description: 'Remove file',

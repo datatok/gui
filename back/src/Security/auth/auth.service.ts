@@ -7,7 +7,7 @@ import { jwtConstants } from './constants';
 export class AuthService {
   constructor(
     private usersService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -24,9 +24,16 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload, {
         expiresIn: '2 days',
-        secret: jwtConstants.secret
+        secret: jwtConstants.secret,
       }),
-      username: user.username
+      username: user.username,
     };
+  }
+
+  /**
+   * Secure a single URL
+   */
+  secureLink(url: string): string {
+    return url + '&token=toto';
   }
 }

@@ -24,13 +24,18 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { UploadObjectsDto } from './dto/upload-objects.dto';
 import { BrowseDto } from './dto/browse.dto';
 import { EditKeyDTO } from './dto/edit-key.dto';
+import { FileUpload, StorageBucket } from '../types';
+import { AuthService } from 'src/Security/auth/auth.service';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
 @Controller('api/bucket')
 @UseGuards(JwtAuthGuard)
 export class BucketController {
-  constructor(private bucketProvider: BucketsProviderService) {}
+  constructor(
+    private bucketProvider: BucketsProviderService,
+    private authService: AuthService,
+  ) {}
 
   @Get()
   getBuckets(): any {
@@ -56,6 +61,7 @@ export class BucketController {
   @Get(':bucket/browse')
   async browse(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Param('bucket') bucketName: string,
     @Query(
       new ValidationPipe({
         transform: false,
@@ -66,11 +72,30 @@ export class BucketController {
   ) {
     let path = query.path || '';
 
-    path += '/';
+    if (path !== '') {
+      path += '/';
+    }
+
+    const files = await storage.listObjects(path);
+
+    const filesWithDownloadURLs = files.map((file) => {
+      if (file.type === 'file') {
+        const downloadLink = `/api/download/${bucketName}/object?key=${encodeURIComponent(
+          path + file.name,
+        )}`;
+
+        return {
+          ...file,
+          downloadLink: this.authService.secureLink(downloadLink),
+        };
+      }
+
+      return file;
+    });
 
     return {
       prefix: path,
-      files: await storage.listObjects(path),
+      files: filesWithDownloadURLs,
     };
   }
 
