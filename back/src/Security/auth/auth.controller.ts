@@ -1,10 +1,17 @@
-import { Controller, Get, HttpException, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
 
-import {
-    ApiBearerAuth, ApiTags,
-  } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
+import { SecurityConfig } from 'src/config/types';
 import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -15,12 +22,14 @@ export class SecurityAuthController {
   constructor(
     private configService: ConfigService,
     private authService: AuthService,
-    private userService: UsersService
+    private userService: UsersService,
   ) {}
 
   @Post('anonymous')
   getAnonymous(): any {
-    if (this.configService.get<SecurityConfig>("security").auth.anonymous.enabled) {
+    if (
+      this.configService.get<SecurityConfig>('security').auth.anonymous.enabled
+    ) {
       return this.authService.login(this.userService.findAnonymous());
     }
 
@@ -29,23 +38,23 @@ export class SecurityAuthController {
 
   @Get('methods')
   getMethods() {
-    const methods = []
-    const securityConfig = this.configService.get<SecurityConfig>("security")
+    const methods = [];
+    const securityConfig = this.configService.get<SecurityConfig>('security');
 
     if (securityConfig.auth?.anonymous?.enabled) {
       methods.push({
-        provider: 'anonymous'
-      })
+        provider: 'anonymous',
+      });
     }
 
     if (securityConfig.auth?.gitlab?.enabled) {
       methods.push({
         provider: 'gitlab',
-        baseURL: securityConfig.auth.gitlab.baseURL
-      })
+        baseURL: securityConfig.auth.gitlab.baseURL,
+      });
     }
 
-    return methods
+    return methods;
   }
 
   @UseGuards(JwtAuthGuard)

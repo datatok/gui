@@ -1,4 +1,4 @@
-import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
+import { PipeTransform, Injectable } from '@nestjs/common';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
 import { StorageService } from '../storage.service';
 import { GetBucketPipe } from './get-bucket.pipe';
@@ -10,14 +10,14 @@ export class GetStorageDriverPipe implements PipeTransform {
 
   constructor(
     private bucketsProviderService: BucketsProviderService,
-    private storageService: StorageService
+    private storageService: StorageService,
   ) {
-    this.bucketPipe = new GetBucketPipe(bucketsProviderService)
+    this.bucketPipe = new GetBucketPipe(bucketsProviderService);
   }
 
-  transform(value: any, metadata: ArgumentMetadata): AWSStorageDriver | undefined {
-    const bucket = this.bucketPipe.transform(value, metadata);
+  transform(value: any): AWSStorageDriver | undefined {
+    const bucket = this.bucketPipe.transform(value);
 
-    return this.storageService.getInstance(bucket)
+    return this.storageService.getInstance(bucket);
   }
 }
