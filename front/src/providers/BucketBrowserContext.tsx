@@ -5,7 +5,7 @@ import { BrowserUtils } from 'utils/BrowserUtils'
 import { GuiBucketUtils } from 'utils/GuiBucketUtils'
 import * as R from 'ramda'
 import { GuiBrowserObject, GuiBucket, GuiObjects } from 'types'
-import { getRouteURL, Route } from 'services/routing'
+import { Route, useNavigateProps } from 'services/routing'
 import { useSiteMetaContext } from './SiteMetaContext'
 
 interface LoadingStatus {
@@ -92,6 +92,8 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
 
   const siteMetaContext = useSiteMetaContext()
 
+  const navigateProps = useNavigateProps()
+
   const browseFetchPointer = React.useRef({ status: '', cancelToken: null })
 
   const [state, setState] = useState<IBrowserState>({
@@ -123,19 +125,14 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
   }
 
   const objectToBreadcrumbItem = (bucket: GuiBucket, file: GuiBrowserObject): Breadcrumb => {
-    const href = getRouteURL(Route.BucketBrowse, {
-      bucket: bucket.id,
-      path: file.path
-    })
-
     const text = (file.name === '' ? 'root' : file.name)
 
     return {
       text,
-      href
-      /* onClick: onClick(() => {
-        navigate(href)
-      }) */
+      ...navigateProps(Route.BucketBrowse, {
+        bucket: bucket.id,
+        path: file.path
+      })
     }
   }
 
