@@ -15,6 +15,7 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
     "axios": "^0.27.2",
+    "http-proxy-middleware": "^2.0.6",
     "moment": "^2.29.4",
     "prop-types": "^15.8.1",
     "ramda": "^0.28.0",
@@ -34,6 +35,7 @@
     "lint": "eslint './src/**/*.{ts,tsx}' --ignore-path .gitignore",
     "lint:fix": "npm run lint -- --fix"
   },
+  "proxy": "http://localhost:3001",
   "eslintConfig": {
     "extends": [
       "react-app",
