@@ -1,6 +1,4 @@
----
-title: Getting started as developer
----
+# Getting started as developer
 
 ## Requirement
 
