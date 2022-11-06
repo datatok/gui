@@ -33,7 +33,7 @@ const RenameModal: FC<RenameModalProps> = ({
 
   const [formData, setFormData] = useState({
     name: selectedItem.name,
-    path: selectedItem.prefix
+    prefix: selectedItem.prefix
   })
 
   const modalFormId = useGeneratedHtmlId({ prefix: 'modalForm' })
@@ -50,7 +50,7 @@ const RenameModal: FC<RenameModalProps> = ({
   }
 
   const onSubmit = (): void => {
-    apiRenameKey(bucket, selectedItem, `${formData.path}/${formData.name}`)
+    apiRenameKey(bucket, selectedItem, `${formData.prefix}/${formData.name}`)
       .then(response => {
         onClose()
       })
@@ -62,8 +62,8 @@ const RenameModal: FC<RenameModalProps> = ({
   const formSample = (
     <EuiForm id={modalFormId} component="form">
 
-      <EuiFormRow label="New path" helpText={`(${selectedItem.path})`}>
-        <EuiFieldText name="path" value={formData.path} onChange={onFormNameChange} />
+      <EuiFormRow label="New prefix" helpText={`(${selectedItem.prefix})`}>
+        <EuiFieldText name="prefix" value={formData.prefix} onChange={onFormNameChange} />
       </EuiFormRow>
 
       <EuiFormRow label="New name" helpText={`(${selectedItem.name})`}>

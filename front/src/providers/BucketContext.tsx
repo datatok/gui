@@ -31,7 +31,7 @@ export const useBucketContext = (): IBucketState => {
 
   // if `undefined`, throw an error
   if (context === undefined) {
-    throw new Error('useUserContext was used outside of its Provider')
+    throw new Error('useBucketContext was used outside of its Provider')
   }
 
   return context

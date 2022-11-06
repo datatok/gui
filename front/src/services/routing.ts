@@ -29,7 +29,7 @@ export const getRouteURL = (route: Route, args?: Args): string => {
     case Route.Home:
       return '/'
     case Route.BucketHome:
-      return `/bucket/${args.bucket}`
+      return '/bucket'
     case Route.BucketBrowse:
       return `/bucket/${args.bucket}/browse/${args.path}`
     case Route.BucketUpload:

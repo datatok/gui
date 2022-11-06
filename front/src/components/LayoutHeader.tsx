@@ -116,16 +116,17 @@ const HeaderAboutMenu: FC = () => {
         </EuiText>
         <EuiSpacer />
         <EuiText>
-        <h3>Tech stack</h3>
-        <ul>
-          <li>Front: React / elasticEUI</li>
-          <li>Back: nestJS</li>
-        </ul>
+          <a href='https://github.com/datatok/gui' target={'_blank'} rel="noreferrer">https://github.com/datatok/gui</a>
+          <h3>Tech stack</h3>
+          <ul>
+            <li>Front: React / elasticEUI</li>
+            <li>Back: nestJS</li>
+          </ul>
 
-        <h3>Copyrights</h3>
-        <ul>
-          <li><a href="https://www.flaticon.com/free-icons/mistletoe" title="mistletoe icons">Mistletoe icons created by Freepik - Flaticon</a></li>
-        </ul>
+          <h3>Copyrights</h3>
+          <ul>
+            <li><a href="https://www.flaticon.com/free-icons/mistletoe" title="mistletoe icons" target={'_blank'} rel="noreferrer">Mistletoe icons created by Freepik - Flaticon</a></li>
+          </ul>
         </EuiText>
       </div>
     </EuiPopover>

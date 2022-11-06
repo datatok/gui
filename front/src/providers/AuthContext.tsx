@@ -94,8 +94,6 @@ export const AuthContextProvider: FC = ({ children }) => {
       })
     }
 
-    console.log(state.apiAccessToken)
-
     if (state.apiAccessToken !== '') {
       fetchData()
         .catch(err => {

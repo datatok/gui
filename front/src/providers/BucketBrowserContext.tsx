@@ -215,7 +215,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
 
     if (bucketFromRoute !== '' && state.bucket !== null && GuiBucketUtils.equals(selectedBucket, state.bucket)) {
       const paramBrowsePath: string = routeParams['*'] ?? ''
-      console.log(state.bucket)
+
       getObjectChildren(paramBrowsePath)
     }
   }, [state.bucket, routeParams])
@@ -227,10 +227,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
     const breadcrumbs = [
       {
         text: 'Buckets',
-        href: '/bucket'
-        /* onClick: onClick(() => {
-          navigate('/bucket')
-        }) */
+        ...navigateProps(Route.BucketHome, null)
       }
     ]
 

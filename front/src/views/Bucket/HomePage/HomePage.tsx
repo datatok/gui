@@ -1,4 +1,4 @@
-import { EuiCallOut, EuiCard, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
+import { EuiCallOut, EuiCard, EuiDescriptionList, EuiFlexGroup, EuiFlexItem, EuiIcon, EuiPageTemplate, EuiSpacer, EuiText } from '@elastic/eui'
 import { useBucketContext } from 'providers/BucketContext'
 import React, { FC, useMemo } from 'react'
 import { Route, useNavigateProps } from 'services/routing'
@@ -41,13 +41,22 @@ const HomePage: FC = () => {
     <EuiPageTemplate.Section>
       <EuiText><h3>Select a bucket</h3></EuiText>
       <EuiSpacer />
-      <EuiFlexGroup gutterSize="l">
+      <EuiFlexGroup gutterSize="l" justifyContent="spaceEvenly">
         {items.map(({ title, name, host, nav }, index) => (
-          <EuiFlexItem key={index}>
+          <EuiFlexItem key={index} css={{ width: '25%' }}>
           <EuiCard
             title={title}
             icon={<EuiIcon type={'storage'} size={'xl'} />}
-            description={`bucket: ${name} / host: ${host}`}
+            description={(<EuiDescriptionList listItems={[
+              {
+                title: 'Bucket',
+                description: name
+              },
+              {
+                title: 'Host',
+                description: host
+              }
+            ]}/>)}
             {...nav}
           />
         </EuiFlexItem>
