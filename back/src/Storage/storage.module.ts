@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { AuthModule } from 'src/Security/auth/auth.module';
 import { AuthService } from 'src/Security/auth/auth.service';
+import { SecurityModule } from 'src/Security/security.module';
 import { UsersService } from 'src/Security/users/users.service';
 import { BucketController } from './Buckets/bucket.controller';
 import { BucketDownloadController } from './Buckets/download.controller';
@@ -18,6 +18,6 @@ import { StorageService } from './storage.service';
     UsersService,
     JwtService,
   ],
-  imports: [ConfigModule, AuthModule],
+  imports: [ConfigModule, SecurityModule],
 })
 export class StorageModule {}
