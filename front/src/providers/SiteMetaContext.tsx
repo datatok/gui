@@ -1,4 +1,12 @@
 import React, { FC } from 'react'
+import store from 'store'
+
+const LightTheme = React.lazy(async () => await import('../themes/Light'))
+const DarkTheme = React.lazy(async () => await import('../themes/Dark'))
+const themes = ['light', 'dark']
+
+const themeFromStore = store.get('theme')
+const themeDefault = themes.includes(themeFromStore) ? themeFromStore : themes[0]
 
 interface BreadcrumbItem {
   text: string
@@ -8,10 +16,12 @@ interface BreadcrumbItem {
 interface ISiteMetaState {
   title: string
   breadcrumbs: BreadcrumbItem[]
+  theme: string
 }
 
 interface ISiteMetaContext extends ISiteMetaState {
   setTitle: (title: string) => void
+  setTheme: (theme: string) => void
   setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => void
 }
 
@@ -21,7 +31,9 @@ interface ISiteMetaContext extends ISiteMetaState {
 export const SiteContext = React.createContext<ISiteMetaContext>({
   title: '',
   breadcrumbs: [],
+  theme: themeDefault,
   setTitle: (title: string) => {},
+  setTheme: (theme: string) => {},
   setBreadcrumbs: (breadcrumbs: BreadcrumbItem[]) => {}
 })
 
@@ -54,7 +66,8 @@ export const useSetSiteMetaTitle = (): (title: string) => void => {
 export const SiteMetaContextProvider: FC = ({ children }) => {
   const [state, setState] = React.useState<ISiteMetaState>({
     title: 'GUI',
-    breadcrumbs: []
+    breadcrumbs: [],
+    theme: themeDefault
   })
 
   const actions = {
@@ -73,11 +86,26 @@ export const SiteMetaContextProvider: FC = ({ children }) => {
           title
         })
       }
+    },
+
+    setTheme: (theme: string) => {
+      if (theme !== state.theme) {
+        store.set('theme', theme)
+
+        setState({
+          ...state,
+          theme
+        })
+      }
     }
   }
 
   return (
     <SiteContext.Provider value={{ ...state, ...actions }}>
+      <React.Suspense fallback={<></>}>
+        {(state.theme === 'light') && <LightTheme />}
+        {(state.theme === 'dark') && <DarkTheme />}
+      </React.Suspense>
       {children}
     </SiteContext.Provider>
   )

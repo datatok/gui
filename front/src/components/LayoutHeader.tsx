@@ -1,4 +1,4 @@
-import { EuiAvatar, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiLink, EuiPopover, EuiSpacer, EuiText, useGeneratedHtmlId } from '@elastic/eui'
+import { EuiAvatar, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiLink, EuiPopover, EuiSpacer, EuiSwitch, EuiSwitchEvent, EuiText, useGeneratedHtmlId } from '@elastic/eui'
 import { useNavigate } from 'react-router-dom'
 import { useSiteMetaContext } from 'providers/SiteMetaContext'
 import { useAuthContext } from 'providers/AuthContext'
@@ -97,8 +97,7 @@ const HeaderAboutMenu: FC = () => {
       aria-label="Account menu"
       onClick={onMenuButtonClick}
       iconType='help'
-    >
-    </EuiButtonEmpty>
+    >About</EuiButtonEmpty>
   )
 
   return (
@@ -133,6 +132,63 @@ const HeaderAboutMenu: FC = () => {
   )
 }
 
+interface SMProps {
+  theme: string
+  setTheme: (theme: string) => void
+}
+
+interface SwitchEvent extends EuiSwitchEvent {
+  checked: boolean
+}
+
+const HeaderSettingsMenu: FC<SMProps> = ({ theme, setTheme }) => {
+  const headerUserPopoverId = useGeneratedHtmlId({
+    prefix: 'headerSettingsPopover'
+  })
+  const [isOpen, setIsOpen] = useState(false)
+
+  const onMenuButtonClick = (): void => {
+    setIsOpen(!isOpen)
+  }
+
+  const closeMenu = (): void => {
+    setIsOpen(false)
+  }
+
+  const button = (
+    <EuiButtonEmpty
+      aria-controls={headerUserPopoverId}
+      aria-expanded={isOpen}
+      aria-haspopup="true"
+      aria-label="Account menu"
+      onClick={onMenuButtonClick}
+      iconType='menu'
+    >
+      Settings
+    </EuiButtonEmpty>
+  )
+
+  return (
+    <EuiPopover
+      id={headerUserPopoverId}
+      button={button}
+      isOpen={isOpen}
+      anchorPosition="downRight"
+      closePopover={closeMenu}
+      panelPaddingSize="none"
+    >
+      <div style={{ width: 320, padding: '20px' }}>
+        <EuiSwitch
+          showLabel={true}
+          label="Dark theme"
+          onChange={(event: SwitchEvent) => { setTheme(theme === 'dark' ? 'light' : 'dark') }}
+          checked={theme === 'dark'}
+        />
+      </div>
+    </EuiPopover>
+  )
+}
+
 const LayoutHeader: FC = () => {
   /**
    * Hooks
@@ -162,6 +218,11 @@ const LayoutHeader: FC = () => {
     <HeaderAboutMenu />
   , [])
 
+  const settingsMenu = <HeaderSettingsMenu
+    theme={siteMetaContext.theme}
+    setTheme={siteMetaContext.setTheme}
+  />
+
   return (
     <EuiHeader
       title={siteMetaContext.title}
@@ -177,6 +238,7 @@ const LayoutHeader: FC = () => {
       </EuiHeaderSection>
 
       <EuiHeaderSection side="right">
+        <EuiHeaderSectionItem>{settingsMenu}</EuiHeaderSectionItem>
         <EuiHeaderSectionItem>{aboutMenu}</EuiHeaderSectionItem>
         <EuiHeaderSectionItem>{userMenu}</EuiHeaderSectionItem>
         <If condition={authContext.apiAccessToken !== ''}>
