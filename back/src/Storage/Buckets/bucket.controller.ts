@@ -5,7 +5,6 @@ import {
   Param,
   Post,
   Query,
-  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -13,7 +12,13 @@ import {
 } from '@nestjs/common';
 import * as R from 'ramda';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
@@ -28,7 +33,6 @@ import { EditKeyDTO } from './dto/edit-key.dto';
 import { FileUpload, StorageBucket } from '../types';
 import { AuthService } from 'src/Security/auth/auth.service';
 import { ObjectsDecorator } from './objects.decorator.service';
-import { request } from 'http';
 import { AuthCurrentUser } from 'src/Security/auth/auth.user.param-decorator';
 
 @ApiTags('bucket')
@@ -52,11 +56,27 @@ export class BucketController {
   }
 
   @Get(':bucket')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   getBucket(@Param('bucket', GetBucketPipe) bucket?: StorageBucket): any {
     return R.omit(['auth'], bucket);
   }
 
   @Get(':bucket/status')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   getStatus(
     @Param('bucket', GetStorageDriverPipe) storage?: AWSStorageDriver,
   ): any {
@@ -64,6 +84,20 @@ export class BucketController {
   }
 
   @Get(':bucket/browse')
+  @ApiOperation({ summary: 'List bucket objects' })
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
+  @ApiQuery({
+    name: 'path',
+    required: true,
+    example: '/',
+  })
   async browse(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Param('bucket', GetBucketPipe) bucket: StorageBucket,
@@ -78,7 +112,7 @@ export class BucketController {
   ) {
     let path = query.path || '';
 
-    if (path !== '') {
+    if (path !== '' && path !== '/') {
       path += '/';
     }
 
@@ -103,6 +137,14 @@ export class BucketController {
   }
 
   @Post(':bucket/key/delete')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async deleteKeys(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() deleteKeys: DeleteKeysDto,
@@ -111,6 +153,14 @@ export class BucketController {
   }
 
   @Post(':bucket/key/move')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async renameKey(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
@@ -119,6 +169,14 @@ export class BucketController {
   }
 
   @Post(':bucket/key/copy')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async copyKey(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
@@ -127,6 +185,14 @@ export class BucketController {
   }
 
   @Post(':bucket/upload')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadObjects(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
