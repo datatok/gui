@@ -1,3 +1,16 @@
+export interface RBACRuleConfig {
+  entity: {
+    kind: string;
+    name: string;
+  };
+  verbs: string[];
+  resources: {
+    bucket?: string;
+    host?: string;
+    path?: string;
+  }[];
+}
+
 export interface SecurityConfig {
   auth: {
     anonymous: {
@@ -14,14 +27,7 @@ export interface SecurityConfig {
 
   rbac: {
     enabled: boolean;
-    items: {
-      entity: string;
-      rules: string[];
-      buckets: {
-        name: string;
-        host: string;
-      }[];
-    }[];
+    rules: RBACRuleConfig[];
   };
 }
 

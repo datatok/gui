@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -26,6 +27,9 @@ import { BrowseDto } from './dto/browse.dto';
 import { EditKeyDTO } from './dto/edit-key.dto';
 import { FileUpload, StorageBucket } from '../types';
 import { AuthService } from 'src/Security/auth/auth.service';
+import { ObjectsDecorator } from './objects.decorator.service';
+import { request } from 'http';
+import { AuthCurrentUser } from 'src/Security/auth/auth.user.param-decorator';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -34,6 +38,7 @@ import { AuthService } from 'src/Security/auth/auth.service';
 export class BucketController {
   constructor(
     private bucketProvider: BucketsProviderService,
+    private objectsDecorator: ObjectsDecorator,
     private authService: AuthService,
   ) {}
 
@@ -61,7 +66,8 @@ export class BucketController {
   @Get(':bucket/browse')
   async browse(
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Param('bucket') bucketName: string,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
+    @AuthCurrentUser() authUser,
     @Query(
       new ValidationPipe({
         transform: false,
@@ -76,26 +82,15 @@ export class BucketController {
       path += '/';
     }
 
+    console.log(authUser);
+
     const files = await storage.listObjects(path);
 
-    const filesWithDownloadURLs = files.map((file) => {
-      if (file.type === 'file') {
-        const downloadLink = `/api/download/${bucketName}/object?key=${encodeURIComponent(
-          path + file.name,
-        )}`;
-
-        return {
-          ...file,
-          downloadLink: this.authService.secureLink(downloadLink),
-        };
-      }
-
-      return file;
-    });
+    const filesDecorated = this.objectsDecorator.decorate(bucket, path, files);
 
     return {
       prefix: path,
-      files: filesWithDownloadURLs,
+      files: filesDecorated,
     };
   }
 
