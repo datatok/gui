@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -34,6 +35,7 @@ import { FileUpload, StorageBucket } from '../types';
 import { AuthService } from 'src/Security/auth/auth.service';
 import { ObjectsDecorator } from './objects.decorator.service';
 import { AuthCurrentUser } from 'src/Security/auth/auth.user.param-decorator';
+import { RBACService } from 'src/Security/rbac/rbac.service';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -44,6 +46,7 @@ export class BucketController {
     private bucketProvider: BucketsProviderService,
     private objectsDecorator: ObjectsDecorator,
     private authService: AuthService,
+    private rbacService: RBACService,
   ) {}
 
   @Get()
@@ -99,9 +102,9 @@ export class BucketController {
     example: '/',
   })
   async browse(
+    @AuthCurrentUser() authUser,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Param('bucket', GetBucketPipe) bucket: StorageBucket,
-    @AuthCurrentUser() authUser,
     @Query(
       new ValidationPipe({
         transform: false,
@@ -116,7 +119,9 @@ export class BucketController {
       path += '/';
     }
 
-    console.log(authUser);
+    if (!this.rbacService.can('list', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
 
     const files = await storage.listObjects(path);
 
@@ -130,9 +135,15 @@ export class BucketController {
 
   @Post(':bucket/key/create')
   async createKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() createFolderDto: CreateFolderDto,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.createFolder(createFolderDto.path);
   }
 
@@ -146,9 +157,15 @@ export class BucketController {
     example: 'local-gui',
   })
   async deleteKeys(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() deleteKeys: DeleteKeysDto,
   ) {
+    if (!this.rbacService.can('delete', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.deleteKeys(deleteKeys.keys);
   }
 
@@ -162,9 +179,15 @@ export class BucketController {
     example: 'local-gui',
   })
   async renameKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.moveKey(editKey.sourceKey, editKey.targetKey);
   }
 
@@ -178,9 +201,15 @@ export class BucketController {
     example: 'local-gui',
   })
   async copyKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.copyKey(editKey.sourceKey, editKey.targetKey);
   }
 
@@ -195,10 +224,16 @@ export class BucketController {
   })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadObjects(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() uploadObjects: UploadObjectsDto,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     if (files) {
       const files2: FileUpload[] = files.map((file) => {
         return {

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SecurityConfig } from 'src/config/types';
 import { StorageBucket } from 'src/Storage/types';
+import { User } from '../users/users.service';
 import { RBACRule, RBACRuleResource } from './rbac.types';
 
 @Injectable()
@@ -42,6 +43,25 @@ export class RBACService {
     return this.rules;
   }
 
+  /**
+   * Check if action can be done.
+   */
+  can(verb: string, user: User, bucket: StorageBucket, path: string): boolean {
+    for (const rule of this.rules) {
+      if (
+        rule.verbs.includes(verb) &&
+        this.match(rule.resource, bucket.name, bucket.endpoint?.name, path)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Get all authorized verbs.
+   */
   getAuthorizedVerbsForRules(
     rules: RBACRule[],
     bucket: StorageBucket,
