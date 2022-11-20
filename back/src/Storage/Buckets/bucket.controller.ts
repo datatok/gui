@@ -113,11 +113,7 @@ export class BucketController {
     )
     query: BrowseDto,
   ) {
-    let path = query.path || '';
-
-    if (path !== '' && path !== '/') {
-      path += '/';
-    }
+    const path = this.fixPath(query.path || '');
 
     if (!this.rbacService.can('list', authUser, bucket, path)) {
       throw new ForbiddenException('cant do this action!');
@@ -146,11 +142,13 @@ export class BucketController {
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() createFolderDto: CreateFolderDto,
   ) {
+    const fixedPath = this.fixPath(createFolderDto.path);
+
     if (!this.rbacService.can('edit', authUser, bucket, '/')) {
       throw new ForbiddenException('cant do this action!');
     }
 
-    return await storage.createFolder(createFolderDto.path);
+    return await storage.createFolder(fixedPath);
   }
 
   @Post(':bucket/key/delete')
@@ -236,7 +234,9 @@ export class BucketController {
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() uploadObjects: UploadObjectsDto,
   ) {
-    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+    const fixedPath = this.fixPath(uploadObjects.path);
+
+    if (!this.rbacService.can('upload', authUser, bucket, fixedPath)) {
       throw new ForbiddenException('cant do this action!');
     }
 
@@ -250,9 +250,25 @@ export class BucketController {
         };
       });
 
-      return storage.uploadObjects(uploadObjects.path, files2);
+      return storage.uploadObjects(fixedPath, files2);
     }
 
     return [];
+  }
+
+  fixPath(path: string): string {
+    if (path === '/' || path === '') {
+      return '';
+    }
+
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+
+    return path;
   }
 }

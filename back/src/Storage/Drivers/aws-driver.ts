@@ -9,7 +9,6 @@ import {
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
 import { S3DownloadStream } from 'src/utils/S3DownloadStream';
-import { Readable } from 'stream';
 import { StringUtils } from '../../utils/StringUtils';
 import { FileUpload, StorageBucket } from '../types';
 
@@ -183,7 +182,7 @@ export class AWSStorageDriver {
     const results = await this.client.send(
       new PutObjectCommand({
         Bucket: this.bucket.name,
-        Key: `${path}/__meta.md`,
+        Key: `${path}__meta.md`,
         ContentType: 'text/html; charset=UTF-8',
         Metadata: {
           author: 'Gui',
@@ -283,7 +282,7 @@ export class AWSStorageDriver {
         Bucket: this.bucket.name,
         ContentType: file.contentType,
         ContentLength: file.contentSize,
-        Key: `${prefix}/${file.key}`,
+        Key: `${prefix}${file.key}`,
         Body: file.buffer,
       });
 

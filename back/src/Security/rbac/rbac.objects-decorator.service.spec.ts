@@ -34,6 +34,9 @@ describe('RBACDecorator', () => {
 
     const decoreatedFiles = service.decorate(bucket, path, files);
 
-    expect(decoreatedFiles[0]).toEqual({ key: 'hello.txt', verbs: [] });
+    expect(decoreatedFiles[0]).toEqual({
+      key: 'hello.txt',
+      verbs: ['list', 'read'],
+    });
   });
 });

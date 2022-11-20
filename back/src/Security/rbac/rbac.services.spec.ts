@@ -224,13 +224,13 @@ describe('RBACService', () => {
             verbs: [RBACVerbs.Upload],
             resource: {
               bucket: new RegExp('(.*)'),
-              path: new RegExp('^/Bucket(.*)$'),
+              path: new RegExp('^Bucket/(.*)$'),
             },
           },
         ],
         bucket: 'prod-team',
         hostname: 'localhost',
-        path: '/Toto',
+        path: 'Toto/',
         expected: [RBACVerbs.List, RBACVerbs.Download],
       },
       {
@@ -244,7 +244,7 @@ describe('RBACService', () => {
             verbs: [RBACVerbs.Upload],
             resource: {
               bucket: new RegExp('(.*)'),
-              path: new RegExp('^/Bucket(.*)$'),
+              path: new RegExp('^Bucket/(.*)$'),
             },
           },
         ],
@@ -264,13 +264,13 @@ describe('RBACService', () => {
             verbs: [RBACVerbs.Upload],
             resource: {
               bucket: new RegExp('(.*)'),
-              path: new RegExp('^/Bucket(.*)$'),
+              path: new RegExp('^Bucket/(.*)$'),
             },
           },
         ],
         bucket: 'prod-team',
         hostname: 'localhost',
-        path: '/Bucket',
+        path: 'Bucket/',
         expected: [RBACVerbs.List, RBACVerbs.Download, RBACVerbs.Upload],
       },
     ];
