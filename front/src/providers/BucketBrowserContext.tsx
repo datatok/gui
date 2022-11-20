@@ -38,7 +38,7 @@ export interface IBrowserState {
   /**
    * current selected (folder or file)
    */
-  currentNode?: GuiBrowserObject
+  currentNode: GuiBrowserObject
 
   /**
    * loading files status (loading / done)
@@ -55,6 +55,7 @@ const defaultData: IBrowserContext = {
   bucket: null,
   objects: {},
   currentKey: '',
+  currentNode: BrowserUtils.objectEmpty(),
   loadingStatus: null,
   getByPath: (path: string): GuiBrowserObject | undefined => { return undefined },
   refresh: () => {}
@@ -100,6 +101,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
     bucket: null,
     objects: {},
     currentKey: '',
+    currentNode: BrowserUtils.objectEmpty(),
     loadingStatus: null
   })
 
@@ -120,7 +122,7 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
     setState({
       ...state,
       bucket,
-      currentNode: undefined
+      currentNode: BrowserUtils.objectEmpty()
     })
   }
 
@@ -139,11 +141,11 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
   /**
    * Set current view
    */
-  const setFiles = (fromPath: string, files: GuiBrowserObject[]): void => {
-    const currentNode = {
+  const setFiles = (fromPath: string, rootVerbs: string[], files: GuiBrowserObject[]): void => {
+    const currentNode: GuiBrowserObject = {
       ...BrowserUtils.extractNamePrefix(fromPath),
       type: 'folder',
-      children: files
+      verbs: rootVerbs
     }
 
     const newObjects = BrowserUtils.mergeObjects(
@@ -177,16 +179,16 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
     browseFetchPointer.current = { status: 'progress', cancelToken: null }
 
     apiBucketBrowse(selectedBucket, key)
-      .then(({ files }) => {
+      .then(({ path, verbs, files }) => {
         browseFetchPointer.current = { status: 'success', cancelToken: null }
 
-        setFiles(key, files)
+        setFiles(key, verbs, files)
       })
       .catch(err => {
         browseFetchPointer.current = { status: 'error', cancelToken: null }
 
         if (err.response.status === 404) {
-          setFiles(key, [])
+          setFiles(key, [], [])
         }
 
         /* setState({
@@ -238,7 +240,8 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
         name: state.bucket.title,
         prefix: '',
         path: '',
-        type: 'folder'
+        type: 'folder',
+        verbs: ['list']
       }))
 
       if (state.currentKey !== '') {
@@ -247,7 +250,8 @@ const BrowserStateProvider: FC<BrowserStateProviderProps> = ({ selectedBucket, c
         keyParts.filter(key => key).forEach(key => {
           breadcrumbs.push(objectToBreadcrumbItem(b, {
             ...BrowserUtils.extractNamePrefix(key),
-            type: 'folder'
+            type: 'folder',
+            verbs: []
           }))
         })
       }

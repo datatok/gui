@@ -25,30 +25,37 @@ test('splitKeyPrefixes', () => {
 test('getObjectChildren', () => {
   const objects: GuiObjects = {
     gp: {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp'),
       type: 'folder'
     },
     'gp/papa': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/papa'),
       type: 'folder'
     },
     'gp/papa/girl.txt': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/papa/girl.txt'),
       type: 'file'
     },
     'gp/papa/son.txt': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/papa/son.txt'),
       type: 'file'
     },
     'gp/papa/girl/girl.txt': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/papa/girl/girl.txt'),
       type: 'file'
     },
     'gp/tonton/girl': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/tonton/girl'),
       type: 'folder'
     },
     'gp/papa2/girl': {
+      ...BrowserUtils.objectDefaults(),
       ...BrowserUtils.extractNamePrefix('gp/papa2/girl'),
       type: 'folder'
     }
@@ -73,18 +80,21 @@ test('getObjectChildren', () => {
 test('getHierarchy 2', () => {
   const objects: GuiObjects = {
     Storage: {
+      ...BrowserUtils.objectDefaults(),
       path: 'Storage',
       name: 'Storage',
       prefix: '',
       type: 'folder'
     },
     'Storage/Drivers': {
+      ...BrowserUtils.objectDefaults(),
       name: 'Drivers',
       type: 'folder',
       prefix: 'Storage',
       path: 'Storage/Drivers'
     },
     'Storage/storage.service.spec.ts': {
+      ...BrowserUtils.objectDefaults(),
       name: 'storage.service.spec.ts',
       type: 'file',
       size: 866,
@@ -120,7 +130,8 @@ test('merge objects', () => {
     name: '',
     path: '',
     prefix: '',
-    type: 'file'
+    type: 'file',
+    verbs: []
   }
 
   const existingObjects: GuiObjects = {

@@ -6,22 +6,24 @@ import { GuiBrowserObject, GuiBucket, ObjectItemAction } from 'types'
 
 interface TopBarProps {
   bucket: GuiBucket
-  currentKey: string
+  currentNode: GuiBrowserObject
   selectedItems: GuiBrowserObject[]
   onItemAction: (action: ObjectItemAction) => void
   onRefresh: () => void
 }
 
-const TopBar: FC<TopBarProps> = ({ bucket, currentKey, onItemAction, onRefresh, selectedItems }) => {
+const TopBar: FC<TopBarProps> = ({ bucket, currentNode, onItemAction, onRefresh, selectedItems }) => {
   const navigate = useNavigate()
+
+  console.log(currentNode.verbs)
 
   const getSideUploadButton = (): ReactElement => {
     const href = getRouteURL(Route.BucketUpload, {
       bucket: bucket.id,
-      path: currentKey
+      path: currentNode.path
     })
 
-    return <EuiButton fill iconType={'exportAction'} href={href} onClick={onClick(() => {
+    return <EuiButton fill iconType={'exportAction'} isDisabled={!currentNode.verbs.includes('upload')} href={href} onClick={onClick(() => {
       navigate(href)
     })} key={'upload'} >Upload</EuiButton>
   }

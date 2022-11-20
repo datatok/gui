@@ -2,6 +2,21 @@ import { GuiBrowserObject, GuiBrowserObjectNode, GuiObjects } from 'types'
 import * as R from 'ramda'
 import { StringUtils } from './StringUtils'
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+const objectDefaults = () => {
+  return {
+    verbs: [],
+    type: 'folder'
+  }
+}
+
+const objectEmpty = (): GuiBrowserObject => {
+  return {
+    ...objectDefaults(),
+    ...extractNamePrefix('')
+  }
+}
+
 /**
  * @param path
  * @returns
@@ -179,5 +194,12 @@ export const BrowserUtils = {
   /**
    * Merge objects (remove not existing)
    */
-  mergeObjects
+  mergeObjects,
+
+  /**
+   * Get default properties
+   */
+  objectDefaults,
+
+  objectEmpty
 }

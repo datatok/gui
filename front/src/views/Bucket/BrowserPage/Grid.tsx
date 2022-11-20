@@ -95,6 +95,9 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
           color: 'danger',
           type: 'icon',
           isPrimary: true,
+          enabled: ({ verbs }: GuiBrowserObject) => {
+            return verbs.includes('delete')
+          },
           onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Delete, item)
           },
@@ -106,6 +109,9 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
           description: 'Edit (rename, meta)',
           icon: 'pencil',
           type: 'icon',
+          enabled: ({ verbs }: GuiBrowserObject) => {
+            return verbs.includes('edit')
+          },
           onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Move, item)
           },
@@ -117,6 +123,9 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
           description: 'Full copy',
           icon: 'copy',
           type: 'icon',
+          enabled: ({ verbs }: GuiBrowserObject) => {
+            return verbs.includes('edit')
+          },
           onClick: (item: GuiBrowserObject) => {
             onItemAction(ObjectItemAction.Copy, item)
           },
@@ -138,8 +147,9 @@ const Grid: FC<GridProps> = ({ bucket, listObjects, onItemAction, onSelectionCha
     selectableMessage: (selectable: boolean, item: GuiBrowserObject) => '',
     onSelectionChange: (selectedItems: GuiBrowserObject[]) => {
       // setSelectedItems(selectedItems);
+      const deletableItems = selectedItems.filter(i => i.verbs.includes('delete'))
 
-      onSelectionChange(selectedItems)
+      onSelectionChange(deletableItems)
     }
   }
 

@@ -23,7 +23,7 @@ const BrowserPage: FC = () => {
 
   const {
     refresh: browserRefreshObjects,
-    currentKey: browserCurrentKey,
+    currentNode,
     objects: browserObjects
   } = useBrowserContext()
 
@@ -39,7 +39,7 @@ const BrowserPage: FC = () => {
     NewFolder,
   }
 
-  const browserSelectedObjectChildren = BrowserUtils.getObjectChildren(browserObjects, browserCurrentKey)
+  const browserSelectedObjectChildren = BrowserUtils.getObjectChildren(browserObjects, currentNode?.path)
 
   /**
    * State
@@ -89,12 +89,12 @@ const BrowserPage: FC = () => {
           <NewFolderModal
             key={'new-folder-modal'}
             bucket={selectedBucket}
-            targetKey={browserCurrentKey}
+            targetKey={currentNode.path}
             onClose={closeModal}
           />
         )
     }
-  }, [selectedBucket, browserCurrentKey, selectedItems])
+  }, [selectedBucket, currentNode.path, selectedItems])
 
   if (typeof selectedBucket === 'undefined' || selectedBucket === null) {
     return <></>
@@ -138,7 +138,7 @@ const BrowserPage: FC = () => {
     <>
       <TopBar
         bucket={selectedBucket}
-        currentKey={browserCurrentKey}
+        currentNode={currentNode}
         onItemAction={onItemAction}
         onRefresh={browserRefreshObjects}
         selectedItems={selectedItems}
