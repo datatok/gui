@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Post,
@@ -12,7 +13,13 @@ import {
 } from '@nestjs/common';
 import * as R from 'ramda';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
@@ -26,6 +33,9 @@ import { BrowseDto } from './dto/browse.dto';
 import { EditKeyDTO } from './dto/edit-key.dto';
 import { FileUpload, StorageBucket } from '../types';
 import { AuthService } from 'src/Security/auth/auth.service';
+import { ObjectsDecorator } from './objects.decorator.service';
+import { AuthCurrentUser } from 'src/Security/auth/auth.user.param-decorator';
+import { RBACService } from 'src/Security/rbac/rbac.service';
 
 @ApiTags('bucket')
 @ApiBearerAuth('access_token')
@@ -34,7 +44,9 @@ import { AuthService } from 'src/Security/auth/auth.service';
 export class BucketController {
   constructor(
     private bucketProvider: BucketsProviderService,
+    private objectsDecorator: ObjectsDecorator,
     private authService: AuthService,
+    private rbacService: RBACService,
   ) {}
 
   @Get()
@@ -47,11 +59,27 @@ export class BucketController {
   }
 
   @Get(':bucket')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   getBucket(@Param('bucket', GetBucketPipe) bucket?: StorageBucket): any {
     return R.omit(['auth'], bucket);
   }
 
   @Get(':bucket/status')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   getStatus(
     @Param('bucket', GetStorageDriverPipe) storage?: AWSStorageDriver,
   ): any {
@@ -59,9 +87,24 @@ export class BucketController {
   }
 
   @Get(':bucket/browse')
+  @ApiOperation({ summary: 'List bucket objects' })
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
+  @ApiQuery({
+    name: 'path',
+    required: true,
+    example: '/',
+  })
   async browse(
+    @AuthCurrentUser() authUser,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
-    @Param('bucket') bucketName: string,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Query(
       new ValidationPipe({
         transform: false,
@@ -70,74 +113,133 @@ export class BucketController {
     )
     query: BrowseDto,
   ) {
-    let path = query.path || '';
+    const path = this.fixPath(query.path || '');
 
-    if (path !== '') {
-      path += '/';
+    if (!this.rbacService.can('list', authUser, bucket, path)) {
+      throw new ForbiddenException('cant do this action!');
     }
 
     const files = await storage.listObjects(path);
-
-    const filesWithDownloadURLs = files.map((file) => {
-      if (file.type === 'file') {
-        const downloadLink = `/api/download/${bucketName}/object?key=${encodeURIComponent(
-          path + file.name,
-        )}`;
-
-        return {
-          ...file,
-          downloadLink: this.authService.secureLink(downloadLink),
-        };
-      }
-
-      return file;
-    });
+    const filesDecorated = this.objectsDecorator.decorate(bucket, path, files);
+    const rulesForUser = this.rbacService.getRulesForUser();
+    const verbs = this.rbacService.getAuthorizedVerbsForRules(
+      rulesForUser,
+      bucket,
+      path,
+    );
 
     return {
       prefix: path,
-      files: filesWithDownloadURLs,
+      files: filesDecorated,
+      verbs,
     };
   }
 
   @Post(':bucket/key/create')
   async createKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() createFolderDto: CreateFolderDto,
   ) {
-    return await storage.createFolder(createFolderDto.path);
+    const fixedPath = this.fixPath(createFolderDto.path);
+
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
+    return await storage.createFolder(fixedPath);
   }
 
   @Post(':bucket/key/delete')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async deleteKeys(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() deleteKeys: DeleteKeysDto,
   ) {
+    if (!this.rbacService.can('delete', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.deleteKeys(deleteKeys.keys);
   }
 
   @Post(':bucket/key/move')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async renameKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.moveKey(editKey.sourceKey, editKey.targetKey);
   }
 
   @Post(':bucket/key/copy')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   async copyKey(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @Body() editKey: EditKeyDTO,
   ) {
+    if (!this.rbacService.can('edit', authUser, bucket, '/')) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     return await storage.copyKey(editKey.sourceKey, editKey.targetKey);
   }
 
   @Post(':bucket/upload')
+  @ApiParam({
+    name: 'bucket',
+    required: true,
+    description: 'name of bucket',
+    schema: { oneOf: [{ type: 'string' }] },
+    type: 'string',
+    example: 'local-gui',
+  })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadObjects(
+    @AuthCurrentUser() authUser,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
     @UploadedFiles() files: Array<Express.Multer.File>,
     @Body() uploadObjects: UploadObjectsDto,
   ) {
+    const fixedPath = this.fixPath(uploadObjects.path);
+
+    if (!this.rbacService.can('upload', authUser, bucket, fixedPath)) {
+      throw new ForbiddenException('cant do this action!');
+    }
+
     if (files) {
       const files2: FileUpload[] = files.map((file) => {
         return {
@@ -148,9 +250,25 @@ export class BucketController {
         };
       });
 
-      return storage.uploadObjects(uploadObjects.path, files2);
+      return storage.uploadObjects(fixedPath, files2);
     }
 
     return [];
+  }
+
+  fixPath(path: string): string {
+    if (path === '/' || path === '') {
+      return '';
+    }
+
+    if (!path.endsWith('/')) {
+      path += '/';
+    }
+
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+
+    return path;
   }
 }

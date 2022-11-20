@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -13,6 +14,27 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('GUI')
+    .setDescription('Yet another UI for S3')
+    .setVersion('1.0')
+    .addTag('gui')
+    .addBearerAuth(
+      {
+        name: 'access_token',
+        bearerFormat: 'JWT',
+        type: 'http',
+        in: 'header',
+        scheme: 'bearer',
+      },
+      'access_token',
+    )
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  SwaggerModule.setup('api/console', app, document);
 
   app.enableCors({
     methods: ['GET'],

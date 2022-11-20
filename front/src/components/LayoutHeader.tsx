@@ -1,4 +1,4 @@
-import { EuiAvatar, EuiButtonEmpty, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiLink, EuiPopover, EuiSpacer, EuiSwitch, EuiSwitchEvent, EuiText, useGeneratedHtmlId } from '@elastic/eui'
+import { EuiAvatar, EuiFlexGroup, EuiFlexItem, EuiHeader, EuiHeaderLogo, EuiHeaderSection, EuiHeaderSectionItem, EuiHeaderSectionItemButton, EuiPopover, EuiSpacer, EuiSwitch, EuiSwitchEvent, EuiText, useGeneratedHtmlId, EuiHeaderLink } from '@elastic/eui'
 import { useNavigate } from 'react-router-dom'
 import { useSiteMetaContext } from 'providers/SiteMetaContext'
 import { useAuthContext } from 'providers/AuthContext'
@@ -34,7 +34,7 @@ const HeaderUserMenu: FC<UMProps> = ({ username }: { username: string }) => {
   }
 
   const button = (
-    <EuiHeaderSectionItemButton
+    <EuiHeaderLink
       aria-controls={headerUserPopoverId}
       aria-expanded={isOpen}
       aria-haspopup="true"
@@ -42,7 +42,7 @@ const HeaderUserMenu: FC<UMProps> = ({ username }: { username: string }) => {
       onClick={onMenuButtonClick}
     >
       <EuiAvatar name={username} size="s" />
-    </EuiHeaderSectionItemButton>
+    </EuiHeaderLink>
   )
 
   return (
@@ -90,14 +90,14 @@ const HeaderAboutMenu: FC = () => {
   }
 
   const button = (
-    <EuiButtonEmpty
+    <EuiHeaderLink
       aria-controls={headerUserPopoverId}
       aria-expanded={isOpen}
       aria-haspopup="true"
       aria-label="Account menu"
       onClick={onMenuButtonClick}
       iconType='help'
-    >About</EuiButtonEmpty>
+    >About</EuiHeaderLink>
   )
 
   return (
@@ -156,7 +156,7 @@ const HeaderSettingsMenu: FC<SMProps> = ({ theme, setTheme }) => {
   }
 
   const button = (
-    <EuiButtonEmpty
+    <EuiHeaderLink
       aria-controls={headerUserPopoverId}
       aria-expanded={isOpen}
       aria-haspopup="true"
@@ -165,7 +165,7 @@ const HeaderSettingsMenu: FC<SMProps> = ({ theme, setTheme }) => {
       iconType='menu'
     >
       Settings
-    </EuiButtonEmpty>
+    </EuiHeaderLink>
   )
 
   return (
@@ -244,7 +244,7 @@ const LayoutHeader: FC = () => {
         <If condition={authContext.apiAccessToken !== ''}>
           <Then>
             <EuiHeaderSectionItem>
-              <EuiLink onClick={() => { authContext.logout(); navigate('/') }}>Log out</EuiLink>
+              <EuiHeaderLink onClick={() => { authContext.logout(); navigate('/') }}>Log out</EuiHeaderLink>
             </EuiHeaderSectionItem>
           </Then>
         </If>

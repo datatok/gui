@@ -6,9 +6,8 @@ import { AppService } from './app.service';
 import { StorageModule } from './Storage/storage.module';
 import configuration from './config/configuration';
 import { AllExceptionsFilter } from './filters/catch-all.filter';
-import { AuthModule } from './Security/auth/auth.module';
-import { UsersModule } from './Security/users/users.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { SecurityModule } from './Security/security.module';
 
 @Module({
   imports: [
@@ -16,8 +15,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       load: [configuration],
     }),
     StorageModule,
-    AuthModule,
-    UsersModule,
+    SecurityModule,
     /*ThrottlerModule.forRoot({
       ttl: 10,
       limit: 500,

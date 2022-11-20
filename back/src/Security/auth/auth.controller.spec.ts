@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import configuration from '../../config/configuration';
 import { UsersService } from '../users/users.service';
 import { SecurityAuthController } from './auth.controller';
-import { AuthModule } from './auth.module';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 
@@ -15,12 +14,8 @@ describe('SecurityController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [SecurityAuthController],
-      providers: [
-        AuthService,
-        UsersService
-      ],
+      providers: [AuthService, UsersService],
       imports: [
-        AuthModule,
         ConfigModule.forRoot({
           load: [configuration],
         }),
@@ -29,7 +24,7 @@ describe('SecurityController', () => {
           secret: jwtConstants.secret,
           signOptions: { expiresIn: '60s' },
         }),
-      ]
+      ],
     }).compile();
 
     appController = app.get<SecurityAuthController>(SecurityAuthController);
@@ -37,9 +32,9 @@ describe('SecurityController', () => {
 
   describe('root', () => {
     it('should return "Hello World!"', async () => {
-      const data = await appController.getAnonymous()
+      const data = await appController.getAnonymous();
 
-      expect(data.access_token).toBeDefined()
+      expect(data.access_token).toBeDefined();
     });
   });
 });

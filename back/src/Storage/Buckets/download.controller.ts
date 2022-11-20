@@ -1,31 +1,40 @@
 import {
-  Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Query,
-  Request,
   Response,
   StreamableFile,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { basename } from 'path';
+import { AuthCurrentUser } from 'src/Security/auth/auth.user.param-decorator';
+import { RBACService } from 'src/Security/rbac/rbac.service';
 import { AWSStorageDriver } from '../Drivers/aws-driver';
+import { StorageBucket } from '../types';
 import { DownloadKeyDto } from './dto/download-key.dto';
+import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
 
 @ApiTags('bucket')
 @Controller('api/download')
 export class BucketDownloadController {
+  constructor(private rbacService: RBACService) {}
+
   @Get(':bucket/object')
   async downloadKey(
+    @AuthCurrentUser() authUser,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,
+    @Param('bucket', GetBucketPipe) bucket: StorageBucket,
     @Query() downloadKey: DownloadKeyDto,
     @Response({ passthrough: true }) httpResponse,
   ) {
-    const stream = await storage.downloadObject(downloadKey.key);
+    if (!this.rbacService.can('download', authUser, bucket, downloadKey.key)) {
+      throw new ForbiddenException('cant do this action!');
+    }
 
-    console.log(stream.getContentLength());
+    const stream = await storage.downloadObject(downloadKey.key);
 
     httpResponse.set({
       'Content-Disposition': `attachment; filename="${basename(

@@ -50,6 +50,11 @@ export interface GuiBrowserObject {
    * Secure link for download object
    */
   downloadLink?: string
+
+  /**
+   * RBAC verbs: list, read, write, download
+   */
+  verbs: string[]
 }
 
 /**
