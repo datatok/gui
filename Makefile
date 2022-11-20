@@ -1,12 +1,24 @@
+##
+# Build back
+##
 gui/back/build:
 	cd back && \
 		npm run build
 
+##
+# Run back for dev
+##
 gui/back/run:
 	cd back && \
 		GUI_PUBLIC_DIR=../front/build \
 		GUI_CONFIG_FILE=./config.yaml \
 		./node_modules/.bin/nest start --watch
+
+##
+# Open the swagger API console
+##
+gui/back/console:
+	open http://localhost:3001/api/console
 
 gui/front/build:
 	cd front && \
