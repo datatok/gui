@@ -13,7 +13,7 @@ export class RBACObjectsDecorator {
       file.verbs = this.rbacService.getAuthorizedVerbsForRules(
         rulesForUser,
         bucket,
-        path,
+        path + file.name,
       );
 
       return file;

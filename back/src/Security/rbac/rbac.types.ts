@@ -5,6 +5,7 @@ export interface RBACRuleResource {
 }
 
 export interface RBACRule {
+  title?: string;
   entity: {
     kind: string;
     name: string;

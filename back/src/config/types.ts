@@ -1,4 +1,5 @@
 export interface RBACRuleConfig {
+  title?: string;
   entity: {
     kind: string;
     name: string;

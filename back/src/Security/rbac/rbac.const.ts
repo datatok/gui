@@ -4,4 +4,5 @@ export const RBACVerbs = Object.freeze({
   Download: 'download',
   Edit: 'edit',
   Delete: 'delete',
+  Upload: 'upload',
 });

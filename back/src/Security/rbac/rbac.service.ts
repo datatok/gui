@@ -20,12 +20,13 @@ export class RBACService {
         this.rules = configRules.flatMap((rule) => {
           return rule.resources.map((resource): RBACRule => {
             return {
+              title: rule.title,
               entity: rule.entity,
               verbs: rule.verbs,
               resource: {
                 host: resource.host ? new RegExp(resource.host) : null,
-                bucket: resource.host ? new RegExp(resource.bucket) : null,
-                path: resource.host ? new RegExp(resource.path) : null,
+                bucket: resource.bucket ? new RegExp(resource.bucket) : null,
+                path: resource.path ? new RegExp(resource.path) : null,
               },
             };
           });
@@ -67,18 +68,24 @@ export class RBACService {
     bucket: StorageBucket,
     path: string,
   ): string[] {
-    return rules
-      .filter((rule) => {
-        return this.match(
-          rule.resource,
-          bucket?.name,
-          bucket?.endpoint?.hostname,
-          path,
-        );
-      })
-      .flatMap((rule) => {
-        return rule.verbs;
-      });
+    const foundRules = rules.filter((rule) => {
+      return this.match(
+        rule.resource,
+        bucket?.name,
+        bucket?.endpoint?.hostname,
+        path,
+      );
+    });
+
+    for (const rule of foundRules) {
+      console.debug(
+        `match(${bucket?.endpoint?.hostname}/${bucket?.name}/${path}) => ${rule.title} with verbs ${rule.verbs}`,
+      );
+    }
+
+    return foundRules.flatMap((rule) => {
+      return rule.verbs;
+    });
   }
 
   /**

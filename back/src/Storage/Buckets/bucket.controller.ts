@@ -119,17 +119,23 @@ export class BucketController {
       path += '/';
     }
 
-    if (!this.rbacService.can('list', authUser, bucket, '/')) {
+    if (!this.rbacService.can('list', authUser, bucket, path)) {
       throw new ForbiddenException('cant do this action!');
     }
 
     const files = await storage.listObjects(path);
-
     const filesDecorated = this.objectsDecorator.decorate(bucket, path, files);
+    const rulesForUser = this.rbacService.getRulesForUser();
+    const verbs = this.rbacService.getAuthorizedVerbsForRules(
+      rulesForUser,
+      bucket,
+      path,
+    );
 
     return {
       prefix: path,
       files: filesDecorated,
+      verbs,
     };
   }
 

@@ -84,6 +84,37 @@ describe('RBACService', () => {
     ).toEqual(true);
   });
 
+  it('should match rules with path', async () => {
+    expect(service.match({}, 'hello', 'localhost', '/')).toEqual(true);
+
+    expect(
+      service.match(
+        { bucket: new RegExp('^dev-(.*)$'), path: new RegExp('Admin(.*)') },
+        'dev-team',
+        'staging',
+        '/Bucket',
+      ),
+    ).toEqual(false);
+
+    expect(
+      service.match(
+        { bucket: new RegExp('^dev-(.*)$'), path: new RegExp('^/Bucket(.*)$') },
+        'dev-team',
+        'localhost',
+        '/Bucket/Admin/toto.txt',
+      ),
+    ).toEqual(true);
+
+    expect(
+      service.match(
+        { bucket: new RegExp('^dev-(.*)$'), path: new RegExp('^/Bucket(.*)$') },
+        'dev-team',
+        'localhost',
+        '/Root/Bucket/Admin/toto.txt',
+      ),
+    ).toEqual(false);
+  });
+
   it('should generate verbs', async () => {
     const dataset = [
       {
@@ -182,6 +213,66 @@ describe('RBACService', () => {
         hostname: 'localhost',
         expected: [RBACVerbs.Edit, RBACVerbs.Delete, RBACVerbs.Download],
       },
+      {
+        title: 'should not be able to upload',
+        rules: [
+          {
+            verbs: [RBACVerbs.List, RBACVerbs.Download],
+            resource: { bucket: new RegExp('(.*)') },
+          },
+          {
+            verbs: [RBACVerbs.Upload],
+            resource: {
+              bucket: new RegExp('(.*)'),
+              path: new RegExp('^/Bucket(.*)$'),
+            },
+          },
+        ],
+        bucket: 'prod-team',
+        hostname: 'localhost',
+        path: '/Toto',
+        expected: [RBACVerbs.List, RBACVerbs.Download],
+      },
+      {
+        title: 'should not be able to upload',
+        rules: [
+          {
+            verbs: [RBACVerbs.List, RBACVerbs.Download],
+            resource: { bucket: new RegExp('(.*)') },
+          },
+          {
+            verbs: [RBACVerbs.Upload],
+            resource: {
+              bucket: new RegExp('(.*)'),
+              path: new RegExp('^/Bucket(.*)$'),
+            },
+          },
+        ],
+        bucket: 'prod-team',
+        hostname: 'localhost',
+        path: '',
+        expected: [RBACVerbs.List, RBACVerbs.Download],
+      },
+      {
+        title: 'should be able to upload',
+        rules: [
+          {
+            verbs: [RBACVerbs.List, RBACVerbs.Download],
+            resource: { bucket: new RegExp('(.*)') },
+          },
+          {
+            verbs: [RBACVerbs.Upload],
+            resource: {
+              bucket: new RegExp('(.*)'),
+              path: new RegExp('^/Bucket(.*)$'),
+            },
+          },
+        ],
+        bucket: 'prod-team',
+        hostname: 'localhost',
+        path: '/Bucket',
+        expected: [RBACVerbs.List, RBACVerbs.Download, RBACVerbs.Upload],
+      },
     ];
 
     for (const data of dataset) {
@@ -198,7 +289,7 @@ describe('RBACService', () => {
             title: '',
             endpoint: { hostname: data.hostname, protocol: 'http', path: '' },
           },
-          '',
+          data.path || '',
         ),
       ).toEqual(data.expected);
     }
