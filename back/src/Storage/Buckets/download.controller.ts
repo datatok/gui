@@ -6,6 +6,7 @@ import {
   Query,
   Response,
   StreamableFile,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { basename } from 'path';
@@ -16,6 +17,7 @@ import { StorageBucket } from '../types';
 import { DownloadKeyDto } from './dto/download-key.dto';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { GetStorageDriverPipe } from './get-storage-driver.pipe';
+import { SignedUrlGuard } from 'nestjs-url-generator';
 
 @ApiTags('bucket')
 @Controller('api/download')
@@ -23,6 +25,7 @@ export class BucketDownloadController {
   constructor(private rbacService: RBACService) {}
 
   @Get(':bucket/object')
+  @UseGuards(SignedUrlGuard)
   async downloadKey(
     @AuthCurrentUser() authUser,
     @Param('bucket', GetStorageDriverPipe) storage: AWSStorageDriver,

@@ -10,6 +10,7 @@ gui/back/build:
 ##
 gui/back/run:
 	cd back && \
+		GUI_PUBLIC_URL=http://localhost:3000 \
 		GUI_PUBLIC_DIR=../front/build \
 		GUI_CONFIG_FILE=./config.yaml \
 		./node_modules/.bin/nest start --watch
