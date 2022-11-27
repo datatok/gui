@@ -2,6 +2,22 @@ version: '2'
 
 services:
 
+  ##
+  # Front HTTP proxy to server services with DNS
+  ##
+  front:
+    image: traefik:v2.9
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+
   app:
     build:
       context: .
@@ -10,10 +26,14 @@ services:
     - GUI_PORT=8080
     - GUI_PUBLIC_DIR=/home/node/public
     - GUI_CONFIG_FILE=/home/node/config.yaml
+    - GUI_PUBLIC_URL=http://gui-${GUI_DEV_HOST}
     - BUCKET=gui
     - SECRET_KEY=rootroot
-    ports:
-    - 8080:8080
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.app.rule=Host(`gui-${GUI_DEV_HOST}`)"
+    - "traefik.http.routers.app.entrypoints=web"
+    - "traefik.http.services.app.loadbalancer.server.port=8080"
     volumes:
     - ./config.yaml:/home/node/config.yaml
 
@@ -30,6 +50,18 @@ services:
     - MINIO_SECRET_KEY=rootroot
     - MINIO_DEFAULT_BUCKETS=gui
     - BITNAMI_DEBUG=true
+    - MINIO_SERVER_URL=http://s3-${GUI_DEV_HOST}
+    - MINIO_BROWSER_REDIRECT_URL=http://s3-console-${GUI_DEV_HOST}
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.minio.rule=Host(`s3-${GUI_DEV_HOST}`)"
+    - "traefik.http.routers.minio.entrypoints=web"
+    - "traefik.http.routers.minio.service=s3"
+    - "traefik.http.services.minio.loadbalancer.server.port=9000"
+    - "traefik.http.routers.s3-console.rule=Host(`s3-console-${GUI_DEV_HOST}`)"
+    - "traefik.http.routers.s3-console.entrypoints=web"
+    - "traefik.http.routers.s3-console.service=s3-console"
+    - "traefik.http.services.s3-console.loadbalancer.server.port=9001"
 volumes:
   minio_data:
     driver: local
