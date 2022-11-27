@@ -5,16 +5,19 @@ security:
 
   rbac:
     enabled: true
-    items:
-    - entity: anonymous
-      rules:
+    rules:
+    - title: all
+      entity: anonymous
+      verbs:
       - list
       - read
       - write
+      - upload
+      - edit
       - delete
-      buckets:
-      - host: "*"
-        name: "*"
+      - download
+      resources:
+      - {}
 
 storage:
   auth:

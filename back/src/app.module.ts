@@ -4,10 +4,13 @@ import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { StorageModule } from './Storage/storage.module';
-import configuration from './config/configuration';
+import configuration, {
+  urlGeneratorModuleConfig,
+} from './config/configuration';
 import { AllExceptionsFilter } from './filters/catch-all.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { SecurityModule } from './Security/security.module';
+import { UrlGeneratorModule } from 'nestjs-url-generator';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { SecurityModule } from './Security/security.module';
       serveStaticOptions: {
         index: false,
       },
+    }),
+    UrlGeneratorModule.forRootAsync({
+      useFactory: () => urlGeneratorModuleConfig(),
     }),
   ],
   controllers: [AppController],
