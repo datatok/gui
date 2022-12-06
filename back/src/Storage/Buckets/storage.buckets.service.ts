@@ -34,6 +34,7 @@ export class BucketsProviderService {
         name: b.name,
         id: b.name,
         region: b.region,
+        path: b.path,
       };
 
       if (b.endpoint) {

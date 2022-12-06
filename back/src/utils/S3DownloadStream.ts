@@ -1,6 +1,5 @@
 import { Transform, ReadableOptions, Readable } from 'stream';
 import { S3 } from '@aws-sdk/client-s3';
-import { rmSync } from 'fs';
 
 type S3DownloadStreamOptions = {
   readonly s3: S3;

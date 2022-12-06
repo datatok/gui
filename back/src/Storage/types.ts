@@ -7,7 +7,7 @@ interface StorageAuthBasic {
 interface StorageEndpoint {
   name?: string;
   protocol: string;
-  hostname: string;
+  hostname?: string;
   port?: number;
   path: string;
 }
@@ -19,6 +19,7 @@ export interface StorageBucket {
   id?: string;
   name: string;
   title: string;
+  path?: string;
 
   auth?: StorageAuthBasic;
 }
@@ -28,4 +29,5 @@ export interface FileUpload {
   contentType: string;
   contentSize: number;
   buffer: Buffer;
+  path: string;
 }

@@ -35,11 +35,11 @@ gui/packages/docker/build:
 ##
 # Build ALL: projects, docker image
 ##
-gui/build: gui/back/build gui/front/build gui/packages/docker/build
+gui/build: gui/back/build gui/front/build
+	make gui/packages/docker/build
 	echo "Done!"
 
-gui/build_and_run: gui/build
+gui/docker/up: gui/build
+	docker-compose up -d minio front
+	open http://gui-127-0-0-1.nip.io
 	docker-compose up app
-
-gui/dev/compose/up:
-	docker-compose up -d minio
