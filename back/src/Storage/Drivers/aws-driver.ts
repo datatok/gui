@@ -12,7 +12,7 @@ import { S3DownloadStream } from 'src/utils/S3DownloadStream';
 import { StringUtils } from '../../utils/StringUtils';
 import { FileUpload, StorageBucket } from '../types';
 
-export class AWSStorageDriver {
+export class AWSStorageDriver implements StorageDriver {
   protected bucket: StorageBucket;
   protected client: S3;
 

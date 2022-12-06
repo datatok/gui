@@ -35,6 +35,17 @@ security:
       resources:
       - bucket: "gui"
         path: "^Bucket/(.*)$"
+    - title: upload/delete only on "Bucket/" prefix
+      entity:
+        kind: anonymous
+        name: anonymous
+      verbs:
+      - edit
+      - delete
+      - upload
+      - download
+      resources:
+      - bucket: "local-fs"
     - entity:
         kind: anonymous
         name: anonymous
@@ -80,3 +91,7 @@ storage:
     name: datahub-events
     auth: infra
     title: datahub
+
+  - path: "."
+    name: local-fs
+    title: local fs

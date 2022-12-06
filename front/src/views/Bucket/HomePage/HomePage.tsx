@@ -37,26 +37,40 @@ const HomePage: FC = () => {
     </EuiPageTemplate.Section>)
   }
 
+  const getDescriptionList = ({ host, name }: { host: string, name: string }): any[] => {
+    const ar = [{
+      title: 'Type',
+      description: host !== null && host !== undefined ? 'Remote' : 'Local'
+    }, {
+      title: 'Bucket',
+      description: name
+    }]
+
+    if (host !== null && host !== undefined) {
+      return [...ar, {
+        title: 'Host',
+        description: host
+      }]
+    }
+
+    return ar
+  }
+
+  const getIcon = ({ host }): string => {
+    return host !== null && host !== undefined ? 'storage' : 'submodule'
+  }
+
   return (
     <EuiPageTemplate.Section>
       <EuiText><h3>Select a bucket</h3></EuiText>
       <EuiSpacer />
-      <EuiFlexGroup gutterSize="l" justifyContent="spaceEvenly">
+      <EuiFlexGroup gutterSize="l" justifyContent="spaceAround">
         {items.map(({ title, name, host, nav }, index) => (
           <EuiFlexItem key={index} css={{ width: '25%' }}>
           <EuiCard
             title={title}
-            icon={<EuiIcon type={'storage'} size={'xl'} />}
-            description={(<EuiDescriptionList listItems={[
-              {
-                title: 'Bucket',
-                description: name
-              },
-              {
-                title: 'Host',
-                description: host
-              }
-            ]}/>)}
+            icon={<EuiIcon type={getIcon({ host })} size={'xl'} />}
+            description={(<EuiDescriptionList listItems={getDescriptionList({ host, name })}/>)}
             {...nav}
           />
         </EuiFlexItem>

@@ -244,6 +244,7 @@ export class BucketController {
       const files2: FileUpload[] = files.map((file) => {
         return {
           key: Buffer.from(file.originalname, 'latin1').toString('utf8'),
+          path: file.path,
           contentType: file.mimetype,
           contentSize: file.size,
           buffer: file.buffer,

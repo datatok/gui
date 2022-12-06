@@ -56,6 +56,8 @@ interface StorageBucketConfig {
   region?: string;
   auth?: string;
   endpoint?: string;
+  // In case of local FS
+  path?: string;
 }
 
 export interface StorageConfig {
