@@ -3,6 +3,9 @@ name: Build apps and Docker image
 on:
   push:
     branches: [ main ]
+    paths:
+    - 'front/**'
+    - 'back/**'
   pull_request:
     branches: [ main ]
 
