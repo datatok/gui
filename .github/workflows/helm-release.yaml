@@ -23,8 +23,7 @@ jobs:
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
         with:
-            charts_repo_url: https://datatok.github.io/helm-charts
-            charts_dir: packages/helm
+          charts_dir: packages/helm
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           CR_SKIP_EXISTING: true
