@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  gui:
+  - apiVersion: v2
+    appVersion: v0.3.0
+    created: "2022-12-08T17:46:29.967686112Z"
+    description: A Helm chart for Kubernetes
+    digest: 285c0e61df1cd8f2a387dc84bf2aa10a53baf10042e4ecbb3631e58cdbc2d965
+    name: gui
+    type: application
+    urls:
+    - https://github.com/datatok/gui/releases/download/gui-0.3.2/gui-0.3.2.tgz
+    version: 0.3.2
+generated: "2022-12-08T17:46:29.967695712Z"
