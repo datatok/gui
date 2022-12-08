@@ -58,18 +58,29 @@ spec:
             value: "{{ .Values.gui.listenPort }}"
           - name: GUI_PUBLIC_DIR
             value: /home/node/public
+          - name: GUI_PUBLIC_URL
+            value: {{ .Values.gui.publicURL }}
           {{- with .Values.extraEnvs }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+          {{- with .Values.extraEnvsOverrides }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
           volumeMounts:
           - name: gui-config
             mountPath: /mnt/gui
+          {{- with .Values.extraVolumeMounts }}
+          {{ toYaml . | nindent 10 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
       - name: gui-config
         configMap:
           name: {{ include "gui.fullname" . }}-config
+      {{- with .Values.extraVolumes }}
+        {{ toYaml . | nindent 6 }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

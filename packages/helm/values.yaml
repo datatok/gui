@@ -1,5 +1,7 @@
 gui:
   listenPort: 8080
+  # -- The public URL (exemple: ingress DNS)
+  publicURL: ""
   # -- YAML GUI configuration
   config: |
     security:
@@ -93,6 +95,9 @@ extraEnvs: #[]
     configMapKeyRef:
       name: special-config
       key: special.how
+
+# -- extra env, another variable to support multi environnements
+extraEnvsOverrides: []
 
 securityContext: {}
   # capabilities:
