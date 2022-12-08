@@ -45,12 +45,26 @@ describe('LocalFSDriver', () => {
     ]);
   });
 
-  it('delete objects', async () => {
+  it('delete objects: file', async () => {
     const driver = getLocalDriver();
 
     await driver.deleteKeys(['hello.txt']);
 
     const results = await driver.listObjects('/');
+
+    expect(results).toHaveLength(1);
+  });
+
+  it('delete objects: folder', async () => {
+    const driver = getLocalDriver();
+
+    let results = await driver.listObjects('/');
+
+    expect(results).toHaveLength(2);
+
+    await driver.deleteKeys(['nested']);
+
+    results = await driver.listObjects('/');
 
     expect(results).toHaveLength(1);
   });

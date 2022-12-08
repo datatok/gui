@@ -2,7 +2,7 @@ import { createReadStream, createWriteStream, existsSync } from 'fs';
 import { promises as fs } from 'fs';
 import { basename, join } from 'path';
 import { StringUtils } from '../../utils/StringUtils';
-import { FileUpload, StorageBucket } from '../types';
+import { FileUpload } from '../types';
 import { Readable } from 'stream';
 
 export class LocalFSDriver implements StorageDriver {
@@ -77,7 +77,7 @@ export class LocalFSDriver implements StorageDriver {
   public async deleteKeys(keys: string[]): Promise<any[]> {
     const promises = keys.map((k: string) => {
       console.trace(`fs.rm(${this.fixPath(k)})`);
-      return fs.rm(this.fixPath(k));
+      return fs.rm(this.fixPath(k), { recursive: true, force: true });
     });
 
     return await Promise.all(promises);
