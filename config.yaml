@@ -33,12 +33,12 @@ storage:
     protocol: http
 
   buckets:
-  - endpoint: minio
+  - title: Minio S3
+    endpoint: minio
     region: us-east-1
     name: ${BUCKET}
     auth: root
 
-  - endpoint: minio
-    region: us-east-1
-    name: test1
-    auth: root
+  - title: Local FS
+    path: /home/node
+    name: home-node
