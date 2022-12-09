@@ -1,4 +1,8 @@
-import { ListObjectsCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import {
+  ListObjectsCommand,
+  ListObjectsV2Command,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AWSStorageDriver } from './aws-driver';
 import { v4 as uuidv4 } from 'uuid';

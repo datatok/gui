@@ -8,9 +8,11 @@ import {
   S3,
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
+import { DownloadResults } from 'src/utils/DownloadResult';
 import { S3DownloadStream } from 'src/utils/S3DownloadStream';
 import { StringUtils } from '../../utils/StringUtils';
 import { FileUpload, StorageBucket } from '../types';
+import { StorageDriver } from './driver';
 
 export class AWSStorageDriver implements StorageDriver {
   protected bucket: StorageBucket;
@@ -305,7 +307,7 @@ export class AWSStorageDriver implements StorageDriver {
   /**
    * see https://dev.to/about14sheep/streaming-data-from-aws-s3-using-nodejs-stream-api-and-typescript-3dj0
    */
-  public async downloadObject(key: string): Promise<S3DownloadStream> {
+  public async downloadObject(key: string): Promise<DownloadResults> {
     const streamer = new S3DownloadStream({
       bucket: this.bucket.name,
       s3: this.client,
@@ -314,7 +316,11 @@ export class AWSStorageDriver implements StorageDriver {
 
     await streamer.run();
 
-    return streamer;
+    return new DownloadResults(
+      streamer.getContentLength(),
+      streamer.getContentType(),
+      streamer,
+    );
   }
 
   public getClient() {

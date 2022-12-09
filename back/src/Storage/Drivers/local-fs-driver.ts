@@ -3,7 +3,8 @@ import { promises as fs } from 'fs';
 import { basename, join } from 'path';
 import { StringUtils } from '../../utils/StringUtils';
 import { FileUpload } from '../types';
-import { Readable } from 'stream';
+import { DownloadResults } from 'src/utils/DownloadResult';
+import { StorageDriver } from './driver';
 
 export class LocalFSDriver implements StorageDriver {
   public constructor(private rootPath: string) {}
@@ -102,8 +103,15 @@ export class LocalFSDriver implements StorageDriver {
     return await Promise.all(promises);
   }
 
-  public async downloadObject(key: string): Promise<Readable> {
-    return createReadStream(this.fixPath(key));
+  public async downloadObject(key: string): Promise<DownloadResults> {
+    const fullPath = this.fixPath(key);
+    const fileStats = await fs.lstat(fullPath);
+
+    return new DownloadResults(
+      fileStats.size,
+      'application/binary',
+      createReadStream(fullPath),
+    );
   }
 
   public fixPath(key: string): string {

@@ -1,4 +1,5 @@
 import { PipeTransform, Injectable } from '@nestjs/common';
+import { StorageDriver } from '../Drivers/driver';
 import { StorageService } from '../storage.service';
 import { GetBucketPipe } from './get-bucket.pipe';
 import { BucketsProviderService } from './storage.buckets.service';

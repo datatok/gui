@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AWSStorageDriver } from './Drivers/aws-driver';
+import { StorageDriver } from './Drivers/driver';
 import { LocalFSDriver } from './Drivers/local-fs-driver';
 import { StorageBucket } from './types';
 
