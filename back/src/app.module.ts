@@ -11,6 +11,7 @@ import { AllExceptionsFilter } from './filters/catch-all.filter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { SecurityModule } from './Security/security.module';
 import { UrlGeneratorModule } from 'nestjs-url-generator';
+import { StatusModule } from './Status/status.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UrlGeneratorModule } from 'nestjs-url-generator';
     }),
     StorageModule,
     SecurityModule,
+    StatusModule,
     /*ThrottlerModule.forRoot({
       ttl: 10,
       limit: 500,

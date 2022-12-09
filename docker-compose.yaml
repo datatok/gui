@@ -19,6 +19,7 @@ services:
       - "80:80"
 
   app:
+    #image: ghcr.io/datatok/gui:v0.3.2
     build:
       context: .
       dockerfile: ./packages/docker/Dockerfile
